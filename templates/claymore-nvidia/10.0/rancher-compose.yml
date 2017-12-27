@@ -2,3 +2,14 @@ version: '2'
 services:
   claymore-nvidia:
     start_on_create: true
+catalog:
+  questions:
+    - variable: WALLET_ADDRESS
+      label: Wallet address
+      default: 0x559db2865e1f099d63037c3ae4a6c8cc1106c819
+      type: string
+    - variable: HOSTS
+      label: Pool Hosts e.g. eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0
+      default: eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0
+      type: string
+
