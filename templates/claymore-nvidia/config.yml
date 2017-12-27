@@ -1,7 +1,6 @@
 name: Claymore Nvidia
-description: |
-  Claymore nvidia
-version: 10.0
+description: Claymore nvidia
+version: 0
 category: miners
 maintainer: Wes Parish
 license: Apache2
