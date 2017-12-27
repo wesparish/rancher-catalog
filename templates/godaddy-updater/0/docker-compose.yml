@@ -1,0 +1,11 @@
+version: '2'
+services:
+  GoDaddyUpdater:
+    image: wesparish/godaddyupdater
+    environment:
+      GODADDY_A_RECORD_LIST: ${A_RECORD_LIST}
+      GODADDY_DOMAIN_LIST: ${DOMAIN_LIST}
+      GODADDY_KEY: ${GODADDY_KEY}
+      GODADDY_SECRET: ${GODADDY_SECRET}
+    labels:
+      io.rancher.container.pull_image: always

@@ -1,0 +1,23 @@
+version: '2'
+services:
+  GoDaddyUpdater:
+    start_on_create: true
+catalog:
+  name: GoDaddy Updater
+  version: 0
+  description: GoDaddy Updater
+  questions:
+    - variable: A_RECORD_LIST
+      label: A record list
+      default: ip,@,*
+      type: string
+    - variable: DOMAIN_LIST
+      label: Domain list
+      default: cowtownt.org
+      type: string
+    - variable: GODADDY_KEY
+      label: GoDaddy API Key
+      type: string
+    - variable: GODADDY_SECRET
+      label: GoDaddy API Secret
+      type: string
