@@ -1,6 +1,6 @@
-name: Claymore Nvidia
+name: Claymore AMD
 description: |
-  Claymore nvidia
+  Claymore AMD
 version: 10.0
 category: miners
 maintainer: Wes Parish

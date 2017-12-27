@@ -13,7 +13,12 @@ services:
     - /dev/nvidia5:/dev/nvidia5:rwm
     stdin_open: true
     tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
     labels:
-      io.rancher.scheduler.affinity:host_label: gpu-type=nvidia,claymore=true
+      io.rancher.scheduler.affinity:host_label: gpu-type=nvidia,miner=claymore
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
