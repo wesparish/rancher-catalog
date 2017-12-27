@@ -1,7 +1,7 @@
 name: EWBF Nvidia
 description: |
   EWBF nvidia
-version: 0.3.4b
+version: 0.3.4
 category: miners
 maintainer: Wes Parish
 license: Apache2
