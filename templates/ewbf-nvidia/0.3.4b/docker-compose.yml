@@ -18,6 +18,10 @@ services:
       options:
         max-size: 1m
         max-file: '3'
+    environment:
+      SERVER: ${SERVER}
+      USER: ${USER}
+      PORT: ${PORT}
     labels:
       io.rancher.scheduler.affinity:host_label: gpu-type=nvidia,miner=ewbf
       io.rancher.container.pull_image: always

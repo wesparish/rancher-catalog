@@ -2,3 +2,18 @@ version: '2'
 services:
   ewbf-nvidia:
     start_on_create: true
+catalog:
+  questions:
+    - variable: SERVER 
+      label: Server - Remote pool address
+      default: zec-us-east1.nanopool.org
+      type: string
+    - variable: USER
+      label: USER - Wallet address
+      default: t1QwLHE4p5G1yM6mHk4gHUAiFVpkeZsdsUJ.unset
+      type: string
+    - variable: PORT
+      label: PORT - Pool Port
+      default: 6666
+      type: string
+
