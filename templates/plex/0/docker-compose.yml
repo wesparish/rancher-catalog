@@ -1,0 +1,63 @@
+version: '2'
+volumes:
+  plexpy:
+    external: true
+    driver: rancher-nfs
+  plex-transcode:
+    external: true
+    driver: local
+  plex-config:
+    external: true
+    driver: local
+  deluge-config:
+    external: true
+    driver: rancher-nfs
+services:
+  plexserver:
+    image: plexinc/pms-docker
+    hostname: plexserver
+    environment:
+      TZ: America/Chicago
+    stdin_open: true
+    volumes:
+    - plex-config:/config
+    - /mnt/raid5_kdrive/plex_media:/mnt/plex_media
+    - plex-transcode:/transcode
+    tty: true
+    ports:
+    - 32400:32400/tcp
+    - 3005:3005/tcp
+    - 8324:8324/tcp
+    - 32469:32469/tcp
+    - 1900:1900/udp
+    - 32410:32410/udp
+    - 32412:32412/udp
+    - 32413:32413/udp
+    - 32414:32414/udp
+    labels:
+      io.rancher.container.pull_image: always
+  plexpy:
+    image: wesparish/plexpy
+    stdin_open: true
+    volumes:
+    - plexpy:/data
+    tty: true
+    ports:
+    - 8181:8181/tcp
+    labels:
+      io.rancher.container.pull_image: always
+  deluge:
+    image: wesparish/deluge
+    stdin_open: true
+    volumes:
+    - deluge-config:/config
+    - /mnt/raid5_kdrive/plex_media:/plex_media
+    tty: true
+    ports:
+    - 8282:8282/tcp
+    - 8444:8444/tcp
+    - 58846:58846/tcp
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.hostname_override: container_name
+
