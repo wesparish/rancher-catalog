@@ -1,0 +1,8 @@
+name: Claymore Nvidia
+description: |
+  Claymore nvidia catalog
+version: 10.0
+category: miners
+maintainer: Wes Parish
+license: Apache2
+projectURL: n/a
