@@ -1,0 +1,24 @@
+version: '2'
+services:
+  ewbf-nvidia:
+    image: wesparish/ewbf:nvidia-0.3.4b
+    devices:
+    - /dev/nvidiactl:/dev/nvidiactl:rwm
+    - /dev/nvidia-uvm:/dev/nvidia-uvm:rwm
+    - /dev/nvidia0:/dev/nvidia0:rwm
+    - /dev/nvidia1:/dev/nvidia1:rwm
+    - /dev/nvidia2:/dev/nvidia2:rwm
+    - /dev/nvidia3:/dev/nvidia3:rwm
+    - /dev/nvidia4:/dev/nvidia4:rwm
+    - /dev/nvidia5:/dev/nvidia5:rwm
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
+    labels:
+      io.rancher.scheduler.affinity:host_label: gpu-type=nvidia,miner=ewbf
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
