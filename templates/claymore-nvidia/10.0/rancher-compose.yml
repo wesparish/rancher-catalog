@@ -3,6 +3,9 @@ services:
   claymore-nvidia:
     start_on_create: true
 catalog:
+  name: Claymore Nvidia
+  version: 0
+  description: Claymore Nvidia
   questions:
     - variable: WALLET_ADDRESS
       label: Wallet address
