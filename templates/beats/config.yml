@@ -1,6 +1,6 @@
-name: Beats Nvidia
+name: Beats 
 description: |
-  Beats nvidia
+  Beats 
 version: 0
 category: monitoring
 maintainer: Wes Parish
