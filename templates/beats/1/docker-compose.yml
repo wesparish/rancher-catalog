@@ -43,6 +43,8 @@ services:
     - /dev/nvidia5:/dev/nvidia5:rwm
     stdin_open: true
     tty: true
+    environment:
+      LOCATION: $LOCATION
     labels:
       io.rancher.scheduler.affinity:host_label: gpumonitor=true,gpu-type=nvidia
       io.rancher.container.hostname_override: container_name
