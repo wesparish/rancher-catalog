@@ -1,0 +1,64 @@
+version: '2'
+services:
+  gpu-monitor-amd:
+    image: wesparish/gpu-monitor
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.scheduler.affinity:host_label: gpumonitor=true,gpu-type=amd
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+    environment:
+      LOCATION: $LOCATION
+  metricbeat:
+    privileged: true
+    image: wesparish/metricbeat
+    environment:
+      ELASTICSEARCH_URL: 172.16.1.17:9200
+    stdin_open: true
+    network_mode: host
+    volumes:
+    - /proc:/hostfs/proc:ro
+    - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+    - /:/hostfs:ro
+    tty: true
+    command:
+    - metricbeat
+    - -e
+    - -system.hostfs=/hostfs
+    labels:
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+  gpu-monitor-nvidia:
+    image: wesparish/gpu-monitor
+    devices:
+    - /dev/nvidiactl:/dev/nvidiactl:rwm
+    - /dev/nvidia0:/dev/nvidia0:rwm
+    - /dev/nvidia1:/dev/nvidia1:rwm
+    - /dev/nvidia2:/dev/nvidia2:rwm
+    - /dev/nvidia3:/dev/nvidia3:rwm
+    - /dev/nvidia4:/dev/nvidia4:rwm
+    - /dev/nvidia5:/dev/nvidia5:rwm
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.scheduler.affinity:host_label: gpumonitor=true,gpu-type=nvidia
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+  filebeat:
+    image: wesparish/filebeat
+    environment:
+      LOGSTASH_HOSTS: 172.16.1.17:5044
+    stdin_open: true
+    volumes:
+    - /var/log:/host-var-log/
+    - /var/lib/docker/containers/:/containers/
+    tty: true
+    labels:
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+

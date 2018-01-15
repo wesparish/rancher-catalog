@@ -1,0 +1,20 @@
+version: '2'
+services:
+  gpu-monitor-amd:
+    start_on_create: true
+  metricbeat:
+    start_on_create: true
+  gpu-monitor-nvidia:
+    start_on_create: true
+  filebeat:
+    start_on_create: true
+catalog:
+  name: Beats
+  version: 1
+  description: Beats
+  questions:
+    - variable: LOCATION
+      label: GPU Monitor Location
+      default: weshouse
+      type: string
+
