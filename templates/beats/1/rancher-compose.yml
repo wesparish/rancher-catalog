@@ -14,7 +14,7 @@ catalog:
   description: Beats
   questions:
     - variable: LOCATION
-      label: GPU Monitor Location
+      label: Location
       default: weshouse
       type: string
 

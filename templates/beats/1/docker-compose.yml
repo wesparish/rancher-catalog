@@ -54,6 +54,7 @@ services:
     image: wesparish/filebeat:5.6.2-1.1
     environment:
       LOGSTASH_HOSTS: 172.16.1.17:5044
+      LOCATION: $LOCATION
     stdin_open: true
     volumes:
     - /var/log:/host-var-log/
