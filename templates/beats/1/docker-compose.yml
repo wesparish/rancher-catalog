@@ -13,7 +13,7 @@ services:
       LOCATION: $LOCATION
   metricbeat:
     privileged: true
-    image: wesparish/metricbeat
+    image: wesparish/metricbeat:5.6.2-1.1
     environment:
       ELASTICSEARCH_URL: 172.16.1.17:9200
     stdin_open: true
