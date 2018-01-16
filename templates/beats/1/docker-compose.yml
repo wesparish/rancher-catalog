@@ -1,7 +1,7 @@
 version: '2'
 services:
   gpu-monitor-amd:
-    image: wesparish/gpu-monitor
+    image: wesparish/gpu-monitor:1.1
     stdin_open: true
     tty: true
     labels:
@@ -32,7 +32,7 @@ services:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
   gpu-monitor-nvidia:
-    image: wesparish/gpu-monitor
+    image: wesparish/gpu-monitor:1.1
     devices:
     - /dev/nvidiactl:/dev/nvidiactl:rwm
     - /dev/nvidia0:/dev/nvidia0:rwm
