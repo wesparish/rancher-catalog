@@ -51,13 +51,14 @@ services:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
   filebeat:
-    image: wesparish/filebeat
+    image: wesparish/filebeat:5.6.2-1.1
     environment:
       LOGSTASH_HOSTS: 172.16.1.17:5044
     stdin_open: true
     volumes:
     - /var/log:/host-var-log/
     - /var/lib/docker/containers/:/containers/
+    - fb-registry:/registry
     tty: true
     labels:
       io.rancher.container.hostname_override: container_name
