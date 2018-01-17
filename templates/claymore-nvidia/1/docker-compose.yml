@@ -25,3 +25,4 @@ services:
       io.rancher.scheduler.affinity:host_label: gpu-type=nvidia,miner=claymore
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
+    privileged: true
