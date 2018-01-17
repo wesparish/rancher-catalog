@@ -1,0 +1,25 @@
+version: '2'
+services:
+  filebeat-wesparish:
+    start_on_create: true
+  elastalert:
+    scale: 1
+    start_on_create: true
+  elasticsearch:
+    start_on_create: true
+  es-cleaner:
+    start_on_create: true
+  Logstash:
+    start_on_create: true
+  kibana:
+    start_on_create: true
+catalog:
+  name: ELK
+  version: 1.1
+  description: ELK
+  questions:
+    - variable: LOGSTASH_HOSTS
+      label: Beats Logstash Target Hosts
+      default: 172.16.1.17:5044
+      type: string
+
