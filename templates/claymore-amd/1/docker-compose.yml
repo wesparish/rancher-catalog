@@ -19,3 +19,5 @@ services:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
     privileged: true
+    ports:
+      - 3333:3333/tcp
