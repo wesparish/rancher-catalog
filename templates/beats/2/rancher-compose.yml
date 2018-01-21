@@ -10,6 +10,7 @@ services:
     start_on_create: true
   heartbeat:
     start_on_create: true
+    scale: 1
 catalog:
   name: Beats
   version: 2
