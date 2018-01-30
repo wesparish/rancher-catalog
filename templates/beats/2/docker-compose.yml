@@ -15,7 +15,7 @@ services:
     privileged: true
     image: wesparish/metricbeat:5.6.2-1.1
     environment:
-      ELASTICSEARCH_URL: 172.16.1.17:9200
+      ELASTICSEARCH_URL: elasticsearch.weshouse:9200
     stdin_open: true
     network_mode: host
     volumes:
@@ -53,7 +53,7 @@ services:
   filebeat:
     image: wesparish/filebeat:5.6.2-1.1
     environment:
-      LOGSTASH_HOSTS: 172.16.1.17:5044
+      LOGSTASH_HOSTS: logstash.weshouse:5044
       LOCATION: $LOCATION
     stdin_open: true
     volumes:

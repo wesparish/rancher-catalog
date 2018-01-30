@@ -17,6 +17,6 @@ catalog:
   questions:
     - variable: LOGSTASH_HOSTS
       label: Beats Logstash Target Hosts
-      default: 172.16.1.17:5044
+      default: logstash.weshouse:5044
       type: string
 
