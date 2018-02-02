@@ -15,7 +15,7 @@ services:
     start_on_create: true
 catalog:
   name: ELK
-  version: 1.1
+  version: 1.2
   description: ELK
   questions:
     - variable: LOGSTASH_HOSTS
