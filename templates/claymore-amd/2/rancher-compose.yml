@@ -17,5 +17,5 @@ catalog:
       type: string
     - variable: CLAYMORE_OPTS
       label: Extra Claymore Options
-      default: -r 1 -nofee
+      default: -r 1 -nofee -mode 1
       type: string
