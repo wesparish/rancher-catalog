@@ -2,7 +2,7 @@ version: '2'
 services:
   claymore-amd:
     init: true
-    image: wesparish/claymore:amd-v10.0-1.1
+    image: wesparish/claymore:amd-v10.0-1.2
     devices:
     - /dev/dri:/dev/dri:rwm
     stdin_open: true
