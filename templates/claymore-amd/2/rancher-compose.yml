@@ -15,4 +15,7 @@ catalog:
       label: Pool Hosts 
       default: eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0
       type: string
-
+    - variable: CLAYMORE_OPTS
+      label: Extra Claymore Options
+      default: -r 1 -nofee
+      type: string

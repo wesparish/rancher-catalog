@@ -15,6 +15,7 @@ services:
     environment:
       WALLET_ADDRESS: ${WALLET_ADDRESS}
       HOSTS: ${HOSTS}
+      CLAYMORE_OPTS: ${CLAYMORE_OPTS}
     labels:
       io.rancher.scheduler.affinity:host_label: gpu-type=amd,miner=claymore
       io.rancher.container.pull_image: always
