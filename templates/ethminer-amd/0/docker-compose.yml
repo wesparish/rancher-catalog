@@ -1,7 +1,8 @@
 version: '2'
 services:
-  ethminer-amd:
-    image: wesparish/ethminer:amd-v0.13.0rc5
+  claymore-amd:
+    init: true
+    image: wesparish/ethminer:amd-v0.13.0
     devices:
     - /dev/dri:/dev/dri:rwm
     stdin_open: true
@@ -15,6 +16,8 @@ services:
       WALLET_ADDRESS: ${WALLET_ADDRESS}
       HOSTS: ${HOSTS}
     labels:
-      io.rancher.scheduler.affinity:host_label: gpu-type=amd,miner=ethminer
+      io.rancher.scheduler.affinity:host_label: gpu-type=amd,miner=claymore
+      io.rancher.scheduler.affinity:container_label_ne: miner=true
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
+    privileged: true
