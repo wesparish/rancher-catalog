@@ -1,0 +1,26 @@
+version: '2'
+services:
+  filebeat-wesparish:
+    start_on_create: true
+  elastalert:
+    scale: 1
+    start_on_create: true
+  elasticsearch:
+    start_on_create: true
+  curator:
+    start_on_create: true
+    scale: 1
+  Logstash:
+    start_on_create: true
+  kibana:
+    start_on_create: true
+catalog:
+  name: ELK
+  version: 2.0
+  description: ELK
+  questions:
+    - variable: LOGSTASH_HOSTS
+      label: Beats Logstash Target Hosts
+      default: logstash.weshouse:5044
+      type: string
+
