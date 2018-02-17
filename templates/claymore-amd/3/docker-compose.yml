@@ -1,0 +1,25 @@
+version: '2'
+services:
+  claymore-amd:
+    init: true
+    image: wesparish/claymore:amd-v11.0-1
+    devices:
+    - /dev/dri:/dev/dri:rwm
+    stdin_open: true
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
+    environment:
+      WALLET_ADDRESS: ${WALLET_ADDRESS}
+      HOSTS: ${HOSTS}
+      CLAYMORE_OPTS: ${CLAYMORE_OPTS}
+    labels:
+      io.rancher.scheduler.affinity:host_label: gpu-type=amd,miner=claymore
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+    privileged: true
+    ports:
+      - 3333:3333/tcp
