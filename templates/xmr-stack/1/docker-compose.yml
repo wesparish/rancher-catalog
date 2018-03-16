@@ -1,6 +1,6 @@
 version: '2'
 services:
-  xmr-stack-scalable:
+  xmr-stack:
     image: wesparish/xmr-stack:2.2.0-1.0
     init: true
     privileged: true
