@@ -2,7 +2,7 @@ version: '2'
 services:
   claymore-amd:
     init: true
-    image: wesparish/claymore:amd-v11.0-1
+    image: wesparish/claymore:amd-v11.5-1
     devices:
     - /dev/dri:/dev/dri:rwm
     stdin_open: true
@@ -25,7 +25,7 @@ services:
       - 3333:3333/tcp
   claymore-amd-scalable:
     init: true
-    image: wesparish/claymore:amd-v11.0-1
+    image: wesparish/claymore:amd-v11.5-1
     devices:
     - /dev/dri:/dev/dri:rwm
     stdin_open: true

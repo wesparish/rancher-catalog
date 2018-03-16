@@ -6,7 +6,7 @@ services:
     start_on_create: false
 catalog:
   name: Claymore AMD
-  version: 11.0-1
+  version: 11.5-1
   description: Claymore AMD
   questions:
     - variable: WALLET_ADDRESS
