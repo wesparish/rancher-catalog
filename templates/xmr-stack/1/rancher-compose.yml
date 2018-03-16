@@ -1,0 +1,21 @@
+version: '2'
+services:
+  xmr-stack:
+    start_on_create: true
+catalog:
+  name: xmr-stack
+  version: 2.2.0-1.0
+  description: xmr-stack
+  questions:
+    - variable: WALLET_ADDRESS
+      label: Wallet address
+      default: etnkJMYgehRjLpWKECLYWi8SG69QZCBwCS7Jh1nx4YFx5gwdRmUfW8EDEQxpawMBwAeAXn9gJCHTbB4y55r2WmMk6QeeZaFFhZi
+      type: string
+    - variable: POOL_ADDRESS
+      label: Pool Address
+      default: etn-us-east1.nanopool.org:13333
+      type: string
+    - variable: POOL_PASSWORD
+      label: Pool password
+      default: x
+      type: string

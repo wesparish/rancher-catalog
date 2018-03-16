@@ -1,0 +1,16 @@
+version: '2'
+services:
+  xmr-stack-scalable:
+    image: wesparish/xmr-stack:2.2.0-1.0
+    environment:
+      POOL_ADDRESS: $POOL_ADDRESS
+      POOL_PASSWORD: $POOL_PASSWORD
+      WALLET_ADDRESS: $WALLET_ADDRESS
+    stdin_open: true
+    tty: true
+    ports:
+    - 16000:16000/tcp
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: miner2=xmr-stack
+      io.rancher.scheduler.global: 'true'
