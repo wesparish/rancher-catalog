@@ -9,7 +9,7 @@ catalog:
   questions:
     - variable: WALLET_ADDRESS
       label: Wallet address
-      default: etnkJMYgehRjLpWKECLYWi8SG69QZCBwCS7Jh1nx4YFx5gwdRmUfW8EDEQxpawMBwAeAXn9gJCHTbB4y55r2WmMk6QeeZaFFhZi
+      default: etnkJMYgehRjLpWKECLYWi8SG69QZCBwCS7Jh1nx4YFx5gwdRmUfW8EDEQxpawMBwAeAXn9gJCHTbB4y55r2WmMk6QeeZaFFhZ
       type: string
     - variable: POOL_ADDRESS
       label: Pool Address
