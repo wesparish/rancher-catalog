@@ -3,9 +3,6 @@ volumes:
   plexpy:
     external: true
     driver: rancher-nfs
-  plex-transcode:
-    external: true
-    driver: local
   plex-config:
     external: true
     driver: rancher-nfs
@@ -25,7 +22,6 @@ services:
     volumes:
     - plex-config:/config
     - plex-media-nfs:/mnt/plex_media
-    - plex-transcode:/transcode
     tty: true
     ports:
     - 32400:32400/tcp
