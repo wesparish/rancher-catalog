@@ -1,0 +1,12 @@
+version: '2'
+services:
+  plexserver:
+    start_on_create: true
+  plexpy:
+    start_on_create: true
+  deluge:
+    start_on_create: true
+catalog:
+  name: Plex
+  version: 0
+  description: Plex
