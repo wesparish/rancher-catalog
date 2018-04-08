@@ -8,5 +8,5 @@ services:
     start_on_create: true
 catalog:
   name: Plex
-  version: 0
+  version: 1
   description: Plex
