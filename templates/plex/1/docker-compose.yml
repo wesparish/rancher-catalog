@@ -8,11 +8,11 @@ volumes:
     driver: local
   plex-config:
     external: true
-    driver: local
+    driver: rancher-nfs
   deluge-config:
     external: true
     driver: rancher-nfs
-  plex_media_nfs:
+  plex-media-nfs:
     external: true
     driver: rancher-nfs
 services:
@@ -24,7 +24,7 @@ services:
     stdin_open: true
     volumes:
     - plex-config:/config
-    - plex_media_nfs:/mnt/plex_media
+    - plex-media-nfs:/mnt/plex_media
     - plex-transcode:/transcode
     tty: true
     ports:
