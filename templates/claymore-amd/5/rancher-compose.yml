@@ -22,11 +22,11 @@ catalog:
       default: -r 1 -nofee -mode 1
       type: string
     - variable: CLAYMORE_SCALABLE_LABEL
-      label: Scheduling label for claymore_amd_scalable service, miner=<>
+      label: Scheduling label for claymore_amd_scalable service
       default: claymore_scalable
       type: string
     - variable: CLAYMORE_LABEL
-      label: Scheduling label for claymore_amd_scalable service, miner=<>
+      label: Scheduling label for claymore_amd service
       default: claymore
       type: string
 
