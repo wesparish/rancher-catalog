@@ -19,7 +19,7 @@ catalog:
       type: string
     - variable: CLAYMORE_OPTS
       label: Extra Claymore Options
-      default: -r 1 -nofee -mode 1
+      default: -r 1 -nofee 1 -mode 1
       type: string
     - variable: CLAYMORE_SCALABLE_LABEL
       label: Scheduling label for claymore_amd_scalable service
