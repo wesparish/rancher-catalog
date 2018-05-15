@@ -23,7 +23,7 @@ catalog:
       type: string
     - variable: CLAYMORE_SCALABLE_LABEL
       label: Scheduling label for claymore_amd_scalable service
-      default: claymore_scalable
+      default: claymore-scalable
       type: string
     - variable: CLAYMORE_LABEL
       label: Scheduling label for claymore_amd service
