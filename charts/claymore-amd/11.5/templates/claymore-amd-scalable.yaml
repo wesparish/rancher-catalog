@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: gpu-type
+                operator: In
+                values:
+                - amd
+              - key: miner
+                operator: In
+                values:
+                - {{ .Values.claymore.scalablelabel }}
+      containers:
+      - env:
+        - name: CLAYMORE_OPTS
+          value: {{ .Values.claymore.options }}
+        - name: HOSTS
+          value: {{ .Values.claymore.poolhosts }}
+        - name: WALLET_ADDRESS
+          value: {{ .Values.claymore.wallet }}
+        image: wesparish/claymore:amd-v11.5-3
+        imagePullPolicy: Always
+        name: claymore-amd-scalable
+        ports:
+        - containerPort: 3333
+          name: 3333tcp33331
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+            - ALL
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /dev/dri
+          name: dev-dri
+        - mountPath: /sys
+          name: sys
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /dev/dri
+          type: ""
+        name: dev-dri
+      - hostPath:
+          path: /sys
+          type: ""
+        name: sys

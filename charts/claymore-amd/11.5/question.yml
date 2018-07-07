@@ -1,0 +1,43 @@
+categories:
+- miners
+questions:
+- variable: claymore.wallet
+  default: "0x559db2865e1f099d63037c3ae4a6c8cc1106c819"
+  description: "Wallet Address"
+  type: string
+  required: true
+  label: Wallet Address
+  group: "claymore questions"
+
+- variable: claymore.poolhosts
+  default: "eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0"
+  description: "Pool Hosts"
+  type: string
+  required: true
+  label: Pool Hosts
+  group: "miner questions"
+
+- variable: claymore.options
+  default: "-r 1 -nofee 1 -mode 1"
+  description: "Claymore Options"
+  type: string
+  required: true
+  label: Claymore Options
+  group: "miner questions"
+
+- variable: claymore.scalablelabel
+  default: ""
+  description: "Scheduling label for claymore_amd_scalable service"
+  type: string
+  required: true
+  label: Scalable Label
+  group: "miner questions"
+
+- variable: claymore.label
+  default: "claymore"
+  description: "Scheduling label for claymore_amd (non-scalable) service"
+  type: string
+  required: true
+  label: Claymore Label
+  group: "miner questions"
+
