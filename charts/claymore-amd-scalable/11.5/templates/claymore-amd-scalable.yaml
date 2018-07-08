@@ -1,7 +1,18 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "18"
+    field.cattle.io/creatorId: user-d84z4
+  creationTimestamp: 2018-06-30T12:21:23Z
+  generation: 21
+  labels:
+    workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
   name: claymore-amd-scalable
+  namespace: claymore-amd
+  resourceVersion: "1705126"
+  selfLink: /apis/apps/v1beta2/namespaces/claymore-amd/deployments/claymore-amd-scalable
+  uid: 1a8326e7-7c60-11e8-9a86-c4346b932458
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -15,6 +26,12 @@ spec:
       maxUnavailable: 1
     type: RollingUpdate
   template:
+    metadata:
+      annotations:
+        field.cattle.io/ports: '[[{"containerPort":30333,"dnsName":"claymore-amd-scalable-nodeport","kind":"NodePort","name":"3333tcp33331","protocol":"TCP","sourcePort":3333}]]'
+      creationTimestamp: null
+      labels:
+        workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
     spec:
       affinity:
         nodeAffinity:
@@ -31,17 +48,17 @@ spec:
                 - {{ .Values.claymore.scalablelabel }}
       containers:
       - env:
+        - name: WALLET_ADDRESS
+          value: {{ .Values.claymore.wallet }}
         - name: CLAYMORE_OPTS
           value: {{ .Values.claymore.options }}
         - name: HOSTS
           value: {{ .Values.claymore.poolhosts }}
-        - name: WALLET_ADDRESS
-          value: {{ .Values.claymore.wallet }}
         image: wesparish/claymore:amd-v11.5-3
         imagePullPolicy: Always
         name: claymore-amd-scalable
         ports:
-        - containerPort: 3333
+        - containerPort: 30333
           name: 3333tcp33331
           protocol: TCP
         resources: {}
@@ -54,6 +71,8 @@ spec:
           readOnlyRootFilesystem: false
           runAsNonRoot: false
         stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         tty: true
         volumeMounts:
         - mountPath: /dev/dri
@@ -62,6 +81,7 @@ spec:
           name: sys
       dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
@@ -73,3 +93,22 @@ spec:
           path: /sys
           type: ""
         name: sys
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-06-30T12:45:54Z
+    lastUpdateTime: 2018-06-30T12:45:54Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-06-30T20:11:49Z
+    lastUpdateTime: 2018-07-08T13:05:51Z
+    message: ReplicaSet "claymore-amd-scalable-6cf85ff8cf" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 21
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
