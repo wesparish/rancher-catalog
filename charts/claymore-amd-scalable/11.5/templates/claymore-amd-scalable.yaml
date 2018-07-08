@@ -9,7 +9,7 @@ metadata:
   labels:
     workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
   name: claymore-amd-scalable
-  namespace: claymore-amd
+  #namespace: claymore-amd
   resourceVersion: "1705126"
   selfLink: /apis/apps/v1beta2/namespaces/claymore-amd/deployments/claymore-amd-scalable
   uid: 1a8326e7-7c60-11e8-9a86-c4346b932458
