@@ -33,11 +33,3 @@ questions:
   label: Scalable Label
   group: "miner questions"
 
-- variable: claymore.label
-  default: "claymore"
-  description: "Scheduling label for claymore_amd (non-scalable) service"
-  type: string
-  required: true
-  label: Claymore Label
-  group: "miner questions"
-

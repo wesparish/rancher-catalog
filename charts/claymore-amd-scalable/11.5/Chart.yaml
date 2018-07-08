@@ -1,7 +1,7 @@
-name: claymore-amd
+name: claymore-amd-scalable
 version: 1.0.0
 appVersion: 11.5
-description: claymore-amd
+description: claymore-amd-scalable
 keywords:
 - claymore
 - miner
