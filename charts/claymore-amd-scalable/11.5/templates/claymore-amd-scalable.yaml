@@ -1,5 +1,7 @@
 apiVersion: apps/v1beta2
 kind: Deployment
+metadata:
+  name: claymore-amd-scalable
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -9,9 +11,6 @@ spec:
       maxSurge: 0
       maxUnavailable: 1
     type: RollingUpdate
-  selector:
-    matchLabels:
-      workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
   template:
     spec:
       affinity:
