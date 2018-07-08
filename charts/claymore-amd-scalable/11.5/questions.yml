@@ -7,7 +7,7 @@ questions:
   type: string
   required: true
   label: Wallet Address
-  group: "claymore questions"
+  group: "miner questions"
 
 - variable: claymore.poolhosts
   default: "eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0"
