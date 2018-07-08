@@ -1,0 +1,14 @@
+name: claymore-amd
+version: 1.0.0
+appVersion: 11.5
+description: claymore-amd
+keywords:
+- claymore
+- miner
+home: na
+icon: https://www.cryptocompare.com/media/20646/eth_logo.png?width=200
+sources:
+- https://github.com/wesparish/docker-claymore
+maintainers:
+- name: wes
+  email: wes@elastiscale.net
