@@ -9,6 +9,9 @@ spec:
       maxSurge: 0
       maxUnavailable: 1
     type: RollingUpdate
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
   template:
     spec:
       affinity:
