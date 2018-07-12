@@ -56,8 +56,6 @@ spec:
               name: containers
             - mountPath: /registry
               name: fb-registry
-            - mountPath: /podinfo
-              name: podinfo
           ports:
             - name: http
               containerPort: 80
