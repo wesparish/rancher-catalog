@@ -5,7 +5,7 @@ appVersion: 5.6.2
 description: Forwards log file data to logstash
 keywords:
 - logging
-icon: "https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwi1nO7RvZjcAhVMd6wKHVz8CeoQjRx6BAgBEAU&url=https%3A%2F%2Fjujucharms.com%2Ffilebeat&psig=AOvVaw2K6xzUi-UsNlWdbhcVo_yG&ust=1531447751273471"
+icon: "https://amsterdam.luminis.eu/wp-content/uploads/2016/02/elastic-beats-fw.png"
 sources:
 - https://github.com/wesparish/docker-filebeat
 maintainers:
