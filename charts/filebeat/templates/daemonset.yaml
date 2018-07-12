@@ -33,7 +33,6 @@ spec:
         name: fb-registry
       containers:
         - name: {{ .Chart.Name }}
-          command: ["/bin/bash"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
