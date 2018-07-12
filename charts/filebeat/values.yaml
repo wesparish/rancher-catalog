@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: wesparish/filebeat
   tag: 5.6.2-1.2
-  pullPolicy: always
+  pullPolicy: Always
 
 filebeat:
   location: weshouse
