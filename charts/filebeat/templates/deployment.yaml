@@ -19,6 +19,19 @@ spec:
         app: {{ template "filebeat.name" . }}
         release: {{ .Release.Name }}
     spec:
+      volumes:
+      - hostPath:
+          path: /var/log
+          type: ""
+        name: var-log
+      - hostPath:
+          path: /var/lib/docker/containers/
+          type: ""
+        name: containers
+      - hostPath:
+          path: /var/tmp/fb-registry
+          type: ""
+        name: fb-registry
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -35,19 +48,6 @@ spec:
               name: containers
             - mountPath: /registry
               name: fb-registry
-          volumes:
-          - hostPath:
-              path: /var/log
-              type: ""
-            name: var-log
-          - hostPath:
-              path: /var/lib/docker/containers/
-              type: ""
-            name: containers
-          - hostPath:
-              path: /var/tmp/fb-registry
-              type: ""
-            name: fb-registry
           ports:
             - name: http
               containerPort: 80
