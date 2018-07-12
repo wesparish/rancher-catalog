@@ -42,6 +42,10 @@ spec:
               resourceFieldRef: 
                 containerName: client-container
                 resource: status.hostIP
+            - path: "container_name"
+              resourceFieldRef:
+                containerName: client-container
+                resource: metadata.name
       containers:
         - name: {{ .Chart.Name }}
           command: "/bin/bash"
