@@ -1,0 +1,19 @@
+categories:
+- logging
+questions:
+- variable: filebeat.location
+  default: "weshouse"
+  description: "Location of this filebeat"
+  type: string
+  required: true
+  label: Location
+  group: "filebeat questions"
+
+- variable: filebeat.logstash_hosts
+  default: "logstash.weshouse:5001"
+  description: "Logstash Hosts"
+  type: string
+  required: true
+  label: Logstash Hosts
+  group: "filebeat questions"
+
