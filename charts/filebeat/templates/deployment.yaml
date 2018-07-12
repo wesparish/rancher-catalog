@@ -28,6 +28,26 @@ spec:
               value: {{ .Values.filebeat.location }}
             - name: LOGSTASH_HOSTS
               value: {{ .Values.filebeat.logstash_hosts }}
+          volumeMounts:
+            - mountPath: /host-var-log/
+              name: var-log
+            - mountPath: /containers/
+              name: containers
+            - mountPath: /registry
+              name: fb-registry
+          volumes:
+          - hostPath:
+              path: /var/log
+              type: ""
+            name: var-log
+          - hostPath:
+              path: /var/lib/docker/containers/
+              type: ""
+            name: containers
+          - hostPath:
+              path: /var/tmp/fb-registry
+              type: ""
+            name: fb-registry
           ports:
             - name: http
               containerPort: 80
