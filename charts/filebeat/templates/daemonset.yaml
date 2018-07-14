@@ -61,10 +61,10 @@ spec:
               protocol: TCP
           livenessProbe:
             exec:
-              command: "ps -ef | grep -i filebeat"
+              command: ["pgrep", "filebeat"]
           readinessProbe:
             exec:
-              command: "ps -ef | grep -i filebeat"
+              command: ["pgrep", "filebeat"]
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
