@@ -60,13 +60,11 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command: "ps -ef | grep -i filebeat"
           readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command: "ps -ef | grep -i filebeat"
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
