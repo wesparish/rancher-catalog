@@ -32,7 +32,7 @@ spec:
       creationTimestamp: null
       labels:
         workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
-        miner: true
+        container.type: miner
     spec:
       affinity:
         nodeAffinity:
@@ -51,10 +51,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: miner
+              - key: container.type
                 operator: In
                 values:
-                - true
+                - miner
             topologyKey: "kubernetes.io/hostname"
       containers:
       - env:
