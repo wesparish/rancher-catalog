@@ -32,6 +32,7 @@ spec:
       creationTimestamp: null
       labels:
         workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
+        miner: true
     spec:
       affinity:
         nodeAffinity:
@@ -46,6 +47,15 @@ spec:
                 operator: In
                 values:
                 - {{ .Values.claymore.scalablelabel }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: miner
+                operator: In
+                values:
+                - true
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - env:
         - name: WALLET_ADDRESS
