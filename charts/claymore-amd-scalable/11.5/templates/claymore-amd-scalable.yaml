@@ -64,6 +64,14 @@ spec:
           value: {{ .Values.claymore.options }}
         - name: HOSTS
           value: {{ .Values.claymore.poolhosts }}
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         image: wesparish/claymore:amd-v11.5-3
         imagePullPolicy: Always
         name: claymore-amd-scalable
