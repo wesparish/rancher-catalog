@@ -1,0 +1,61 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "elastalert.fullname" . }}
+  labels:
+    app: {{ template "elastalert.name" . }}
+    chart: {{ template "elastalert.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "elastalert.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "elastalert.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            CONTAINER_TIMEZONE: America/Chicago
+            ELASTICSEARCH_HOST: {{ .Values.elastalert.elasticsearchHost }}
+            ELASTICSEARCH_PORT: '{{ .Values.elastalert.elasticsearchPort }}'
+            SET_CONTAINER_TIMEZONE: 'True'
+          livenessProbe:
+            exec:
+              command: ["pgrep", "-f", "elastalert.elastalert"]
+          readinessProbe:
+            exec:
+              command: ["pgrep", "-f", "elastalert.elastalert"]
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ .Values.elastalert.elastalertConfigPVC }}
+        - name: rules
+          persistentVolumeClaim:
+            claimName: {{ .Values.elastalert.elastalertRulesPVC }}
+        - name: logs
+          persistentVolumeClaim:
+            claimName: {{ .Values.elastalert.elastalertLogsPVC }}
+
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
