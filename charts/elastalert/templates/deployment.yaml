@@ -43,11 +43,11 @@ spec:
             - name: SET_CONTAINER_TIMEZONE
               value: 'True'
           livenessProbe:
-            initialDeplaySeconds: 30
+            initialDelaySeconds: 30
             exec:
               command: ["pgrep", "-f", "elastalert.elastalert"]
           readinessProbe:
-            initialDeplaySeconds: 30
+            initialDelaySeconds: 30
             exec:
               command: ["pgrep", "-f", "elastalert.elastalert"]
           resources:
