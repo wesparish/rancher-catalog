@@ -19,21 +19,6 @@ spec:
         app: {{ template "elastalert.name" . }}
         release: {{ .Release.Name }}
     spec:
-      containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - CONTAINER_TIMEZONE: America/Chicago
-            - ELASTICSEARCH_HOST: {{ .Values.elastalert.elasticsearchHost }}
-            - ELASTICSEARCH_PORT: '{{ .Values.elastalert.elasticsearchPort }}'
-            - SET_CONTAINER_TIMEZONE: 'True'
-          livenessProbe:
-            exec:
-              command: ["pgrep", "-f", "elastalert.elastalert"]
-          readinessProbe:
-            exec:
-              command: ["pgrep", "-f", "elastalert.elastalert"]
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -44,7 +29,25 @@ spec:
         - name: logs
           persistentVolumeClaim:
             claimName: {{ .Values.elastalert.elastalertLogsPVC }}
-
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CONTAINER_TIMEZONE
+              value: America/Chicago
+            - name: ELASTICSEARCH_HOST
+              value: {{ .Values.elastalert.elasticsearchHost }}
+            - name: ELASTICSEARCH_PORT
+              value: '{{ .Values.elastalert.elasticsearchPort }}'
+            - name: SET_CONTAINER_TIMEZONE
+              value: 'True'
+          livenessProbe:
+            exec:
+              command: ["pgrep", "-f", "elastalert.elastalert"]
+          readinessProbe:
+            exec:
+              command: ["pgrep", "-f", "elastalert.elastalert"]
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
