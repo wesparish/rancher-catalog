@@ -52,11 +52,11 @@ spec:
           livenessProbe:
             initialDelaySeconds: 10
             exec:
-              command: ["pgrep", "-f", "/usr/bin/elastalert"]
+              command: ["pgrep", "-f", "elastalert.elastalert"]
           readinessProbe:
             initialDelaySeconds: 10
             exec:
-              command: ["pgrep", "-f", "/usr/bin/elastalert"]
+              command: ["pgrep", "-f", "elastalert.elastalert"]
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
