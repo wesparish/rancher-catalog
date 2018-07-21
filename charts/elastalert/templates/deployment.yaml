@@ -42,6 +42,13 @@ spec:
               value: '{{ .Values.elastalert.elasticsearchPort }}'
             - name: SET_CONTAINER_TIMEZONE
               value: 'True'
+          volumeMounts:
+            - name: config
+              mountPath: /opt/config
+            - name: rules
+              mountPath: /opt/rules
+            - name: logs
+              mountPath: /opt/logs
           livenessProbe:
             initialDelaySeconds: 10
             exec:
