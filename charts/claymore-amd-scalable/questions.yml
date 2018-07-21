@@ -26,7 +26,7 @@ questions:
   group: "miner questions"
 
 - variable: claymore.scalablelabel
-  default: "claymore-scalable"
+  default: "claymore-scalable-wes"
   description: "Scheduling label for claymore_amd_scalable service"
   type: string
   required: true
