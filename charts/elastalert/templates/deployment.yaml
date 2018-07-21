@@ -24,10 +24,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            CONTAINER_TIMEZONE: America/Chicago
-            ELASTICSEARCH_HOST: {{ .Values.elastalert.elasticsearchHost }}
-            ELASTICSEARCH_PORT: '{{ .Values.elastalert.elasticsearchPort }}'
-            SET_CONTAINER_TIMEZONE: 'True'
+            - CONTAINER_TIMEZONE: America/Chicago
+            - ELASTICSEARCH_HOST: {{ .Values.elastalert.elasticsearchHost }}
+            - ELASTICSEARCH_PORT: '{{ .Values.elastalert.elasticsearchPort }}'
+            - SET_CONTAINER_TIMEZONE: 'True'
           livenessProbe:
             exec:
               command: ["pgrep", "-f", "elastalert.elastalert"]
