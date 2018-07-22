@@ -1,11 +1,19 @@
 categories:
 - logging
 questions:
-- variable: filebeat.location
+- variable: gpumonitor.location
   default: "weshouse"
   description: "Location of this gpu-monitor"
   type: string
   required: true
   label: Location
+  group: "gpu-monitor questions"
+
+- variable: gpumonitor.schedulingLabel
+  default: "gpu-monitor-wes"
+  description: "Label to schedule gpu-monitor to"
+  type: string
+  required: true
+  label: Scheduling Label
   group: "gpu-monitor questions"
 

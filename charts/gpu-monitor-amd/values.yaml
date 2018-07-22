@@ -9,8 +9,9 @@ image:
   tag: 1.3
   pullPolicy: Always
 
-filebeat:
+gpumonitor:
   location: weshouse
+  schedulingLabel: gpu-monitor-wes
 
 service:
   type: ClusterIP
