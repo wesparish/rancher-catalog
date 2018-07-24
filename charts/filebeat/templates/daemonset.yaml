@@ -36,8 +36,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: LOCATION
-              value: {{ .Values.filebeat.location }}
             - name: LOGSTASH_HOSTS
               value: {{ .Values.filebeat.logstash_hosts }}
             - name: NODE_NAME
