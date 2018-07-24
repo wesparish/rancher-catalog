@@ -10,7 +10,8 @@ image:
   pullPolicy: Always
 
 filebeat:
-  location: weshouse
+# Now applied as a node label location=weshouse
+#  location: weshouse
   logstash_hosts: logstash.weshouse:5001
 
 service:
