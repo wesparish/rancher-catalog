@@ -44,7 +44,7 @@ resources: {}
   #  memory: 128Mi
 
 nodeSelector: #{}
-  filebeattest: true
+  filebeattest: "true"
 
 tolerations: []
 
