@@ -9,3 +9,12 @@ questions:
   label: Logstash Hosts
   group: "filebeat questions"
 
+- variable: nodeSelector
+  default: ""
+  description: "Node Selector"
+  type: string
+  required: false
+  label: Node Selector
+  group: "Optional Questions"
+
+
