@@ -3,11 +3,12 @@ kind: Deployment
 metadata:
   annotations:
     deployment.kubernetes.io/revision: "18"
-    field.cattle.io/creatorId: user-d84z4
+#    field.cattle.io/creatorId: user-d84z4
   creationTimestamp: 2018-06-30T12:21:23Z
   generation: 21
   labels:
-    workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
+    app: claymore-amd-scalable
+#    workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
   name: claymore-amd-scalable
   #namespace: claymore-amd
   resourceVersion: "1705126"
@@ -19,7 +20,8 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
+      app: claymore-amd-scalable
+#      workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
   strategy:
     rollingUpdate:
       maxSurge: 0
@@ -27,11 +29,11 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations:
-        field.cattle.io/ports: '[[{"containerPort":30333,"dnsName":"claymore-amd-scalable-nodeport","kind":"NodePort","name":"3333tcp33331","protocol":"TCP","sourcePort":3333}]]'
+#      annotations:
+#        field.cattle.io/ports: '[[{"containerPort":30333,"dnsName":"claymore-amd-scalable-nodeport","kind":"NodePort","name":"3333tcp33331","protocol":"TCP","sourcePort":3333}]]'
       creationTimestamp: null
       labels:
-        workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
+#        workload.user.cattle.io/workloadselector: deployment-claymore-amd-claymore-amd-scalable
         container.type: miner
     spec:
       affinity:
