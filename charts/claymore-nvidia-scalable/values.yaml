@@ -1,0 +1,26 @@
+# Default values for claymore-nvidia-scalable.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: wesparish/claymore
+  tag: cuda-v11.5-1.0
+  pullPolicy: Always
+
+resources: 
+  limits:
+    nvidia.com/gpu: 6
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+claymore:
+  wallet: "0x559db2865e1f099d63037c3ae4a6c8cc1106c819"
+  poolhosts: "eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0"
+  options: "-r 1 -nofee 1 -mode 1"
+  scalablelabel: "claymore-scalable"
