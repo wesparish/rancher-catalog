@@ -1,0 +1,14 @@
+name: claymore-amd-scalable
+version: 1.3.0
+appVersion: 11.9
+description: claymore-amd-scalable
+keywords:
+- claymore
+- miner
+home: na
+icon: https://www.cryptocompare.com/media/20646/eth_logo.png?width=200
+sources:
+- https://github.com/wesparish/docker-claymore
+maintainers:
+- name: wes
+  email: wes@elastiscale.net
