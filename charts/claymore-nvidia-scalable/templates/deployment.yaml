@@ -43,6 +43,21 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
         - name: {{ .Chart.Name }}
+          - env:
+            - name: WALLET_ADDRESS
+              value: {{ .Values.claymore.wallet }}
+            - name: CLAYMORE_OPTS
+              value: {{ .Values.claymore.options }}
+            - name: HOSTS
+              value: {{ .Values.claymore.poolhosts }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           livenessProbe:
