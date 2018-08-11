@@ -43,7 +43,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
         - name: {{ .Chart.Name }}
-          - env:
+          env:
             - name: WALLET_ADDRESS
               value: {{ .Values.claymore.wallet }}
             - name: CLAYMORE_OPTS
