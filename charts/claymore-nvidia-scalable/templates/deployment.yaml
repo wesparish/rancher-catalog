@@ -19,59 +19,22 @@ spec:
         app: {{ template "claymore-nvidia-scalable.name" . }}
         release: {{ .Release.Name }}
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: gpu-type
-                operator: In
-                values:
-                - nvidia
-              - key: miner
-                operator: In
-                values:
-                - {{ .Values.claymore.scalablelabel }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: container.type
-                operator: In
-                values:
-                - miner
-            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: {{ .Chart.Name }}
-          - env:
-            - name: WALLET_ADDRESS
-              value: {{ .Values.claymore.wallet }}
-            - name: CLAYMORE_OPTS
-              value: {{ .Values.claymore.options }}
-            - name: HOSTS
-              value: {{ .Values.claymore.poolhosts }}
-            - name: NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
           livenessProbe:
-            initialDelaySeconds: 30
-            exec:
-              command:
-                - "pgrep"
-                - "ethdcrminer64"
+            httpGet:
+              path: /
+              port: http
           readinessProbe:
-            initialDelaySeconds: 30
-            exec:
-              command:
-                - "pgrep"
-                - "ethdcrminer64"
+            httpGet:
+              path: /
+              port: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

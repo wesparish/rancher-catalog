@@ -1,22 +1,22 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "claymore-amd-scalable.fullname" . }}
+  name: {{ template "claymore-nvidia-scalable.fullname" . }}
   labels:
-    app: {{ template "claymore-amd-scalable.name" . }}
-    chart: {{ template "claymore-amd-scalable.chart" . }}
+    app: {{ template "claymore-nvidia-scalable.name" . }}
+    chart: {{ template "claymore-nvidia-scalable.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "claymore-amd-scalable.name" . }}
+      app: {{ template "claymore-nvidia-scalable.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "claymore-amd-scalable.name" . }}
+        app: {{ template "claymore-nvidia-scalable.name" . }}
         release: {{ .Release.Name }}
     spec:
       affinity:
@@ -27,7 +27,7 @@ spec:
               - key: gpu-type
                 operator: In
                 values:
-                - amd
+                - nvidia
               - key: miner
                 operator: In
                 values:
@@ -41,18 +41,9 @@ spec:
                 values:
                 - miner
             topologyKey: "kubernetes.io/hostname"
-      volumes:
-      - hostPath:
-          path: /dev/dri
-          type: ""
-        name: dev-dri
-      - hostPath:
-          path: /sys
-          type: ""
-        name: sys
       containers:
         - name: {{ .Chart.Name }}
-          env:
+          - env:
             - name: WALLET_ADDRESS
               value: {{ .Values.claymore.wallet }}
             - name: CLAYMORE_OPTS
@@ -69,23 +60,6 @@ spec:
                   fieldPath: metadata.name
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          securityContext:
-            allowPrivilegeEscalation: true
-            capabilities:
-              add:
-              - ALL
-            privileged: true
-            readOnlyRootFilesystem: false
-            runAsNonRoot: false
-          volumeMounts:
-          - mountPath: /dev/dri
-            name: dev-dri
-          - mountPath: /sys
-            name: sys
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
           livenessProbe:
             initialDelaySeconds: 30
             exec:
