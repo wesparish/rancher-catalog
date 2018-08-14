@@ -36,10 +36,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: miner
+              - key: app
                 operator: In
                 values:
-                - "true"
+                - {{ template "claymore-amd-scalable.name" . }}
             topologyKey: "kubernetes.io/hostname"
       volumes:
       - hostPath:

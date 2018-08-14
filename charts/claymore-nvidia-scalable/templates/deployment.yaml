@@ -32,15 +32,6 @@ spec:
                 operator: In
                 values:
                 - {{ .Values.claymore.scalablelabel }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: miner
-                operator: In
-                values:
-                - "true"
-            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: {{ .Chart.Name }}
           env:
