@@ -36,10 +36,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: container.type
+              - key: miner
                 operator: In
                 values:
-                - miner
+                - true
             topologyKey: "kubernetes.io/hostname"
       containers:
         - name: {{ .Chart.Name }}
