@@ -39,7 +39,7 @@ spec:
               - key: miner
                 operator: In
                 values:
-                - true
+                - "true"
             topologyKey: "kubernetes.io/hostname"
       volumes:
       - hostPath:
