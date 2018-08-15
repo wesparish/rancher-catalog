@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "gpu-monitor-nvidia.fullname" . }}
+  labels:
+    app: {{ template "gpu-monitor-nvidia.name" . }}
+    chart: {{ template "gpu-monitor-nvidia.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "gpu-monitor-nvidia.name" . }}
+    release: {{ .Release.Name }}

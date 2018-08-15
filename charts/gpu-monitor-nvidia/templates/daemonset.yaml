@@ -1,0 +1,106 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: {{ template "gpu-monitor-nvidia.fullname" . }}
+  labels:
+    app: {{ template "gpu-monitor-nvidia.name" . }}
+    chart: {{ template "gpu-monitor-nvidia.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "gpu-monitor-nvidia.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "gpu-monitor-nvidia.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: gpu-type
+                operator: In
+                values:
+                - nvidia
+              - key: gpumonitor
+                operator: In
+                values:
+                - {{ .Values.gpumonitor.schedulingLabel }}
+      volumes:
+      - hostPath:
+          path: /dev/nvidiactl
+          type: ""
+        name: dev-nvidiactl
+      - hostPath:
+          path: /dev/nvidia0
+          type: ""
+        name: dev-nvidia0
+      - hostPath:
+          path: /dev/nvidia1
+          type: ""
+        name: dev-nvidia1
+      - hostPath:
+          path: /dev/nvidia2
+          type: ""
+        name: dev-nvidia2
+      - hostPath:
+          path: /dev/nvidia3
+          type: ""
+        name: dev-nvidia3
+      - hostPath:
+          path: /dev/nvidia4
+          type: ""
+        name: dev-nvidia4
+      - hostPath:
+          path: /dev/nvidia5
+          type: ""
+        name: dev-nvidia5
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LOCATION
+              value: {{ .Values.gpumonitor.location }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+          - mountPath: /dev/nvidiactl
+            name: dev-nvidiactl
+          - mountPath: /dev/nvidia0
+            name: dev-nvidia0
+          - mountPath: /dev/nvidia1
+            name: dev-nvidia1
+          - mountPath: /dev/nvidia2
+            name: dev-nvidia2
+          - mountPath: /dev/nvidia3
+            name: dev-nvidia3
+          - mountPath: /dev/nvidia4
+            name: dev-nvidia4
+          - mountPath: /dev/nvidia5
+            name: dev-nvidia5
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
