@@ -33,3 +33,10 @@ questions:
   label: Scalable Label
   group: "miner questions"
 
+- variable: claymore.location
+  default: "weshouse"
+  description: "Location of this gpu-monitor"
+  type: string
+  required: true
+  label: Location
+  group: "gpu-monitor questions"

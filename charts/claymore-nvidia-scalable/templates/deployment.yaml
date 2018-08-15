@@ -35,6 +35,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
+            - name: LOCATION
+              value: {{ .Values.claymore.location }}
             - name: WALLET_ADDRESS
               value: {{ .Values.claymore.wallet }}
             - name: CLAYMORE_OPTS
