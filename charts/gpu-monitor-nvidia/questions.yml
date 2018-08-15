@@ -10,8 +10,8 @@ questions:
   group: "gpu-monitor questions"
 
 - variable: gpumonitor.schedulingLabel
-  default: "gpu-monitor-wes"
-  description: "Label to schedule gpu-monitor to"
+  default: "wes"
+  description: "Label to schedule gpu-monitor to: (i.e. gpumonitor=wes)"
   type: string
   required: true
   label: Scheduling Label
