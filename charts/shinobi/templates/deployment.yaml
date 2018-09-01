@@ -32,7 +32,7 @@ spec:
         - name: etc-localtime
           hostPath:
             path: /etc/localtime
-            type: File
+            type: ""
         - name: etc-timezone
           hostPath:
             path: /etc/timezone
