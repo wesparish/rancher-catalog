@@ -39,7 +39,7 @@ resources: {}
   #  memory: 128Mi
 
 nodeSelector: #{}
-  kubernetes.io/hostname: smdocker3
+  kubernetes.io/hostname: nv16
 
 tolerations: []
 
