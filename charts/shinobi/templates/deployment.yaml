@@ -39,7 +39,7 @@ spec:
             type: File
         - name: shinobi-shm-temp
           hostPath:
-            path: /dev/shm/shinobiDockerTemp
+            path: /dev/shm/
             type: FileOrCreate
       containers:
         - name: {{ .Chart.Name }}
@@ -57,7 +57,7 @@ spec:
             - name: etc-timezone
               mountPath: /etc/timezone
             - name: shinobi-shm-temp
-              mountPath: /dev/shm/streams
+              mountPath: /dev/shm/
           ports:
             - name: http
               containerPort: 8080
