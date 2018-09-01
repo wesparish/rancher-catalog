@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: docker.io/wesparish/shinobi
-  tag: 08312018
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:
