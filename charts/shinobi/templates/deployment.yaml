@@ -1,0 +1,78 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "shinobi.fullname" . }}
+  labels:
+    app: {{ template "shinobi.name" . }}
+    chart: {{ template "shinobi.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "shinobi.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "shinobi.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: shinobi-config
+          persistentVolumeClaim:
+            claimName: shinobi-config
+        - name: shinobi-datadir
+          persistentVolumeClaim:
+            claimName: shinobi-datadir
+        - name: shinobi-videos
+          persistentVolumeClaim:
+            claimName: shinobi-videos
+        - name: etc-localtime
+          hostPath:
+            path: /etc/localtime
+            type: File
+        - name: etc-timezone
+          hostPath:
+            path: /etc/timezone
+            type: File
+        - name: shinobi-shm-temp
+          hostPath:
+            path: /dev/shm/shinobiDockerTemp
+            type: FileOrCreate
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: shinobi-config
+              mountPath: /config
+            - name: shinobi-datadir
+              mountPath: /var/lib/mysql
+            - name: shinobi-videos
+              mountPath: /opt/shinobi/videos
+            - name: etc-localtime 
+              mountPath: /etc/localtime
+            - name: etc-timezone
+              mountPath: /etc/timezone
+            - name: shinobi-shm-temp
+              mountPath: /dev/shm/streams
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
