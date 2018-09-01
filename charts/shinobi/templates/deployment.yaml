@@ -40,7 +40,7 @@ spec:
         - name: shinobi-shm-temp
           hostPath:
             path: /dev/shm/
-            type: FileOrCreate
+            type: ""
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
