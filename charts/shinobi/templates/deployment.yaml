@@ -47,7 +47,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: shinobi-config
-              mountPath: /config
+              mountPath: /opt/shinobi
             - name: shinobi-datadir
               mountPath: /var/lib/mysql
             - name: shinobi-videos
