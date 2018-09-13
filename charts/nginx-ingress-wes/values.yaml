@@ -6,9 +6,6 @@ nginx-ingress:
   controller:
     service:
       type: NodePort
-#      nodePorts:
-#        http: 30080
-#        https: 30443
     kind: DaemonSet
     daemonset:
       useHostPort: true
