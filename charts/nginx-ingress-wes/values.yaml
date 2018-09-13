@@ -1,0 +1,19 @@
+# Default values for nginx-ingress-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nginx-ingress:
+  controller:
+    service:
+      type: NodePort
+      nodePorts:
+        http: 80
+        https: 443
+    kind: DaemonSet
+    daemonset:
+      useHostPort: true
+      hostPorts:
+        http: 80
+        https: 443
+    nodeSelector:
+      ingress: "true"
