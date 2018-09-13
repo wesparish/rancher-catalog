@@ -7,13 +7,13 @@ nginx-ingress:
     service:
       type: NodePort
       nodePorts:
-        http: 80
-        https: 443
+        http: 30080
+        https: 30443
     kind: DaemonSet
     daemonset:
       useHostPort: true
-#      hostPorts:
-#        http: 80
- #       https: 443
+      hostPorts:
+        http: 80
+        https: 443
     nodeSelector:
       ingress: "true"
