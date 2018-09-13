@@ -12,8 +12,8 @@ nginx-ingress:
     kind: DaemonSet
     daemonset:
       useHostPort: true
-      hostPorts:
-        http: 80
-        https: 443
+#      hostPorts:
+#        http: 80
+ #       https: 443
     nodeSelector:
       ingress: "true"
