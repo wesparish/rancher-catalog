@@ -11,7 +11,7 @@ image:
 
 cert-manager:
   ingressShim:
-    defaultIssuerName: letsencrypt-prod
+    defaultIssuerName: letsencrypt-staging
     defaultIssuerKind: ClusterIssuer
   nodeSelector:
     ingress: "true"
