@@ -14,7 +14,7 @@ cert-manager:
     defaultIssuerName: letsencrypt-prod
     defaultIssuerKind: ClusterIssuer
   nodeSelector:
-    ingress: true
+    ingress: "true"
 
 service:
   type: ClusterIP
