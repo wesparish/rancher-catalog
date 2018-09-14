@@ -4,6 +4,7 @@
 
 nginx-ingress:
   controller:
+    ingressClass: nginx-wes
     service:
       type: NodePort
     kind: DaemonSet
