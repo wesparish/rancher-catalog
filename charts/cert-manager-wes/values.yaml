@@ -10,9 +10,9 @@ image:
   pullPolicy: IfNotPresent
 
 cert-manager:
-#  ingressShim:
-#    defaultIssuerName: letsencrypt-staging
-#    defaultIssuerKind: ClusterIssuer
+  ingressShim:
+    defaultIssuerName: letsencrypt-staging
+    defaultIssuerKind: ClusterIssuer
   nodeSelector:
     ingress: "true"
 
