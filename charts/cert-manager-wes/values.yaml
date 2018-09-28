@@ -9,12 +9,12 @@ image:
   tag: stable
   pullPolicy: IfNotPresent
 
-#cert-manager:
+cert-manager:
 #  ingressShim:
 #    defaultIssuerName: letsencrypt-staging
 #    defaultIssuerKind: ClusterIssuer
-#  nodeSelector:
-#    ingress: "true"
+  nodeSelector:
+    ingress: "true"
 
 service:
   type: ClusterIP
