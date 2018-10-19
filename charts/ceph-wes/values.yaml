@@ -1,0 +1,30 @@
+# Default values for ceph-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+network:
+  public:   172.21.0.0/20
+  cluster:   172.21.0.0/20
+
+osd_devices:
+  - name: dev-sda
+    device: /dev/sda
+    journal: /dev/mapper/ceph--journal-dev--sda
+    zap: "1"
+  - name: dev-sdc
+    device: /dev/sdc
+    journal: /dev/mapper/ceph--journal-dev--sdc
+    zap: "1"
+  - name: dev-sde
+    device: /dev/sde
+    journal: /dev/mapper/ceph--journal-dev--sde
+    zap: "1"
+  - name: dev-sdf
+    device: /dev/sdf
+    journal: /dev/mapper/ceph--journal-dev--sdf
+    zap: "1"
+
+storageclass:
+  name: ceph-rbd
+  pool: rbd
+  user_id: admin
