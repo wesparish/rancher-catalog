@@ -27,4 +27,4 @@ osd_devices:
 storageclass:
   name: ceph-rbd
   pool: rbd
-  user_id: admin
+  user_id: k8s
