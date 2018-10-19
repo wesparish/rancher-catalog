@@ -3,8 +3,8 @@
 # Declare variables to be passed into your templates.
 
 network:
-  public:   172.21.0.0/20
-  cluster:   172.21.0.0/20
+  public:   172.16.1.0/24
+  cluster:   172.16.1.0/24
 
 osd_devices:
   - name: dev-sda
