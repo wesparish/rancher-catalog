@@ -1,0 +1,4 @@
+dependencies:
+  - name: kube-plex
+    version: "0.2.1"
+    repository: "file://subcharts/kube-plex/charts/kube-plex/"

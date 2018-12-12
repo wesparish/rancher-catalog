@@ -1,0 +1,65 @@
+# Default values for nginx-ingress-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+kube-plex:
+  image:
+    repository: plexinc/pms-docker
+    tag: plexpass
+    pullPolicy: IfNotPresent
+  
+  kubePlex:
+    enabled: false
+    image:
+      repository: kubeplex/DISABLED
+      tag: latest
+      pullPolicy: Always
+  
+  # config directory is pre-configured
+  claimToken: ""
+  
+  timezone: America/Chicago
+  
+  service:
+    type: ClusterIP
+    port: 32400
+  
+  ingress:
+    enabled: true
+    annotations: 
+      kubernetes.io/ingress.class: nginx-wes
+      kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - plex.elastiscale.net
+    tls:
+      - secretName: plex-elastiscale.net
+        hosts:
+          - plex.elastiscale.net
+  
+  rbac:
+    # Shouldn't be required with kubePlex disabled
+    create: false
+  
+  nodeSelector:
+    beta.kubernetes.io/arch: amd64
+
+  persistence:
+    transcode:
+      claimName: "plex-transcode-pvc"
+    data:
+      claimName: "plex-data-pvc"
+    config:
+      claimName: "plex-config-pvc"
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi

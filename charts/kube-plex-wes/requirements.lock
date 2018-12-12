@@ -1,0 +1,6 @@
+dependencies:
+- name: kube-plex
+  repository: file://subcharts/kube-plex/charts/kube-plex/
+  version: 0.2.1
+digest: sha256:8fcb7771dc1ca688c9adec3e5c16fd9dcd2e815ab48b676b02082535977dde6c
+generated: 2018-12-07T06:08:39.623213782-06:00
