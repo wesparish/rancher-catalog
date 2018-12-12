@@ -43,6 +43,7 @@ kube-plex:
   
   nodeSelector:
     beta.kubernetes.io/arch: amd64
+    kubernetes.io/hostname: smdocker2
 
   persistence:
     transcode:
