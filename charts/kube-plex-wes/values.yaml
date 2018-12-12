@@ -46,11 +46,11 @@ kube-plex:
 
   persistence:
     transcode:
-      claimName: "plex-transcode-pvc"
+      claimName: "plex-transcode"
     data:
-      claimName: "plex-data-pvc"
+      claimName: "plex-data"
     config:
-      claimName: "plex-config-pvc"
+      claimName: "plex-config"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
