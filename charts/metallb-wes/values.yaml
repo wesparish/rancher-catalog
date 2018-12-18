@@ -1,0 +1,30 @@
+# Default values for metallb-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+metallb:
+  # configInline specifies MetalLB's configuration directly, in yaml
+  # format. When configInline is used, Helm manages MetalLB's
+  # configuration ConfigMap as part of the release, and
+  # existingConfigMap is ignored.
+  #
+  # Refer to https://metallb.universe.tf/configuration/ for
+  # available options.
+  configInline:
+    # Example ARP Configuration
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 172.16.1.220-172.16.1.240
+    #
+    # Example BGP Configuration
+    # peers:
+    # - peer-address: 10.0.0.1
+    #   peer-asn: 64501
+    #   my-asn: 64500
+    # address-pools:
+    # - name: default
+    #   protocol: bgp
+    #   addresses:
+    #   - 192.168.10.0/24
