@@ -1,0 +1,29 @@
+# Default values for rocketchat-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+mongodb:
+  persistence:
+    enabled: true
+    existingClaim: mongodb-data
+
+rocketchat:
+  config:
+    SMTP_Host: 172.16.1.13
+    SMTP_Port: 25
+    From_Email: rocketchat@elastiscale.net
+  persistence:
+    enabled: true
+    existingClaim: rocketchat-data
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx-wes
+      kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - chat.elastiscale.net
+    tls:
+      - secretName: chat-elastiscale.net
+        hosts:
+          - chat.elastiscale.net
