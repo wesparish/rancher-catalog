@@ -3,11 +3,15 @@
 # Declare variables to be passed into your templates.
 
 mongodb:
+  nodeSelector:
+    ceph: true
   persistence:
     enabled: true
     existingClaim: mongodb-data
 
 rocketchat:
+  nodeSelector:
+    ceph: true
   config:
     SMTP_Host: 172.16.1.13
     SMTP_Port: 25
