@@ -4,14 +4,14 @@
 
 mongodb:
   nodeSelector:
-    ceph: "true"
+    ceph-client: "true"
   persistence:
     enabled: true
     existingClaim: mongodb-data
 
 rocketchat:
   nodeSelector:
-    ceph: "true"
+    ceph-client: "true"
   config:
     SMTP_Host: 172.16.1.13
     SMTP_Port: 25
