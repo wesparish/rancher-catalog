@@ -8,6 +8,7 @@ mongodb:
   persistence:
     enabled: true
     existingClaim: mongodb-data
+  usePassword: false
 
 rocketchat:
   nodeSelector:
