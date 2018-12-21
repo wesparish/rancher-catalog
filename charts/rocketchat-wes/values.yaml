@@ -27,8 +27,8 @@ rocketchat:
       kubernetes.io/tls-acme: "true"
     path: /
     hosts:
-      - chat.cowtownt.org
+      - chat.elastiscale.net
     tls:
-      - secretName: chat-cowtownt.org
+      - secretName: chat-elastiscale.net
         hosts:
-          - chat.cowtownt.org
+          - chat.elastiscale.net
