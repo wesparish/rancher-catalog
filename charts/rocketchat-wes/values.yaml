@@ -11,6 +11,7 @@ mongodb:
   usePassword: false
 
 rocketchat:
+  host: chat.elastiscale.net
   nodeSelector:
     ceph-client: "true"
   config:
