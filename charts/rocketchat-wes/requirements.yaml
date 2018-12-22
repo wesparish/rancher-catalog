@@ -1,7 +1,4 @@
 dependencies:
-  - name: rocketchat
-    version: "0.1.5"
-    repository: "file://subcharts/charts-1/stable/rocketchat/"
   - name: mongodb
-    version: "4.10.1"
-    repository: "file://subcharts/charts-1/stable/mongodb/"
+    version: "5.0.0"
+    repository: "@stable"

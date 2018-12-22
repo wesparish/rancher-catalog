@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rocketchat-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}
+    helm.sh/chart: {{ include "rocketchat-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: DEPLOY_PLATFORM
+            value: helm-chart
+          - name: INSTANCE_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: MONGO_URL
+            value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
+          - name: ROOT_URL
+            value: {{ .Values.rocketchat.config.ROOT_URL }}
+          - name: MAIL_URL
+            value: smtp://{{ .Values.rocketchat.config.SMTP_Host }}:{{ .Values.rocketchat.config.SMTP_Port }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+              initialDelaySeconds: 60
+              timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+              initialDelaySeconds: 60
+              timeoutSeconds: 5
+          volumeMounts:
+          - name: rocket-data
+            mountPath: /app/uploads
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: rocket-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.rocketchat.persistence.existingClaim }}

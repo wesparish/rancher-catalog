@@ -1,9 +1,6 @@
 dependencies:
-- name: rocketchat
-  repository: file://subcharts/charts-1/stable/rocketchat/
-  version: 0.1.5
 - name: mongodb
-  repository: file://subcharts/charts-1/stable/mongodb/
-  version: 4.10.1
-digest: sha256:0e67f4148707165043827991e585a4f86ed979e30975bb21df2c5ce9a1d91b1a
-generated: 2018-12-18T21:53:38.464102635-06:00
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 5.0.0
+digest: sha256:22e76ae5e7cee543afa78c657d6d5a9f2f68b17230ddd46fe671dcd2d1bee45f
+generated: 2018-12-22T12:26:52.475514258Z
