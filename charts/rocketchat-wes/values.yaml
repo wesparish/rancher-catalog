@@ -16,7 +16,7 @@ rocketchat:
     SMTP_Host: 172.16.1.13
     SMTP_Port: 25
     From_Email: rocketchat@elastiscale.net
-    ROOT_URL: chat.elastiscale.net
+    ROOT_URL: https://chat.elastiscale.net
   persistence:
     existingClaim: rocketchat-data
  
