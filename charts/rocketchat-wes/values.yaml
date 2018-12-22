@@ -2,6 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Mongodb values
 mongodb:
   nodeSelector:
     ceph-client: "true"
@@ -11,25 +12,58 @@ mongodb:
   usePassword: false
 
 rocketchat:
-  host: chat.elastiscale.net
-  nodeSelector:
-    ceph-client: "true"
   config:
     SMTP_Host: 172.16.1.13
     SMTP_Port: 25
     From_Email: rocketchat@elastiscale.net
+    ROOT_URL: https://chat.elastiscale.net
   persistence:
-    enabled: true
     existingClaim: rocketchat-data
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: nginx-wes
-      kubernetes.io/tls-acme: "true"
-    path: /
-    hosts:
-      - chat.elastiscale.net
-    tls:
-      - secretName: chat-elastiscale.net
-        hosts:
-          - chat.elastiscale.net
+ 
+# Values for rocketchat chart
+replicaCount: 1
+
+image:
+  repository: rocketchat/rocket.chat
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: NodePort
+  port: 3000
+
+ingress:
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: nginx-wes
+    kubernetes.io/tls-acme: "true"
+  paths: 
+    - /
+  hosts:
+    - chat.elastiscale.net
+  tls:
+    - secretName: chat-elastiscale.net
+      hosts:
+        - chat.elastiscale.net
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector:
+  ceph-client: "true"
+
+tolerations: []
+
+affinity: {}
