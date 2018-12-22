@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: rocketchat-backup
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: rocketchat-backup
+            image: mongo
+            volumeMounts:
+            - name: rocketchat-backup
+              mountPath: /rocketchat-backup/
+            command: ["/bin/bash"]
+            args:
+            - -c
+            - echo Backing up rocketchat mongodb to /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) && mongodump -o /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) --gzip --host rocketchat-wes-mongodb.rocketchat.svc.cluster.local
+          restartPolicy: OnFailure
+          volumes:
+          - name: rocketchat-backup
+            persistentVolumeClaim:
+              claimName: rocketchat-backup
