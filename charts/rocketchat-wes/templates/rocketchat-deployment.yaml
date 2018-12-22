@@ -44,13 +44,13 @@ spec:
             httpGet:
               path: /
               port: http
-              initialDelaySeconds: 60
+              initialDelaySeconds: 120
               timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: http
-              initialDelaySeconds: 60
+              initialDelaySeconds: 120
               timeoutSeconds: 5
           volumeMounts:
           - name: rocket-data
