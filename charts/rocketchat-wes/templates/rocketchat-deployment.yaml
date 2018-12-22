@@ -40,18 +40,18 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-              initialDelaySeconds: 120
-              timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-              initialDelaySeconds: 120
-              timeoutSeconds: 5
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#              initialDelaySeconds: 120
+#              timeoutSeconds: 5
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#              initialDelaySeconds: 120
+#              timeoutSeconds: 5
           volumeMounts:
           - name: rocket-data
             mountPath: /app/uploads
