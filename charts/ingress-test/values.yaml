@@ -24,11 +24,11 @@ ingress:
   paths:
     - /
   hosts:
-    - chat.elastiscale.net
+    - test.elastiscale.net
   tls:
-    - secretName: chat-elastiscale.net
+    - secretName: test-elastiscale.net
       hosts:
-        - chat.elastiscale.net
+        - test.elastiscale.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
