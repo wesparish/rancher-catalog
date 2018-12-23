@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kube-plex-wes-plexpy
+  annotations:
+      kubernetes.io/ingress.class: "nginx-wes"
+      kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+    - host: plexpy.elastiscale.net
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kube-plex-wes-plexpy-svc
+              servicePort: 8181
+  tls:
+    - hosts:
+      - plexpy.elastiscale.net
+      secretName: plexpy-elastiscale.net

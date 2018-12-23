@@ -1,0 +1,59 @@
+# Deploys plexpy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-plex-wes-plexpy
+  labels:
+    app.kubernetes.io/name: kube-plex-wes-plexpy
+    helm.sh/chart: kube-plex-wes
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: kube-plex-wes-plexpy-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-plex-wes-plexpy
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kube-plex-wes-plexpy
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: plexpy
+          image: tautulli/tautulli:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: plexpy
+              containerPort: 8181
+              protocol: TCP
+          volumeMounts:
+          - name: plexpy-data
+            mountPath: /config
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8181
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8181
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plexpy-data
+        persistentVolumeClaim:
+          claimName: "plexpy-data"

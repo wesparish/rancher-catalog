@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kube-plex-wes-deluge
+  annotations:
+      kubernetes.io/ingress.class: "nginx-wes"
+      kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+    - host: bt.elastiscale.net
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kube-plex-wes-deluge-svc
+              servicePort: 8282
+  tls:
+    - hosts:
+      - bt.elastiscale.net
+      secretName: bt-elastiscale.net

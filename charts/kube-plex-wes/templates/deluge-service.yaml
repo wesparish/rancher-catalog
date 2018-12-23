@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-plex-wes-deluge-svc
+  labels:
+    app.kubernetes.io/name: kube-plex-wes-deluge-svc
+    helm.sh/chart: kube-plex-wes
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: NodePort
+  ports:
+    - port: 8282
+      targetPort: 8282
+      protocol: TCP
+      name: deluge
+  selector:
+    app.kubernetes.io/name: kube-plex-wes-deluge
+    app.kubernetes.io/instance: {{ .Release.Name }}
