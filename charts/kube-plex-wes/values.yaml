@@ -43,7 +43,7 @@ kube-plex:
   
   nodeSelector:
     beta.kubernetes.io/arch: amd64
-    kubernetes.io/hostname: w-dock5
+    #kubernetes.io/hostname: w-dock5
 
   persistence:
     transcode:
