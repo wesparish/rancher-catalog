@@ -34,16 +34,16 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.timezone }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8181
-            initialDeplaySeconds: 60
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8181
-            initialDeplaySeconds: 60
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: 8181
+#            initialDeplaySeconds: 60
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: 8181
+#            initialDeplaySeconds: 60
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
