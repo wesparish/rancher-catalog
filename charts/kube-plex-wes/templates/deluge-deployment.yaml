@@ -43,10 +43,12 @@ spec:
             httpGet:
               path: /
               port: 8282
+            initialDeplaySeconds: 60
           readinessProbe:
             httpGet:
               path: /
               port: 8282
+            initialDeplaySeconds: 60
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
