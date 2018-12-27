@@ -1,1 +1,11 @@
 namespace: plex
+
+questions:
+- variable: kube-plex.claimToken
+  default: "claim-ABCD12345..."
+  description: "Plex claim token from plex.tv/claim"
+  type: string
+  required: true
+  label: Plex Claim Token
+  group: "Plex Server"
+

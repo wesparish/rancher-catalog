@@ -16,7 +16,7 @@ kube-plex:
       pullPolicy: Always
   
   # config directory is pre-configured
-  claimToken: ""
+  claimToken: "abc123"
   
   timezone: America/Chicago
   
