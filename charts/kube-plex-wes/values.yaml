@@ -43,6 +43,7 @@ kube-plex:
   
   nodeSelector:
     beta.kubernetes.io/arch: amd64
+    ceph-client: "true"
     #kubernetes.io/hostname: w-dock5
 
   persistence:
