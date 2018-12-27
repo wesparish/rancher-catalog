@@ -31,6 +31,9 @@ spec:
           volumeMounts:
           - name: plexpy-data
             mountPath: /config
+          env:
+            - name: TZ
+              value: {{ .Values.timezone }}
           livenessProbe:
             httpGet:
               path: /

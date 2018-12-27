@@ -54,6 +54,8 @@ kube-plex:
     config:
       claimName: "plex-config"
 
+timezone: America/Chicago
+
 nodeSelector:
   ceph-client: "true"
 
