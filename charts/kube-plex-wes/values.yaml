@@ -21,7 +21,7 @@ kube-plex:
   timezone: America/Chicago
   
   service:
-    type: ClusterIP
+    type: NodePort
     port: 32400
   
   ingress:
