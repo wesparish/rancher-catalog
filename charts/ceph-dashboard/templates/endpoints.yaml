@@ -1,0 +1,11 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+ name: ceph-dashboard
+subsets:
+ - addresses:
+     - ip: 172.16.1.107
+     - ip: 172.16.1.109
+     - ip: 172.16.1.197
+   ports:
+     - port: 8443
