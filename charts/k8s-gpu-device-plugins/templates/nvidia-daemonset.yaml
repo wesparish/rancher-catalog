@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: {{ include "k8s-gpu-device-plugins.fullname" . }}
   labels:
@@ -8,7 +8,6 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "k8s-gpu-device-plugins.name" . }}
@@ -21,13 +20,11 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.amd }}"
+          image: "{{ .Values.image.nvidia}}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
           - mountPath: /var/lib/kubelet/device-plugins
             name: device-plugin
-          - mountPath: /sys
-            name: sys
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -52,7 +49,3 @@ spec:
             path: /var/lib/kubelet/device-plugins
             type: ""
           name: device-plugin
-        - hostPath:
-            path: /sys
-            type: ""
-          name: sys
