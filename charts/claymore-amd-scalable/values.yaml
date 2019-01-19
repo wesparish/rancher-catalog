@@ -14,6 +14,7 @@ claymore:
   poolhosts: "eth-us-east1.nanopool.org:9999:x:0:0 eth-us-west1.nanopool.org:9999:x:0:0"
   options: "-r 1 -nofee 1 -mode 1"
   scalablelabel: "claymore-scalable"
+  gpusperpod: 1
 
 service:
   type: ClusterIP
