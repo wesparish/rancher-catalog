@@ -36,7 +36,7 @@ questions:
 - variable: resources.limits.amd.com/gpu
   default: "1"
   description: "How many GPUs per pod?"
-  type: string
+  type: int
   required: true
   label: How many GPUs per pod
   group: "miner questions"
