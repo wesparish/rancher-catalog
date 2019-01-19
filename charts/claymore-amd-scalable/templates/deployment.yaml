@@ -68,8 +68,8 @@ spec:
 #                - "pgrep"
 #                - "ethdcrminer64"
           resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+            limits:
+              amd.com/gpu: {{ .Values.claymore.gpusperpod }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}

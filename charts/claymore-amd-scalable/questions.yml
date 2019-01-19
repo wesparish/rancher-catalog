@@ -33,7 +33,7 @@ questions:
   label: Scalable Label
   group: "miner questions"
 
-- variable: resources.limits.amd.com/gpu
+- variable: claymore.gpusperpod
   default: "1"
   description: "How many GPUs per pod?"
   type: int
