@@ -24,32 +24,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: gpu-type
-                operator: In
-                values:
-                - amd
               - key: miner
                 operator: In
                 values:
                 - {{ .Values.claymore.scalablelabel }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - {{ template "claymore-amd-scalable.name" . }}
-            topologyKey: "kubernetes.io/hostname"
-      volumes:
-      - hostPath:
-          path: /dev/dri
-          type: ""
-        name: dev-dri
-      - hostPath:
-          path: /sys
-          type: ""
-        name: sys
       containers:
         - name: {{ .Chart.Name }}
           env:
@@ -77,15 +55,6 @@ spec:
             privileged: true
             readOnlyRootFilesystem: false
             runAsNonRoot: false
-          volumeMounts:
-          - mountPath: /dev/dri
-            name: dev-dri
-          - mountPath: /sys
-            name: sys
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
 #          livenessProbe:
 #            initialDelaySeconds: 30
 #            exec:
