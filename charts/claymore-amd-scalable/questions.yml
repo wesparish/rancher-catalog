@@ -37,6 +37,8 @@ questions:
   default: "1"
   description: "How many GPUs per pod?"
   type: int
+  min: 1
+  max: 99
   required: true
   label: How many GPUs per pod
   group: "miner questions"
