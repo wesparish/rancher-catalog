@@ -47,6 +47,9 @@ spec:
                   fieldPath: metadata.name
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /sys
+            name: sys
           securityContext:
             allowPrivilegeEscalation: true
             capabilities:
@@ -70,6 +73,11 @@ spec:
           resources:
             limits:
               amd.com/gpu: {{ .Values.claymore.gpusperpod }}
+      volumes:
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
     {{- with .Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
