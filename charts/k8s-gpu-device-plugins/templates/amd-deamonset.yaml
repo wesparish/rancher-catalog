@@ -27,17 +27,9 @@ spec:
             name: device-plugin
           - mountPath: /sys
             name: sys
+          privileged: true
           securityContext:
             allowPrivilegeEscalation: true
-            capabilities:
-              add:
-              - ALL
-            privileged: true
-            readOnlyRootFilesystem: false
-            runAsNonRoot: false
-
-#          securityContext:
-#            allowPrivilegeEscalation: false
 #            capabilities:
 #              drop:
 #              - ALL
