@@ -27,12 +27,11 @@ spec:
             name: device-plugin
           - mountPath: /sys
             name: sys
-          privileged: true
           securityContext:
-            allowPrivilegeEscalation: true
-#            capabilities:
-#              drop:
-#              - ALL
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
