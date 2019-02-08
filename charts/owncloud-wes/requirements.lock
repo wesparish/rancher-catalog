@@ -1,0 +1,6 @@
+dependencies:
+- name: owncloud
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 4.0.2
+digest: sha256:144625ca2f3a4a67df4cd68cef252e4750f03573519d9a16921340c1a5cd26ca
+generated: 2019-02-07T18:44:05.499951226Z

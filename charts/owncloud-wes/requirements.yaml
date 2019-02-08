@@ -1,0 +1,4 @@
+dependencies:
+  - name: owncloud
+    version: "4.0.2"
+    repository: "@stable"
