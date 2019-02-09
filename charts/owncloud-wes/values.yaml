@@ -37,3 +37,5 @@ mariadb:
     persistence:
       enabled: true
       existingClaim: owncloud-mariadb-pvc
+  slave:
+    replicas: 0
