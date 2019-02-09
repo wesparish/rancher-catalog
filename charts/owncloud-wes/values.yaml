@@ -29,8 +29,11 @@ owncloud:
     owncloud:
       existingClaim: owncloud-data-pvc
 
-  mariadb:
-    master:
-      persistence:
-        enabled: true
-        existingClaim: owncloud-mariadb-pvc
+mariadb:
+  # Disable owncloud's built-in mariadb - it's outdated
+  enabled: false
+  # Configuration for mariadb chart
+  master:
+    persistence:
+      enabled: true
+      existingClaim: owncloud-mariadb-pvc
