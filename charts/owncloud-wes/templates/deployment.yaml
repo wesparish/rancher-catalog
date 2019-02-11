@@ -52,6 +52,8 @@ spec:
               value: "true"
             - name: MYSQL_USER
               value: "owncloud"
+            - name: MYSQL_PASSWORD
+              value: "owncloud"
           volumeMounts:
             - name: owncloud-mariadb-pvc
               mountPath: /var/lib/mysql
@@ -84,6 +86,8 @@ spec:
             - name: OWNCLOUD_DB_NAME
               value: "owncloud"
             - name: OWNCLOUD_DB_USERNAME
+              value: "owncloud"
+            - name: OWNCLOUD_DB_PASSWORD
               value: "owncloud"
             - name: OWNCLOUD_DB_HOST
               value: "localhost"
