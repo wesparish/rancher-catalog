@@ -23,9 +23,6 @@ spec:
         - name: {{ .Chart.Name }}-redis
           image: "{{ .Values.image.redis.repository }}:{{ .Values.image.redis.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: 
-              value: 
           volumeMounts:
             - name: owncloud-redis-pvc
               mountPath: /data
