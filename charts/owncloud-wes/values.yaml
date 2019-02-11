@@ -8,13 +8,13 @@ image:
   pullPolicy: IfNotPresent
   owncloud:
     repository: owncloud/server
-    tag: 10.0
+    tag: "10.0"
   redis:
     repository: redis
-    tag: 5.0
+    tag: "5.0"
   mariadb:
     repository: mariadb
-    tag: 10.3
+    tag: "10.3"
 
 nameOverride: ""
 fullnameOverride: ""
