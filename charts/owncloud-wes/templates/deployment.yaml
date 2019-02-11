@@ -91,7 +91,7 @@ spec:
 #            - name: OWNCLOUD_DB_PASSWORD
 #              value: "owncloud"
             - name: OWNCLOUD_DB_HOST
-              value: "localhost"
+              value: "127.0.0.1"
             - name: OWNCLOUD_MYSQL_UTF8MB4
               value: "true"
             - name: OWNCLOUD_REDIS_ENABLED
