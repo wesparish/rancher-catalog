@@ -50,10 +50,6 @@ spec:
           env:
             - name: MYSQL_ALLOW_EMPTY_PASSWORD
               value: "true"
-#            - name: MYSQL_USER
-#              value: "owncloud"
-#            - name: MYSQL_PASSWORD
-#              value: "owncloud"
           volumeMounts:
             - name: owncloud-mariadb-pvc
               mountPath: /var/lib/mysql
@@ -87,8 +83,6 @@ spec:
               value: "owncloud"
             - name: OWNCLOUD_DB_USERNAME
               value: "root"
-#            - name: OWNCLOUD_DB_PASSWORD
-#              value: "owncloud"
             - name: OWNCLOUD_DB_HOST
               value: "127.0.0.1"
             - name: OWNCLOUD_MYSQL_UTF8MB4
