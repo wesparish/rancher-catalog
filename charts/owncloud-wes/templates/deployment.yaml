@@ -49,9 +49,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: MYSQL_ALLOW_EMPTY_PASSWORD
-              value: true
+              value: "true"
             - name: MYSQL_USER
-              value: owncloud
+              value: "owncloud"
           volumeMounts:
             - name: owncloud-mariadb-pvc
               mountPath: /var/lib/mysql
@@ -78,21 +78,21 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: OWNCLOUD_DOMAIN
-              value: {{ index .Values.ingress.hosts 0 }}
+              value: {{ index .Values.ingress.hosts 0 | quote }}
             - name: OWNCLOUD_DB_TYPE
-              value: mysql
+              value: "mysql"
             - name: OWNCLOUD_DB_NAME
-              value: owncloud
+              value: "owncloud"
             - name: OWNCLOUD_DB_USERNAME
-              value: owncloud
+              value: "owncloud"
             - name: OWNCLOUD_DB_HOST
-              value: localhost
+              value: "localhost"
             - name: OWNCLOUD_MYSQL_UTF8MB4
-              value: true
+              value: "true"
             - name: OWNCLOUD_REDIS_ENABLED
-              value: true
+              value: "true"
             - name: OWNCLOUD_REDIS_HOST
-              value: localhost
+              value: "localhost"
           volumeMounts:
             - name: owncloud-data
               mountPath: /mnt/data
