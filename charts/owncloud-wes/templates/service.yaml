@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "owncloud-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "owncloud-wes.name" . }}
+    helm.sh/chart: {{ include "owncloud-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: owncloud
+  selector:
+    app.kubernetes.io/name: {{ include "owncloud-wes.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

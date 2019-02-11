@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "owncloud-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "owncloud-wes.name" . }}
+    helm.sh/chart: {{ include "owncloud-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "owncloud-wes.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "owncloud-wes.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-redis
+          image: "{{ .Values.image.redis.repository }}:{{ .Values.image.redis.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: 
+              value: 
+          volumeMounts:
+            - name: owncloud-redis-pvc
+              mountPath: /data
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources.owncloud | nindent 12 }}
+        - name: {{ .Chart.Name }}-mariadb
+          image: "{{ .Values.image.mariadb.repository }}:{{ .Values.image.mariadb.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: true
+            - name: MYSQL_USER
+              value: owncloud
+          volumeMounts:
+            - name: owncloud-mariadb-pvc
+              mountPath: /var/lib/mysql
+          ports:
+            - name: mariadb
+              containerPort: 3306
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources.owncloud | nindent 12 }}
+        - name: {{ .Chart.Name }}-owncloud
+          image: "{{ .Values.image.owncloud.repository }}:{{ .Values.image.owncloud.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: OWNCLOUD_DOMAIN
+              value: {{ index .Values.ingress.hosts 0 }}
+            - name: OWNCLOUD_DB_TYPE
+              value: mysql
+            - name: OWNCLOUD_DB_NAME
+              value: owncloud
+            - name: OWNCLOUD_DB_USERNAME
+              value: owncloud
+            - name: OWNCLOUD_DB_HOST
+              value: localhost
+            - name: OWNCLOUD_MYSQL_UTF8MB4
+              value: true
+            - name: OWNCLOUD_REDIS_ENABLED
+              value: true
+            - name: OWNCLOUD_REDIS_HOST
+              value: localhost
+          volumeMounts:
+            - name: owncloud-data
+              mountPath: /mnt/data
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+              - name: Host
+                value: {{ index .Values.ingress.hosts 0 | quote }}
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+              - name: Host
+                value: {{ index .Values.ingress.hosts 0 | quote }}
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources.owncloud | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: owncloud-data
+          persistentVolumeClaim:
+            claimName: owncloud-data-pvc
+        - name: owncloud-mariadb-pvc
+          persistentVolumeClaim:
+            claimName: owncloud-mariadb-pvc
+        - name: owncloud-redis-pvc
+          persistentVolumeClaim:
+            claimName: owncloud-redis-pvc

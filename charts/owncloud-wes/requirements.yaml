@@ -1,7 +1,0 @@
-dependencies:
-  - name: owncloud
-    version: "4.0.3"
-    repository: "@stable"
-  - name: mariadb
-    version: "5.5.2"
-    repository: "@stable"
