@@ -78,7 +78,6 @@ spec:
         - name: {{ .Chart.Name }}-owncloud
           image: "{{ .Values.image.owncloud.repository }}:{{ .Values.image.owncloud.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["tail", "-f", "/etc/hosts"]
           env:
             - name: OWNCLOUD_DOMAIN
               value: {{ index .Values.ingress.hosts 0 | quote }}
