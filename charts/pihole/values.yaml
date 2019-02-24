@@ -51,7 +51,8 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 
-nodeSelector: {}
+nodeSelector:
+  ceph-client: "true"
 
 tolerations: []
 
