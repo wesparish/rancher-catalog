@@ -11,6 +11,7 @@ spec:
     protocol: UDP
     targetPort: 53
   selector:
-    app: pihole
+    app.kubernetes.io/name: {{ include "pihole.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
   type: LoadBalancer
   loadBalancerIP: 172.16.1.222
