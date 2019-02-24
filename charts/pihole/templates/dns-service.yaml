@@ -6,10 +6,6 @@ metadata:
     metallb.universe.tf/address-pool: default
 spec:
   ports:
-  - name: dns-tcp
-    port: 53
-    protocol: TCP
-    targetPort: 53
   - name: dns-udp
     port: 53
     protocol: UDP
