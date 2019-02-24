@@ -54,10 +54,10 @@ spec:
           volumeMounts:
           - name: pihole-data
             mountPath: /etc/dnsmasq.d/
-            subPath: /dnsmasq
+            subPath: dnsmasq/
           - name: pihole-data
             mountPath: /etc/pihole/
-            subPath: /etc/pihole/
+            subPath: etc/pihole/
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
