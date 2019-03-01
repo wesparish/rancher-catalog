@@ -23,7 +23,7 @@ spec:
       containers:
         - name: plexpy
           image: tautulli/tautulli:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: plexpy
               containerPort: 8181

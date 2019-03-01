@@ -23,7 +23,7 @@ spec:
       containers:
         - name: deluge
           image: wesparish/deluge
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: deluge-web
               containerPort: 8282
