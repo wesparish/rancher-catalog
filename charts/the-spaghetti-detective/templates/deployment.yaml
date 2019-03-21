@@ -74,14 +74,14 @@ spec:
             - name: http
               containerPort: 3334
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3334
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 3334
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: 3334
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: 3334
           volumeMounts:
             - name: web
               mountPath: /app
@@ -102,16 +102,16 @@ spec:
             - python server.py
           ports:
             - name: http
-              containerPort: 3334
+              containerPort: 3333
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3334
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 3334
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: 3333
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: 3333
           resources:
             {{- toYaml .Values.resources.web | nindent 12 }}
       {{- with .Values.nodeSelector }}
