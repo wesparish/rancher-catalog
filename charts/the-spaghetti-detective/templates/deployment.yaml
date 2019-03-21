@@ -51,23 +51,23 @@ spec:
             - "python manage.py collectstatic --noinput -c && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"
           env:
             - name: "EMAIL_HOST"
-              value: 172.16.1.13
+              value: "172.16.1.13"
             - name:  "EMAIL_HOST_USER"
               value: 
             - name: "EMAIL_HOST_PASSWORD"
               value: 
             - name: "EMAIL_PORT"
-              value: 25
+              value: "25"
             - name: "EMAIL_USE_TLS"
               value: 
             - name: "DEFAULT_FROM_EMAIL"
-              value: tsd@elastiscale.net
+              value: "tsd@elastiscale.net"
             - name: "SITE_USES_HTTPS"
               value: "True"
             - name: "SOCIAL_LOGIN"
               value: 
             - name: "REDIS_URL"
-              value: redis://localhost:6379
+              value: "redis://localhost:6379"
             - name: "DATABASE_URL"
               value: "sqlite:////app/db.sqlite3"
             - name: "INTERNAL_MEDIA_HOST"
