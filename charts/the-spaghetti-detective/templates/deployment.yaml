@@ -63,13 +63,13 @@ spec:
             - name: "SOCIAL_LOGIN"
               value: 
             - name: "REDIS_URL"
-              value: 
+              value: redis://localhost:6379
             - name: "DATABASE_URL"
               value: "sqlite:////app/db.sqlite3"
             - name: "INTERNAL_MEDIA_HOST"
               value: "http://web:3334"
             - name: "ML_API_HOST"
-              value: "http://ml_api:3333"
+              value: "http://localhost:3333"
           ports:
             - name: http
               containerPort: 3334
