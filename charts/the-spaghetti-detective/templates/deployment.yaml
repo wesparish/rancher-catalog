@@ -88,7 +88,7 @@ spec:
           resources:
             {{- toYaml .Values.resources.web | nindent 12 }}
 
-        - name: {{ .Chart.Name }}-ml_api
+        - name: {{ .Chart.Name }}-ml-api
           image: "{{ .Values.image.ml_api.repository }}:{{ .Values.image.ml_api.tag }}"
           imagePullPolicy: {{ .Values.image.ml_api.pullPolicy }}
           env:
