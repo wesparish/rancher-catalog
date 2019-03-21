@@ -46,9 +46,9 @@ spec:
           image: "{{ .Values.image.web.repository }}:{{ .Values.image.web.tag }}"
           imagePullPolicy: {{ .Values.image.web.pullPolicy }}
           command:
-            - "bash"
-            - "-c"
-            - "python manage.py collectstatic --noinput -c && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"
+            - tail
+            - -f
+            - /etc/hosts
           env:
             - name: "EMAIL_HOST"
               value: 
