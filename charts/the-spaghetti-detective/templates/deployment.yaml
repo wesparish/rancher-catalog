@@ -45,10 +45,6 @@ spec:
         - name: {{ .Chart.Name }}-web
           image: "{{ .Values.image.web.repository }}:{{ .Values.image.web.tag }}"
           imagePullPolicy: {{ .Values.image.web.pullPolicy }}
-          command:
-            - tail
-            - -f
-            - /etc/hosts
           env:
             - name: "EMAIL_HOST"
               value: 
