@@ -83,7 +83,7 @@ spec:
               path: /
               port: 3334
           volumeMounts:
-            - name: tsd-app-pvc
+            - name: web
               mountPath: /app
           resources:
             {{- toYaml .Values.resources.web | nindent 12 }}
