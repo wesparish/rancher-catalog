@@ -129,4 +129,4 @@ spec:
       volumes:
         - name: web
           persistentVolumeClaim:
-            claimName: tsd-web-pvc
+            claimName: tsd-app-pvc
