@@ -51,19 +51,19 @@ spec:
             - "python manage.py collectstatic --noinput -c && python manage.py migrate && python manage.py runserver 0.0.0.0:3334"
           env:
             - name: "EMAIL_HOST"
-              value: 
+              value: 172.16.1.13
             - name:  "EMAIL_HOST_USER"
               value: 
             - name: "EMAIL_HOST_PASSWORD"
               value: 
             - name: "EMAIL_PORT"
-              value: 
+              value: 25
             - name: "EMAIL_USE_TLS"
               value: 
             - name: "DEFAULT_FROM_EMAIL"
-              value: 
+              value: tsd@elastiscale.net
             - name: "SITE_USES_HTTPS"
-              value: 
+              value: "True"
             - name: "SOCIAL_LOGIN"
               value: 
             - name: "REDIS_URL"
@@ -78,14 +78,14 @@ spec:
             - name: http
               containerPort: 3334
               protocol: TCP
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: 3334
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: 3334
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3334
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3334
           volumeMounts:
             - name: web
               mountPath: /app
@@ -108,14 +108,14 @@ spec:
             - name: http
               containerPort: 3333
               protocol: TCP
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: 3333
-#          readinessProbe:
-#            httpGet:
-#              path: /
-#              port: 3333
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3333
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3333
           resources:
             {{- toYaml .Values.resources.web | nindent 12 }}
       {{- with .Values.nodeSelector }}
