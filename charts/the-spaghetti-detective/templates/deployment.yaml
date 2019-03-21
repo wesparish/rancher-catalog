@@ -110,11 +110,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /p/
               port: 3333
           readinessProbe:
             httpGet:
-              path: /
+              path: /p/
               port: 3333
           resources:
             {{- toYaml .Values.resources.web | nindent 12 }}
