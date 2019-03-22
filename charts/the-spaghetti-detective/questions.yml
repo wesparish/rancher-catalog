@@ -1,1 +1,34 @@
 namespace: tsd
+
+questions:
+- variable: image.web.repository
+  default: "thespaghettidetective/web"
+  description: "thespaghettidetective/web container name"
+  type: string
+  required: true
+  label: "thespaghettidetective/web container name"
+  group: "TSD web"
+
+- variable: image.web.tag
+  default: "0.104"
+  description: "thespaghettidetective/web container tag"
+  type: string
+  required: true
+  label: "thespaghettidetective/web container tag"
+  group: "TSD web"
+
+- variable: image.ml_api.repository
+  default: "thespaghettidetective/ml_api"
+  description: "thespaghettidetective/ml_api container name"
+  type: string
+  required: true
+  label: "thespaghettidetective/ml_api container name"
+  group: "TSD ml_api"
+
+- variable: image.ml_api.tag
+  default: "0.104"
+  description: "thespaghettidetective/ml_api container tag"
+  type: string
+  required: true
+  label: "thespaghettidetective/ml_api container tag"
+  group: "TSD ml_api"
