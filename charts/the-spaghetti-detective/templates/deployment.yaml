@@ -74,6 +74,8 @@ spec:
               value: "http://web:3334"
             - name: "ML_API_HOST"
               value: "http://localhost:3333"
+            - name: "INTERNAL_MEDIA_HOST"
+              value: "http://localhost:3334"
           ports:
             - name: http
               containerPort: 3334
