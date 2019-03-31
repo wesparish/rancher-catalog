@@ -1,0 +1,36 @@
+namespace: ml-api
+
+questions:
+- variable: image.ml_api.repository
+  default: "thespaghettidetective/ml_api"
+  description: "thespaghettidetective/ml_api container name"
+  type: string
+  required: true
+  label: "thespaghettidetective/ml_api container name"
+  group: "TSD ml_api"
+
+- variable: image.ml_api.tag
+  default: "0.104"
+  description: "thespaghettidetective/ml_api container tag"
+  type: string
+  required: true
+  label: "thespaghettidetective/ml_api container tag"
+  group: "TSD ml_api"
+
+
+- variable: ml_api.gpu.enabled
+  default: "true"
+  description: "Enable GPUs for ml-api?"
+  type: boolean
+  required: true
+  label: "Enable GPUs for ml-api?"
+  group: "TSD ml_api"
+  show_subquestion_if: "true"
+  subquestions:
+  - variable: ml_api.gpu.gpus_per_pod
+    default: "1"
+    description: "Number of GPUs per ml-api pod"
+    type: integer
+    required: true
+    label: "Number of GPUs per ml-api pod"
+    group: "TSD ml_api"
