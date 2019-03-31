@@ -30,7 +30,7 @@ questions:
   - variable: ml_api.gpu.gpus_per_pod
     default: "1"
     description: "Number of GPUs per ml-api pod"
-    type: integer
+    type: int
     required: true
     label: "Number of GPUs per ml-api pod"
     group: "TSD ml_api"
