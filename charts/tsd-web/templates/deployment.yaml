@@ -75,7 +75,7 @@ spec:
             - name: "ML_API_HOST"
               value: "{{ .Values.tsd_web.ml_api_host }}"
             - name: "INTERNAL_MEDIA_HOST"
-              value: "http://localhost:3334"
+              value: "https://tsd.elastiscale.net"
           ports:
             - name: http
               containerPort: 3334
