@@ -1,0 +1,28 @@
+namespace: tsd-web
+
+questions:
+- variable: image.web.repository
+  default: "thespaghettidetective/web"
+  description: "thespaghettidetective/web container name"
+  type: string
+  required: true
+  label: "thespaghettidetective/web container name"
+  group: "TSD web"
+
+- variable: image.web.tag
+  default: "0.104"
+  description: "thespaghettidetective/web container tag"
+  type: string
+  required: true
+  label: "thespaghettidetective/web container tag"
+  group: "TSD web"
+
+
+- variable: tsd_web.ml_api_host
+  default: "tps://<user>:<pass>@ml-api.elastiscale.net"
+  description: "URL to ml_api"
+  type: string
+  required: true
+  label: "URL to ml_api"
+  group: "TSD web"
+
