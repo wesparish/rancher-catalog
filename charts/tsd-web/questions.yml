@@ -10,7 +10,7 @@ questions:
   group: "TSD web"
 
 - variable: image.web.tag
-  default: "0.104"
+  default: "0.114"
   description: "thespaghettidetective/web container tag"
   type: string
   required: true
