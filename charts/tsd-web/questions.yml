@@ -19,7 +19,7 @@ questions:
 
 
 - variable: tsd_web.ml_api_host
-  default: "tps://<user>:<pass>@ml-api.elastiscale.net"
+  default: "https://<user>:<pass>@ml-api.elastiscale.net"
   description: "URL to ml_api"
   type: string
   required: true
