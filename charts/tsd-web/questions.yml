@@ -1,4 +1,4 @@
-namespace: tsd-web
+namespace: tsd
 
 questions:
 - variable: image.web.repository
