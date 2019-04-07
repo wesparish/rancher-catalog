@@ -1,0 +1,6 @@
+dependencies:
+- name: elasticsearch
+  repository: file://subcharts/elastic/elasticsearch/
+  version: 6.6.2-alpha1
+digest: sha256:347f15bc6ffe5c54ea456fac92a6c7a813e8d0f7808156faa4781f1072f6e3a2
+generated: 2019-04-07T14:07:12.958409453Z
