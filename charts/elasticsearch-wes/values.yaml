@@ -71,14 +71,12 @@ elasticsearch:
   networkHost: "0.0.0.0"
   
   volumeClaimTemplate:
-    accessModes:
-    - ReadWriteOnce
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "ceph-kube"
     resources:
       requests:
         storage: 100Gi
-    storageClassName: "ceph-kube"
-  
-  
+
   # By default this will make sure two pods don't end up on the same node
   # Changing this to a region would allow you to spread pods across regions
   antiAffinityTopologyKey: "kubernetes.io/hostname"
