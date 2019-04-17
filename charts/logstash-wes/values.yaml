@@ -281,86 +281,86 @@ logstash:
   filters:
     main: |-
       filter {
-        grok {
-          match => { "log" => "\A%{NOTSPACE} t=%{INT:gpu0-temp:int}C fan=%{INT:gpu0-fan:int}%, GPU1 t=%{INT:gpu1-temp:int}C fan=%{INT:gpu1-fan:int}%, GPU2 t=%{INT:gpu2-temp:int}C fan=%{INT:gpu2-fan:int}%, GPU3 t=%{INT:gpu3-temp:int}C fan=%{INT:gpu3-fan:int}%, GPU4 t=%{INT:gpu4-temp:int}C fan=%{INT:gpu4-fan:int}%" }
-        }
-      
-        grok {
-          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s%{GREEDYDATA}" }
-        }
-      
-        grok {
-          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s%{GREEDYDATA}" }
-        }
-      
-        grok {
-          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s%{GREEDYDATA}" }
-        }
-      
-        grok {
-          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s, GPU3 %{NUMBER:gpu3-hashrate:float} Mh/s%{GREEDYDATA}" }
-        }
-      
-        grok {
-          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s, GPU3 %{NUMBER:gpu3-hashrate:float} Mh/s, GPU4 %{NUMBER:gpu4-hashrate:float} Mh/s%{GREEDYDATA}" }
-        }
-      
-        grok {
-          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s, GPU3 %{NUMBER:gpu3-hashrate:float} Mh/s, GPU4 %{NUMBER:gpu4-hashrate:float} Mh/s, GPU5 %{NUMBER:gpu5-hashrate:float}%{GREEDYDATA}" }
-        }
-      
-        if [gpu0-hashrate] {
-          ruby {
-            code => "event.set('hashrate-sum', event.get('gpu0-hashrate'))"
-          }
-          mutate {
-            convert => { "hashrate-sum" => "float" }
-          }
-        }
-      
-        if [gpu0-hashrate] and [gpu1-hashrate] {
-          ruby {
-            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate'))"
-          }
-          mutate {
-            convert => { "hashrate-sum" => "float" }
-          }
-        }
-      
-        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] {
-          ruby {
-            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate'))"
-          }
-          mutate {
-            convert => { "hashrate-sum" => "float" }
-          }
-        }
-      
-        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] and [gpu3-hashrate] {
-          ruby {
-            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate') + event.get('gpu3-hashrate'))"
-          }
-          mutate {
-            convert => { "hashrate-sum" => "float" }
-          }
-        }
-      
-        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] and [gpu3-hashrate] and [gpu4-hashrate] {
-          ruby {
-            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate') + event.get('gpu3-hashrate') + event.get('gpu4-hashrate'))"
-          }
-          mutate {
-            convert => { "hashrate-sum" => "float" }
-          }
-        }
-      
-        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] and [gpu3-hashrate] and [gpu4-hashrate] and [gpu5-hashrate] {
-          ruby {
-            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate') + event.get('gpu3-hashrate') + event.get('gpu4-hashrate') + event.get('gpu5-hashrate'))"
-          }
-          mutate {
-            convert => { "hashrate-sum" => "float" }
-          }
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} t=%{INT:gpu0-temp:int}C fan=%{INT:gpu0-fan:int}%, GPU1 t=%{INT:gpu1-temp:int}C fan=%{INT:gpu1-fan:int}%, GPU2 t=%{INT:gpu2-temp:int}C fan=%{INT:gpu2-fan:int}%, GPU3 t=%{INT:gpu3-temp:int}C fan=%{INT:gpu3-fan:int}%, GPU4 t=%{INT:gpu4-temp:int}C fan=%{INT:gpu4-fan:int}%" }
+#        }
+#      
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s%{GREEDYDATA}" }
+#        }
+#      
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s%{GREEDYDATA}" }
+#        }
+#      
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s%{GREEDYDATA}" }
+#        }
+#      
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s, GPU3 %{NUMBER:gpu3-hashrate:float} Mh/s%{GREEDYDATA}" }
+#        }
+#      
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s, GPU3 %{NUMBER:gpu3-hashrate:float} Mh/s, GPU4 %{NUMBER:gpu4-hashrate:float} Mh/s%{GREEDYDATA}" }
+#        }
+#      
+#        grok {
+#          match => { "log" => "\A%{NOTSPACE} GPU0 %{NUMBER:gpu0-hashrate:float} Mh/s, GPU1 %{NUMBER:gpu1-hashrate:float} Mh/s, GPU2 %{NUMBER:gpu2-hashrate:float} Mh/s, GPU3 %{NUMBER:gpu3-hashrate:float} Mh/s, GPU4 %{NUMBER:gpu4-hashrate:float} Mh/s, GPU5 %{NUMBER:gpu5-hashrate:float}%{GREEDYDATA}" }
+#        }
+#      
+#        if [gpu0-hashrate] {
+#          ruby {
+#            code => "event.set('hashrate-sum', event.get('gpu0-hashrate'))"
+#          }
+#          mutate {
+#            convert => { "hashrate-sum" => "float" }
+#          }
+#        }
+#      
+#        if [gpu0-hashrate] and [gpu1-hashrate] {
+#          ruby {
+#            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate'))"
+#          }
+#          mutate {
+#            convert => { "hashrate-sum" => "float" }
+#          }
+#        }
+#      
+#        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] {
+#          ruby {
+#            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate'))"
+#          }
+#          mutate {
+#            convert => { "hashrate-sum" => "float" }
+#          }
+#        }
+#      
+#        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] and [gpu3-hashrate] {
+#          ruby {
+#            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate') + event.get('gpu3-hashrate'))"
+#          }
+#          mutate {
+#            convert => { "hashrate-sum" => "float" }
+#          }
+#        }
+#      
+#        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] and [gpu3-hashrate] and [gpu4-hashrate] {
+#          ruby {
+#            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate') + event.get('gpu3-hashrate') + event.get('gpu4-hashrate'))"
+#          }
+#          mutate {
+#            convert => { "hashrate-sum" => "float" }
+#          }
+#        }
+#      
+#        if [gpu0-hashrate] and [gpu1-hashrate] and [gpu2-hashrate] and [gpu3-hashrate] and [gpu4-hashrate] and [gpu5-hashrate] {
+#          ruby {
+#            code => "event.set('hashrate-sum', event.get('gpu0-hashrate') + event.get('gpu1-hashrate') + event.get('gpu2-hashrate') + event.get('gpu3-hashrate') + event.get('gpu4-hashrate') + event.get('gpu5-hashrate'))"
+#          }
+#          mutate {
+#            convert => { "hashrate-sum" => "float" }
+#          }
         }
   
   outputs:
