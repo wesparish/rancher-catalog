@@ -1,0 +1,4 @@
+dependencies:
+  - name: logstash
+    version: "1.7.0"
+    repository: "@stable"
