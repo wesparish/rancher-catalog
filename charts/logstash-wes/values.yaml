@@ -146,7 +146,7 @@ logstash:
     accessMode: ReadWriteOnce
     size: 2Gi
   
-  volumeMounts: []
+  volumeMounts:
     - name: data
       mountPath: /usr/share/logstash/data
     - name: patterns
