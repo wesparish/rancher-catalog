@@ -280,7 +280,7 @@ logstash:
   
   filters:
     main: |-
-      filter {
+      filter {}
 #        grok {
 #          match => { "log" => "\A%{NOTSPACE} t=%{INT:gpu0-temp:int}C fan=%{INT:gpu0-fan:int}%, GPU1 t=%{INT:gpu1-temp:int}C fan=%{INT:gpu1-fan:int}%, GPU2 t=%{INT:gpu2-temp:int}C fan=%{INT:gpu2-fan:int}%, GPU3 t=%{INT:gpu3-temp:int}C fan=%{INT:gpu3-fan:int}%, GPU4 t=%{INT:gpu4-temp:int}C fan=%{INT:gpu4-fan:int}%" }
 #        }
@@ -361,7 +361,6 @@ logstash:
 #          mutate {
 #            convert => { "hashrate-sum" => "float" }
 #          }
-        }
   
   outputs:
     main: |-
