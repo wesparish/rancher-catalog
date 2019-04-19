@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "filebeat-wes.name" . }}-config
+  labels:
+    app: {{ include "filebeat-wes.name" . }}
+    chart: {{ include "filebeat-wes.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+{{- with .Values.filebeatInputs}}
+data:
+{{- toYaml . | nindent 2 }}
+{{- end }}
