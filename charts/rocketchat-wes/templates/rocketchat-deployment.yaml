@@ -63,6 +63,7 @@ spec:
         - name: {{ .Chart.Name }}-configure-mongodb
           image:  {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
           - name: DEPLOY_PLATFORM
             value: helm-chart
           - name: INSTANCE_IP
@@ -81,7 +82,7 @@ spec:
           - name: data
             mountPath: /data
           command: 
-            - tail -f /dev/null
+            - 'tail -f /dev/null'
             - 'mongo mongo/rocketchat --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
 
       {{- with .Values.nodeSelector }}
