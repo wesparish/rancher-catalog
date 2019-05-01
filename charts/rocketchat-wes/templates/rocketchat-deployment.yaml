@@ -32,6 +32,8 @@ spec:
                 fieldPath: status.podIP
           - name: MONGO_URL
             value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
+          - name: MONGO_OPLOG_URL
+            value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/local
           - name: ROOT_URL
             value: {{ .Values.rocketchat.config.ROOT_URL }}
           - name: MAIL_URL
@@ -57,6 +59,16 @@ spec:
             mountPath: /app/uploads
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      initContainers:
+        - name: {{ .Chart.Name }}-configure-mongodb
+          image:  {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: data
+            mountPath: /data
+          command: 'bash -c "for i in `seq 1 30`; do mongo mongo/rocketchat --eval \"rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})\" && s=$$? && break || s=$$?; echo \"Tried $$i times. Waiting 5 secs...\"; sleep 5; done; (exit $$s)"'
+
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -73,3 +85,6 @@ spec:
       - name: rocket-data
         persistentVolumeClaim:
           claimName: {{ .Values.rocketchat.persistence.existingClaim }}
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.mongodb.persistence.existingClaim }}
