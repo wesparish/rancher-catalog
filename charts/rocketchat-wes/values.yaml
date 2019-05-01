@@ -25,7 +25,7 @@ replicaCount: 1
 
 image:
   repository: rocketchat/rocket.chat
-  tag: 0.74.3
+  tag: latest
   pullPolicy: Always
 
 nameOverride: ""
