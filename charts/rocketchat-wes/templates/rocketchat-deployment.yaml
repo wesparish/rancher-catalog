@@ -82,10 +82,10 @@ spec:
           - name: data
             mountPath: /data
           command: 
-            - tail 
-            - -f
-            - /etc/hosts
-            - 'mongo mongo/rocketchat --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
+            - mongo
+            - $MONGO_URL
+            - --eval 
+            - "rs.initiate({ _id: 'rs0', members: [ { _id: 0, host: 'localhost:27017' } ]})"
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
