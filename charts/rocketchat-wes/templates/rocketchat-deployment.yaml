@@ -83,7 +83,7 @@ spec:
             mountPath: /data
           command: 
             - mongo
-            - $MONGO_URL
+            - mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
             - --eval 
             - "rs.initiate({ _id: 'rs0', members: [ { _id: 0, host: 'localhost:27017' } ]})"
 
