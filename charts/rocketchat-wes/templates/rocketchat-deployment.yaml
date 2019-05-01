@@ -67,6 +67,7 @@ spec:
           - name: data
             mountPath: /data
           command: 
+            - tail -f /dev/null
             - 'mongo mongo/rocketchat --eval "rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})"'
 
       {{- with .Values.nodeSelector }}
