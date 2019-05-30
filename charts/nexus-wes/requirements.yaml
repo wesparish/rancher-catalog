@@ -1,0 +1,4 @@
+dependencies:
+  - name: sonatype-nexus
+    version: "1.18.3"
+    repository: "@stable"

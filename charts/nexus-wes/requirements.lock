@@ -1,0 +1,6 @@
+dependencies:
+- name: sonatype-nexus
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.18.3
+digest: sha256:c80f484655136921ced7dc0f092387d22666b0d661c7b588db81a807ad906465
+generated: 2019-05-27T12:23:53.969431075Z
