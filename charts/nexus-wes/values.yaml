@@ -1,4 +1,8 @@
 sonatype-nexus:
+  nexus:
+    nodeSelector:
+      ceph-client: "true"
+
   nexusProxy:
     env:
       nexusDockerHost: nexus.elastiscale.net
