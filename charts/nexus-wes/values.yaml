@@ -23,7 +23,7 @@ sonatype-nexus:
       secretName: nexus-elastiscale.net
 
   persistence:
-    existingClaim: nexus-data
+    existingClaim: nexus-wes-sonatype-nexus-data
 
   resources:
     requests:
