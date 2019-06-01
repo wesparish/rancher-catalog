@@ -1,5 +1,9 @@
 sonatype-nexus:
   nexus:
+    nexus:
+      imageName: wesparish/nexus-repository-apt
+      imageTag: 3.15.2
+      imagePullPolicy: IfNotPresent
     nodeSelector:
       ceph-client: "true"
 
