@@ -1,17 +1,18 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
- name: docker-service
- annotations:
-   metallb.universe.tf/address-pool: default
+  name: docker-service
+  annotations:
+    metallb.universe.tf/address-pool: default
 spec:
- ports:
- - port: 80
-   targetPort: 80
-   protocol: TCP
-   name: docker-service
-   selector:
-     app: {{ template "nexus.name" . }}
-     release: {{ .Release.Name }}
-   type: LoadBalancer
-   loadBalancerIP: 172.16.1.221
+  ports:
+  - name: docker-service
+    port: 5010
+    protocol: TCP
+    targetPort: 5010
+  selector:
+    app: {{ template "nexus.name" . }}
+    release: {{ .Release.Name }}
+  type: LoadBalancer
+  loadBalancerIP: 172.16.1.221
+
