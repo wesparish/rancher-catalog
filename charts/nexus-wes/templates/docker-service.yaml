@@ -11,7 +11,7 @@ spec:
     protocol: TCP
     targetPort: 5010
   selector:
-    app: {{ template "nexus.name" . }}
+    app: sonatype-nexus
     release: {{ .Release.Name }}
   type: LoadBalancer
   loadBalancerIP: 172.16.1.221
