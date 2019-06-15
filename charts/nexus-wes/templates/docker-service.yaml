@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+ name: docker-service
+ annotations:
+   metallb.universe.tf/address-pool: default
+spec:
+ ports:
+ - port: 80
+   targetPort: 80
+   protocol: TCP
+   name: docker-service
+   selector:
+     app: {{ template "nexus.name" . }}
+     release: {{ .Release.Name }}
+   type: LoadBalancer
+   loadBalancerIP: 172.16.1.221
