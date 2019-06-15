@@ -9,7 +9,7 @@ sonatype-nexus:
   nexusProxy:
     env:
       nexusDockerHost: nexus.elastiscale.net
-      #nexusHttpHost: nexus.elastiscale.net
+      nexusHttpHost: nexus.elastiscale.net
 
   ingress:
     enabled: true
