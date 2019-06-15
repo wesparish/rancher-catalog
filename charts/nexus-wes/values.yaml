@@ -5,6 +5,7 @@ sonatype-nexus:
     imagePullPolicy: Always
     nodeSelector:
       ceph-client: "true"
+    dockerPort: 5010
 
   nexusProxy:
     env:
