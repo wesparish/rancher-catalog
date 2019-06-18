@@ -2,5 +2,8 @@ dependencies:
 - name: sonatype-nexus
   repository: https://kubernetes-charts.storage.googleapis.com
   version: 1.18.3
-digest: sha256:c80f484655136921ced7dc0f092387d22666b0d661c7b588db81a807ad906465
-generated: 2019-05-27T12:23:53.969431075Z
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.6.18
+digest: sha256:3675cdba564b9c1ed58bcece5313573c0737c483a6c71db770257c744d534cfe
+generated: 2019-06-18T10:24:53.798473853Z

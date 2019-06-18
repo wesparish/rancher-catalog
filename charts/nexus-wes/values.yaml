@@ -33,3 +33,11 @@ sonatype-nexus:
     requests:
       cpu: 250m
       memory: 4800Mi
+
+nginx-ingress:
+  controller:
+    ingressClass: nginx-nexus
+    service:
+      type: LoadBalancer
+      loadBalanerIP: 172.16.1.221
+      enableHttps: 5010

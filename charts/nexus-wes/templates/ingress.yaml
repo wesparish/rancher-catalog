@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nexus-docker
+  annotations:
+      kubernetes.io/ingress.class: "nginx-nexus"
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+spec:
+  rules:
+    - host: nexus.elastiscale.net
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: docker-service
+              servicePort: 5010
+  tls:
+    - hosts:
+      - nexus.elastiscale.net
+      secretName: nexus-elastiscale.net

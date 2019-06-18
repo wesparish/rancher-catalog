@@ -1,9 +1,0 @@
-kind: Endpoints
-apiVersion: v1
-metadata:
- name: octopi
-subsets:
- - addresses:
-     - ip: 172.16.1.61
-   ports:
-     - port: 80
