@@ -41,3 +41,5 @@ nginx-ingress:
       type: LoadBalancer
       loadBalanerIP: 172.16.1.221
       enableHttps: 5010
+      nodePorts:
+        https: 5010
