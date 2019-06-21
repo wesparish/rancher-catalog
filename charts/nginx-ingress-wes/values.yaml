@@ -6,7 +6,10 @@ nginx-ingress:
   controller:
     ingressClass: nginx-wes
     service:
-      type: NodePort
+      type: LoadBalancer
+      loadBalancerIP: 172.16.1.223
+      annotations:
+        metallb.universe.tf/address-pool: default
     kind: DaemonSet
     daemonset:
       useHostPort: true
