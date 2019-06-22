@@ -1,6 +1,6 @@
 sonatype-nexus:
   nexus:
-    imageName: wesparish/nexus-repository-apt
+    imageName: wesparish/nexus-repository-apt-sonatypeofficial
     imageTag: 3.15.2
     imagePullPolicy: Always
     nodeSelector:
