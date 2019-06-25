@@ -62,7 +62,7 @@ mariadb:
     forcePassword: true
   master:
     nodeSelector:
-      ceph-client: true
+      ceph-client: "true"
     persistence:
       enabled: true
       existingClaim: shinobi-db
