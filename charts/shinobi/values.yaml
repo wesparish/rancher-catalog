@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: docker.io/wesparish/shinobi
-  tag: latest
+  repository: migoller/shinobidocker
+  tag: microservice-debian
   pullPolicy: IfNotPresent
 
 service:
@@ -46,3 +46,25 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+shinobi:
+  admin:
+    password: set-in-rancher-questions
+  cronKey: set-in-rancher-questions
+
+mariadb:
+  rootUser:
+    password: set-in-rancher-questions
+    forcePassword: true
+  db:
+    user: shinobi
+    password: set-in-rancher-questions
+    forcePassword: true
+  master:
+    nodeSelector:
+      ceph-client: true
+    persistence:
+      enabled: true
+      existingClaim: shinobi-db
+  slave:
+    replicas: 0
