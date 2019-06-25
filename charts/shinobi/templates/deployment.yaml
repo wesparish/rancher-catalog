@@ -71,7 +71,7 @@ spec:
           - name: MOTION_HOST
             value: localhost
           - name: MOTION_PORT
-            value: 8080
+            value: "8080"
           volumeMounts:
             - name: shinobi-config
               mountPath: /opt/shinobi
