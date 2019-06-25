@@ -1,5 +1,6 @@
 namespace: shinobi
 
+questions:
 - variable: .Values.mariadb.db.password
   default: "shinobi"
   description: "Shinobi DB password"
