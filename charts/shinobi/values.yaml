@@ -66,5 +66,3 @@ mariadb:
     persistence:
       enabled: true
       existingClaim: shinobi-db
-  slave:
-    replicas: 0
