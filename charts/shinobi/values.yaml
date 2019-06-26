@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: migoller/shinobidocker
-  tag: microservice-debian
+  tag: latest # microservice-debian
   pullPolicy: IfNotPresent
 
 service:

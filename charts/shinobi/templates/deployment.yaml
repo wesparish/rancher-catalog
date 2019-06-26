@@ -39,7 +39,7 @@ spec:
             type: File
         - name: shinobi-shm-temp
           hostPath:
-            path: /dev/shm/
+            path: /dev/shm/shinobiDockerTmp
             type: ""
       containers:
         - name: {{ .Chart.Name }}-shinobi
@@ -50,18 +50,18 @@ spec:
             value: "wes@elastiscale.net"
           - name: ADMIN_PASSWORD
             value: "{{ .Values.shinobi.admin.password }}"
-          - name: MYSQL_USER
-            value: "shinobi"
-          - name: MYSQL_PASSWORD
-            value: "{{ .Values.mariadb.db.password }}"
-          - name: MYSQL_HOST
-            value: "{{ .Release.Name }}-mariadb"
-          - name: MYSQL_DATABASE
-            value: "shinobi"
-          - name: MYSQL_ROOT_PASSWORD
-            value: "{{ .Values.mariadb.rootUser.password }}"
-          - name: MYSQL_ROOT_USER
-            value: "root"
+#          - name: MYSQL_USER
+#            value: "shinobi"
+#          - name: MYSQL_PASSWORD
+#            value: "{{ .Values.mariadb.db.password }}"
+#          - name: MYSQL_HOST
+#            value: "{{ .Release.Name }}-mariadb"
+#          - name: MYSQL_DATABASE
+#            value: "shinobi"
+#          - name: MYSQL_ROOT_PASSWORD
+#            value: "{{ .Values.mariadb.rootUser.password }}"
+#          - name: MYSQL_ROOT_USER
+#            value: "root"
           - name: CRON_KEY
             value: "{{ .Values.shinobi.cronKey }}"
           - name: PLUGINKEY_MOTION
@@ -84,7 +84,7 @@ spec:
             - name: etc-timezone
               mountPath: /etc/timezone
             - name: shinobi-shm-temp
-              mountPath: /dev/shm/
+              mountPath: /dev/shm/streams
           ports:
             - name: http
               containerPort: 8080

@@ -1,4 +1,4 @@
-dependencies:
-  - name: mariadb
-    version: "6.5.2"
-    repository: "@stable"
+#dependencies:
+#  - name: mariadb
+#    version: "6.5.2"
+#    repository: "@stable"
