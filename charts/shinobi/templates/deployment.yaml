@@ -41,6 +41,9 @@ spec:
           hostPath:
             path: /dev/shm/shinobiDockerTmp
             type: ""
+        - name: disable-super-json
+          configMap:
+            name: shinobi-config
       containers:
         - name: {{ .Chart.Name }}-shinobi
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -85,6 +88,9 @@ spec:
               mountPath: /etc/timezone
             - name: shinobi-shm-temp
               mountPath: /dev/shm/streams
+            - name: disable-super-json
+              mountPath: /opt/shinobi/super.json
+              subPath: super.json
           ports:
             - name: http
               containerPort: 8080
