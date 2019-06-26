@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: shinobi-config
 data:
+  # no longer used
   super.json: |
     [
       {
