@@ -46,10 +46,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          - name: ADMIN_USER
-            value: "wes@elastiscale.net"
-          - name: ADMIN_PASSWORD
-            value: "{{ .Values.shinobi.admin.password }}"
+#          - name: ADMIN_USER
+#            value: "wes@elastiscale.net"
+#          - name: ADMIN_PASSWORD
+#            value: "{{ .Values.shinobi.admin.password }}"
 #          - name: MYSQL_USER
 #            value: "shinobi"
 #          - name: MYSQL_PASSWORD
