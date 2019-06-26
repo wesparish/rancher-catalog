@@ -1,7 +1,7 @@
 namespace: shinobi
 
 questions:
-- variable: .Values.mariadb.db.password
+- variable: mariadb.db.password
   default: "shinobi"
   description: "Shinobi DB password"
   type: password
@@ -9,7 +9,7 @@ questions:
   label: Shinobi DB password
   group: "Shinobi"
 
-- variable: .Values.mariadb.rootUser.password
+- variable: mariadb.rootUser.password
   default: "shinobi"
   description: "Shinobi DB rootUser password"
   type: password
@@ -17,7 +17,7 @@ questions:
   label: Shinobi DB rootUser password
   group: "Shinobi"
 
-- variable: .Values.shinobi.admin.password
+- variable: shinobi.admin.password
   default: "shinobi"
   description: "Shinobi ADMIN password"
   type: password
@@ -25,7 +25,7 @@ questions:
   label: Shinobi ADMIN password
   group: "Shinobi"
 
-- variable: .Values.shinobi.cronKey
+- variable: shinobi.cronKey
   default: "908174589734681345891347589017508918911351894571895"
   description: "Shinobi cronKey"
   type: password
