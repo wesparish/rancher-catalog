@@ -41,7 +41,7 @@ resources: {}
   #  memory: 128Mi
 
 nodeSelector: {}
-#  kubernetes.io/hostname: nv16
+  ceph-client: "true"
 
 tolerations: []
 
