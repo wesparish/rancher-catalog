@@ -47,29 +47,29 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: ADMIN_USER
-            value: wes@elastiscale.net
+            value: "wes@elastiscale.net"
           - name: ADMIN_PASSWORD
-            value: {{ .Values.shinobi.admin.password }}
+            value: "{{ .Values.shinobi.admin.password }}"
           - name: MYSQL_USER
-            value: shinobi
+            value: "shinobi"
           - name: MYSQL_PASSWORD
-            value: {{ .Values.mariadb.db.password }}
+            value: "{{ .Values.mariadb.db.password }}"
           - name: MYSQL_HOST
-            value: {{ .Release.Name }}-mariadb
+            value: "{{ .Release.Name }}-mariadb"
           - name: MYSQL_DATABASE
-            value: shinobi
+            value: "shinobi"
           - name: MYSQL_ROOT_PASSWORD
-            value: {{ .Values.mariadb.rootUser.password }}
+            value: "{{ .Values.mariadb.rootUser.password }}"
           - name: MYSQL_ROOT_USER
-            value: root
+            value: "root"
           - name: CRON_KEY
-            value: {{ .Values.shinobi.cronKey }}
+            value: "{{ .Values.shinobi.cronKey }}"
           - name: PLUGINKEY_MOTION
-            value: a0746424-2a05-491f-b2ae-b697605cf538
+            value: "a0746424-2a05-491f-b2ae-b697605cf538"
           - name: PLUGINKEY_OPENALPR
-            value: c2b0075d-bf2c-40f6-9032-c0e2d099909a
+            value: "c2b0075d-bf2c-40f6-9032-c0e2d099909a"
           - name: MOTION_HOST
-            value: localhost
+            value: "localhost"
           - name: MOTION_PORT
             value: "8080"
           volumeMounts:
