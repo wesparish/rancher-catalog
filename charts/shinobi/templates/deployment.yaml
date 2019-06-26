@@ -50,18 +50,6 @@ spec:
             value: "wes@elastiscale.net"
           - name: ADMIN_PASSWORD
             value: "{{ .Values.shinobi.admin.password }}"
-#          - name: MYSQL_USER
-#            value: "shinobi"
-#          - name: MYSQL_PASSWORD
-#            value: "{{ .Values.mariadb.db.password }}"
-#          - name: MYSQL_HOST
-#            value: "{{ .Release.Name }}-mariadb"
-#          - name: MYSQL_DATABASE
-#            value: "shinobi"
-#          - name: MYSQL_ROOT_PASSWORD
-#            value: "{{ .Values.mariadb.rootUser.password }}"
-#          - name: MYSQL_ROOT_USER
-#            value: "root"
           - name: CRON_KEY
             value: "{{ .Values.shinobi.cronKey }}"
           - name: PLUGINKEY_MOTION
