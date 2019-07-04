@@ -1,0 +1,6 @@
+dependencies:
+- name: kibana
+  repository: file://subcharts/elastic/kibana/
+  version: 6.6.2-alpha1
+digest: sha256:087fdf8ee5a5de740aa57d6d9b422aab38a00ae38a08cd94772c95cf466e2397
+generated: 2019-07-04T05:25:11.268445592Z

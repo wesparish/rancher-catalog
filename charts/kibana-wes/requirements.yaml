@@ -1,0 +1,4 @@
+dependencies:
+  - name: kibana
+    version: "6.6.2-alpha1"
+    repository: "file://subcharts/elastic/kibana/"
