@@ -1,5 +1,7 @@
 ---
 kibana:
+  service:
+    type: NodePort
   ingress:
     enabled: true
     annotations:
