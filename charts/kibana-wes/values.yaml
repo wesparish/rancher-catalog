@@ -1,17 +1,17 @@
 ---
 kibana:
   ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx-wes
-    kubernetes.io/tls-acme: "true"
-    nginx.ingress.kubernetes.io/auth-realm: Authentication Required - OctoPi
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-type: basic
-  path: /
-  hosts:
-    - kibana.elastiscale.net
-  tls:
-    - secretName: kibana-elastiscale.net
-      hosts:
-        - kibana.elastiscale.net
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx-wes
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/auth-realm: Authentication Required - OctoPi
+      nginx.ingress.kubernetes.io/auth-secret: basic-auth
+      nginx.ingress.kubernetes.io/auth-type: basic
+    path: /
+    hosts:
+      - kibana.elastiscale.net
+    tls:
+      - secretName: kibana-elastiscale.net
+        hosts:
+          - kibana.elastiscale.net
