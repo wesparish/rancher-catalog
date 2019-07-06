@@ -1,6 +1,6 @@
 dependencies:
 - name: kibana
-  repository: file://subcharts/elastic/kibana/
-  version: 6.6.2-alpha1
-digest: sha256:087fdf8ee5a5de740aa57d6d9b422aab38a00ae38a08cd94772c95cf466e2397
-generated: 2019-07-04T05:25:11.268445592Z
+  repository: file://../elasticsearch-wes/subcharts/helm-charts/kibana
+  version: 7.2.0
+digest: sha256:72f0b21435b137f8be2a75d429e42935c1a8a97a4158f0c17810ea7b8ee72b8a
+generated: 2019-07-06T13:35:35.963009585Z

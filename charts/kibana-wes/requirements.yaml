@@ -1,4 +1,4 @@
 dependencies:
   - name: kibana
-    version: "6.6.2-alpha1"
-    repository: "file://subcharts/elastic/kibana/"
+    version: "7.2.0"
+    repository: "file://../elasticsearch-wes/subcharts/helm-charts/kibana"
