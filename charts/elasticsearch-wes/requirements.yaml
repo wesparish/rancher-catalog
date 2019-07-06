@@ -1,4 +1,4 @@
 dependencies:
   - name: elasticsearch
-    version: "6.6.2-alpha1"
-    repository: "file://subcharts/elastic/elasticsearch/"
+    version: "7.2.0"
+    repository: "file://subcharts/helm-charts/elasticsearch/"

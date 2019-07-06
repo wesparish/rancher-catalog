@@ -18,7 +18,7 @@ logstash:
     #    - name: "myKubernetesSecret"
   
   service:
-    type: ClusterIP
+    type: NodePort
     # clusterIP: None
     # nodePort:
     # Set this to local, to preserve client source ip.  Default stripes out the source ip
