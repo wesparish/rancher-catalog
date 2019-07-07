@@ -1,0 +1,6 @@
+dependencies:
+- name: filebeat
+  repository: file://../elasticsearch-wes/subcharts/helm-charts/filebeat
+  version: 7.2.0
+digest: sha256:3c4a19562e078bf1fd7d6c2f0431e27fed38cf1d4f23945411e01223a446989f
+generated: 2019-07-07T13:34:06.050037651Z

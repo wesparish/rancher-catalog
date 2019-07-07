@@ -1,0 +1,4 @@
+dependencies:
+  - name: filebeat
+    version: "7.2.0"
+    repository: "file://../elasticsearch-wes/subcharts/helm-charts/filebeat"
