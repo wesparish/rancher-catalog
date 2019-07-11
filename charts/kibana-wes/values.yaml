@@ -12,8 +12,8 @@ kibana:
       nginx.ingress.kubernetes.io/auth-type: basic
     path: /
     hosts:
-      - kibana.elastiscale.net
+      - kibana-jamie.elastiscale.net
     tls:
-      - secretName: kibana-elastiscale.net
+      - secretName: kibana-jamie-elastiscale.net
         hosts:
-          - kibana.elastiscale.net
+          - kibana-jamie.elastiscale.net
