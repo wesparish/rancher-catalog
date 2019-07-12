@@ -16,7 +16,7 @@ metallb:
     - name: default
       protocol: layer2
       addresses:
-      - 172.16.1.220-172.16.1.240
+      - 10.2.2.230-10.2.2.250
     #
     # Example BGP Configuration
     # peers:
