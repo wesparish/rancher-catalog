@@ -11,7 +11,7 @@ image:
 
 resources: 
   limits:
-    nvidia.com/gpu: 6
+    nvidia.com/gpu: 1
 
 nodeSelector: {}
 
