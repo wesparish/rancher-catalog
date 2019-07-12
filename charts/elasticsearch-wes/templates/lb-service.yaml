@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: es-loadbalancer-service
+  annotations:
+    metallb.universe.tf/address-pool: default
+spec:
+  ports:
+  - name: http-lb
+    protocol: TCP
+    port: {{ .Values.elasticsearch.httpPort }}
+  - name: transport-lb
+    protocol: TCP
+    port: {{ .Values.elasticsearch.transportPort }}
+  selector:
+    app: elasticsearch-master
+    chart: elasticsearch-7.2.0
+    heritage: Tiller
+    release: elasticsearch
+  type: LoadBalancer
+  loadBalancerIP: 172.16.1.224
