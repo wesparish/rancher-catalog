@@ -7,7 +7,7 @@ nginx-ingress:
     ingressClass: nginx-wes
     service:
       type: LoadBalancer
-      loadBalancerIP: 172.16.1.223
+      loadBalancerIP: 10.2.2.230
       annotations:
         metallb.universe.tf/address-pool: default
     kind: DaemonSet
