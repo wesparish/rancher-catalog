@@ -13,9 +13,9 @@ spec:
     protocol: TCP
     port: {{ .Values.elasticsearch.transportPort }}
   selector:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "uname" . }}"
+    app: elasticsearch-master
+    chart: elasticsearch-7.2.0
+    heritage: Tiller
+    release: elasticsearch
   type: LoadBalancer
   loadBalancerIP: 10.2.2.231
