@@ -13,8 +13,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: LoadBalancer
-  loadBalanerIP: 172.16.1.225
+  type: NodePort
   port: 8081
 
 ingress:
