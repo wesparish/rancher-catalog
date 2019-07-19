@@ -1,7 +1,0 @@
-dependencies:
-  - name: sonatype-nexus
-    version: "1.18.3"
-    repository: "@stable"
-  - name: nginx-ingress
-    version: "1.6.18"
-    repository: "@stable"
