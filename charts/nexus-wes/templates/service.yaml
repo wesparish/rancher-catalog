@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexus-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "nexus-wes.name" . }}
+    helm.sh/chart: {{ include "nexus-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8081
+      protocol: TCP
+      name: http
+    - port: 5010
+      targetPort: 5010
+      protocol: TCP
+      name: docker
+  selector:
+    app.kubernetes.io/name: {{ include "nexus-wes.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
