@@ -8,7 +8,7 @@ metadata:
       nginx.ingress.kubernetes.io/proxy-body-size: 2000m
 spec:
   rules:
-    - host: nexus.elastiscale.net
+    - host: nexus-jamie.elastiscale.net
       http:
         paths:
           - path: /
@@ -17,5 +17,5 @@ spec:
               servicePort: 5010
   tls:
     - hosts:
-      - nexus.elastiscale.net
-      secretName: nexus-elastiscale.net
+      - nexus-jamie.elastiscale.net
+      secretName: nexus-jamie-elastiscale.net

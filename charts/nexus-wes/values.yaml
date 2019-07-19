@@ -9,8 +9,8 @@ sonatype-nexus:
 
   nexusProxy:
     env:
-      nexusDockerHost: nexus.elastiscale.net
-      nexusHttpHost: nexus.elastiscale.net
+      nexusDockerHost: nexus-jamie.elastiscale.net
+      nexusHttpHost: nexus-jamie.elastiscale.net
 
   ingress:
     enabled: true
@@ -21,10 +21,10 @@ sonatype-nexus:
     paths:
       - /
     hosts:
-      - nexus.elastiscale.net
+      - nexus-jamie.elastiscale.net
     tls:
       enabled: true
-      secretName: nexus-elastiscale.net
+      secretName: nexus-jamie-elastiscale.net
 
   persistence:
     existingClaim: nexus-wes-sonatype-nexus-data
