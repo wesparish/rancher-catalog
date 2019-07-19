@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: soantype/nexus3
+  repository: sonatype/nexus3
   tag: 3.17.0
   pullPolicy: IfNotPresent
 
