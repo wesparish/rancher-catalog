@@ -38,18 +38,18 @@ spec:
             - name: docker
               containerPort: 5010
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            failureThreshold: 10
-            initialDelaySeconds: 120
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            failureThreshold: 10
-            initialDelaySeconds: 120
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#            failureThreshold: 10
+#            initialDelaySeconds: 120
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#            failureThreshold: 10
+#            initialDelaySeconds: 120
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
