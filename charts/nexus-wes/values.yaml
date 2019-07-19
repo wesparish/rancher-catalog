@@ -13,7 +13,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalanerIP: 172.16.1.225
   port: 8081
 
 ingress:
