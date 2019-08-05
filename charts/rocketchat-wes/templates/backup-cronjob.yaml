@@ -21,7 +21,7 @@ spec:
             command: ["/bin/bash"]
             args:
             - -c
-            - echo Backing up rocketchat mongodb to /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) && mongodump -o /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) --gzip --host rocketchat-wes-mongodb.rocketchat.svc.cluster.local
+            - echo Backing up rocketchat mongodb to /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) && mongodump -o /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) --gzip --host rocketchat-mongodb.rocketchat.svc.cluster.local
           restartPolicy: OnFailure
           volumes:
           - name: rocketchat-backup
