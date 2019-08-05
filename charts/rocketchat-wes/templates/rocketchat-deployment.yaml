@@ -59,33 +59,33 @@ spec:
             mountPath: /app/uploads
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      initContainers:
-        - name: {{ .Chart.Name }}-configure-mongodb
-          image:  {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: DEPLOY_PLATFORM
-            value: helm-chart
-          - name: INSTANCE_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: MONGO_URL
-            value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
-          - name: MONGO_OPLOG_URL
-            value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/local
-          - name: ROOT_URL
-            value: {{ .Values.rocketchat.config.ROOT_URL }}
-          - name: MAIL_URL
-            value: smtp://{{ .Values.rocketchat.config.SMTP_Host }}:{{ .Values.rocketchat.config.SMTP_Port }}
-          volumeMounts:
-          - name: data
-            mountPath: /data
-          command: 
-            - mongo
-            - mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
-            - --eval 
-            - "rs.initiate({ _id: 'rs0', members: [ { _id: 0, host: 'localhost:27017' } ]})"
+#      initContainers:
+#        - name: {{ .Chart.Name }}-configure-mongodb
+#          image:  {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+#          imagePullPolicy: {{ .Values.image.pullPolicy }}
+#          env:
+#          - name: DEPLOY_PLATFORM
+#            value: helm-chart
+#          - name: INSTANCE_IP
+#            valueFrom:
+#              fieldRef:
+#                fieldPath: status.podIP
+#          - name: MONGO_URL
+#            value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
+#          - name: MONGO_OPLOG_URL
+#            value: mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/local
+#          - name: ROOT_URL
+#            value: {{ .Values.rocketchat.config.ROOT_URL }}
+#          - name: MAIL_URL
+#            value: smtp://{{ .Values.rocketchat.config.SMTP_Host }}:{{ .Values.rocketchat.config.SMTP_Port }}
+#          volumeMounts:
+#          - name: data
+#            mountPath: /data
+#          command: 
+#            - mongo
+#            - mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
+#            - --eval 
+#            - "rs.initiate({ _id: 'rs0', members: [ { _id: 0, host: 'localhost:27017' } ]})"
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
