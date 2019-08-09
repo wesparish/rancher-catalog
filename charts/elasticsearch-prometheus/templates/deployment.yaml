@@ -23,6 +23,11 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ELASTICSEARCH_QUERY_RESULTS_NAME
+              value: "tempsensor-barn"
+            - name: ELASTICSEARCH_QUERY_RESULTS_TEXT
+              value: "tempsensor-barn 15m avg"
           ports:
             - name: http
               containerPort: 80
