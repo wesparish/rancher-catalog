@@ -25,7 +25,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: ELASTICSEARCH_QUERY_RESULTS_NAME
-              value: "tempsensor-barn"
+              value: "tempsensor_barn"
             - name: ELASTICSEARCH_QUERY_RESULTS_TEXT
               value: "tempsensor-barn 15m avg"
           ports:
