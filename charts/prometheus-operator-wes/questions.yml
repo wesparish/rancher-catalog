@@ -1,4 +1,4 @@
-namespace: prometheus-operator
+#namespace: prometheus-operator
 
 questions:
 - variable: grafana.adminPassword
