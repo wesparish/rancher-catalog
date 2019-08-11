@@ -1,0 +1,4 @@
+dependencies:
+  - name: prometheus-adapter
+    version: "1.2.0"
+    repository: "@stable"
