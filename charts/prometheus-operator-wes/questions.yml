@@ -1,4 +1,4 @@
-#namespace: prometheus-operator
+namespace: kube-system
 
 questions:
 - variable: grafana.adminPassword
