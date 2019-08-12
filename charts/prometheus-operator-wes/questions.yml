@@ -1,0 +1,10 @@
+#namespace: prometheus-operator
+
+questions:
+- variable: grafana.adminPassword
+  default: "password"
+  description: "Grafana admin password"
+  type: password
+  required: true
+  label: Grafana admin password
+  group: "grafana"
