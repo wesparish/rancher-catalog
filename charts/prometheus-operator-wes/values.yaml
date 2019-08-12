@@ -189,7 +189,7 @@ alertmanager:
     loadBalancerSourceRanges: []
     ## Service type
     ##
-    type: ClusterIP
+    type: NodePort
 
   ## If true, create a serviceMonitor for alertmanager
   ##
