@@ -396,7 +396,7 @@ prometheus-operator:
       # hosts:
       #   - grafana.domain.com
       hosts: 
-        - grafana.elastiscale.net
+        - grafana-jamie.elastiscale.net
   
       ## Path for grafana ingress
       path: /
@@ -407,7 +407,7 @@ prometheus-operator:
       tls:
         - secretName: grafana-general-tls
           hosts:
-          - grafana.elastiscale.net
+          - grafana-jamie.elastiscale.net
   
     sidecar:
       dashboards:
