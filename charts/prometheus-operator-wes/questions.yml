@@ -1,4 +1,4 @@
-namespace: kube-system
+#namespace: kube-system
 
 questions:
 - variable: grafana.adminPassword
