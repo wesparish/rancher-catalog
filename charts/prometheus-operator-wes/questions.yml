@@ -1,7 +1,7 @@
 #namespace: kube-system
 
 questions:
-- variable: grafana.adminPassword
+- variable: prometheus-operator.grafana.adminPassword
   default: "password"
   description: "Grafana admin password"
   type: password
