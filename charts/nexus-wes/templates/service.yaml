@@ -19,11 +19,6 @@ spec:
       protocol: TCP
       name: docker
       nodePort: 32340
-    - port: 5011
-      targetPort: 5011
-      nodePort: 32341
-      protocol: TCP
-      name: docker-secure
   selector:
     app.kubernetes.io/name: {{ include "nexus-wes.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
