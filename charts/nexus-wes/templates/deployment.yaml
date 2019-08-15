@@ -38,6 +38,9 @@ spec:
             - name: docker
               containerPort: 5010
               protocol: TCP
+            - name: docker-secure
+              containerPort: 5011
+              protocol: TCP
 #          livenessProbe:
 #            httpGet:
 #              path: /
