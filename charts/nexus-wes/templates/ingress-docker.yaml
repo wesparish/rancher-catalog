@@ -6,6 +6,7 @@ metadata:
   annotations:
       kubernetes.io/ingress.class: "nginx-wes"
       kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
 spec:
   rules:
     - host: nexus-jamie-docker.elastiscale.net
