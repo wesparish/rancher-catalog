@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: wesparish/amdgpu-pro-claymore11.9
-  tag: latest
+  repository: nexus-jamie-docker.elastiscale.net/claymore
+  tag: amdgpu-pro-v14.7-1
   pullPolicy: Always
 
 claymore:
