@@ -2,7 +2,7 @@ categories:
 - miners
 questions:
 - variable: claymore.wallet
-  default: "0x559db2865e1f099d63037c3ae4a6c8cc1106c819"
+  default: "0x331077cd09209dc9e51c2e44a711f928de3f669e"
   description: "Wallet Address"
   type: string
   required: true
@@ -26,7 +26,7 @@ questions:
   group: "miner questions"
 
 - variable: claymore.scalablelabel
-  default: "claymore-scalable-wes"
+  default: "claymore-scalable-jamie"
   description: "Scheduling label for claymore_amd_scalable service"
   type: string
   required: true
@@ -34,7 +34,7 @@ questions:
   group: "miner questions"
 
 - variable: claymore.gpusperpod
-  default: "1"
+  default: "6"
   description: "How many GPUs per pod?"
   type: int
   min: 1
