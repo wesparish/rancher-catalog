@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/claymore
-  tag: cuda10.1-14.7
+  tag: cuda-14.7
   pullPolicy: Always
 
 resources: {}
