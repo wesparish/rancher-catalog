@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: wesparish/claymore
-  tag: cuda-v11.5-1.1
+  repository: nexus-jamie-docker.elastiscale.net/claymore
+  tag: cuda-14.7
   pullPolicy: Always
 
 resources: 
