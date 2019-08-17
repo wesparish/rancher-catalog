@@ -1,1 +1,0 @@
-# claymore-amd-scalable
