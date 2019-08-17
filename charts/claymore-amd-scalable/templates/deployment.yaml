@@ -19,15 +19,6 @@ spec:
         app: {{ template "claymore-amd-scalable.name" . }}
         release: {{ .Release.Name }}
     spec:
-#      affinity:
-#        nodeAffinity:
-#          requiredDuringSchedulingIgnoredDuringExecution:
-#            nodeSelectorTerms:
-#            - matchExpressions:
-#              - key: miner
-#                operator: In
-#                values:
-#                - {{ .Values.claymore.scalablelabel }}
       containers:
         - name: {{ .Chart.Name }}
           env:
@@ -58,18 +49,18 @@ spec:
             privileged: true
             readOnlyRootFilesystem: false
             runAsNonRoot: false
-#          livenessProbe:
-#            initialDelaySeconds: 30
-#            exec:
-#              command:
-#                - "pgrep"
-#                - "ethdcrminer64"
-#          readinessProbe:
-#            initialDelaySeconds: 30
-#            exec:
-#              command:
-#                - "pgrep"
-#                - "ethdcrminer64"
+          livenessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "ethdcrminer64"
+          readinessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "ethdcrminer64"
           resources:
             requests:
               amd.com/gpu: {{ .Values.claymore.gpusperpod }}
