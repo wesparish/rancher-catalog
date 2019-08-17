@@ -19,19 +19,19 @@ spec:
         app: {{ template "claymore-nvidia-scalable.name" . }}
         release: {{ .Release.Name }}
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: gpu-type
-                operator: In
-                values:
-                - nvidia
-              - key: miner
-                operator: In
-                values:
-                - {{ .Values.claymore.scalablelabel }}
+#      affinity:
+#        nodeAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            nodeSelectorTerms:
+#            - matchExpressions:
+#              - key: gpu-type
+#                operator: In
+#                values:
+#                - nvidia
+#              - key: miner
+#                operator: In
+#                values:
+#                - {{ .Values.claymore.scalablelabel }}
       containers:
         - name: {{ .Chart.Name }}
           env:
@@ -67,8 +67,10 @@ spec:
                 - "ethdcrminer64"
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
       nodeSelector:
+        gpu-type: nvidia
+        miner: {{ .Values.claymore.scalablelabel }}
+    {{- with .Values.nodeSelector }}
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.affinity }}
