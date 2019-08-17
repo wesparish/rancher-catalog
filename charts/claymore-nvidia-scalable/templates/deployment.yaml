@@ -19,19 +19,6 @@ spec:
         app: {{ template "claymore-nvidia-scalable.name" . }}
         release: {{ .Release.Name }}
     spec:
-#      affinity:
-#        nodeAffinity:
-#          requiredDuringSchedulingIgnoredDuringExecution:
-#            nodeSelectorTerms:
-#            - matchExpressions:
-#              - key: gpu-type
-#                operator: In
-#                values:
-#                - nvidia
-#              - key: miner
-#                operator: In
-#                values:
-#                - {{ .Values.claymore.scalablelabel }}
       containers:
         - name: {{ .Chart.Name }}
           env:
@@ -66,9 +53,11 @@ spec:
                 - "pgrep"
                 - "ethdcrminer64"
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+            requests:
+              nvidia.com/gpu: {{ .Values.claymore.gpusperpod }}
+            limits:
+              nvidia.com/gpu: {{ .Values.claymore.gpusperpod }}
       nodeSelector:
-        gpu-type: nvidia
         miner: {{ .Values.claymore.scalablelabel }}
     {{- with .Values.nodeSelector }}
 {{ toYaml . | indent 8 }}

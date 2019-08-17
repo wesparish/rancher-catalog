@@ -26,8 +26,8 @@ questions:
   group: "miner questions"
 
 - variable: claymore.scalablelabel
-  default: "claymore-scalable-jamie"
-  description: "Scheduling label for claymore_amd_scalable service"
+  default: "claymore"
+  description: "Scheduling label for claymore_nvidia_scalable service"
   type: string
   required: true
   label: Scalable Label
@@ -40,3 +40,13 @@ questions:
   required: true
   label: Location
   group: "gpu-monitor questions"
+
+- variable: claymore.gpusperpod
+  default: "6"
+  description: "How many GPUs per pod?"
+  type: int
+  min: 1
+  max: 99
+  required: true
+  label: How many GPUs per pod
+  group: "miner questions"
