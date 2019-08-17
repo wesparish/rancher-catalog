@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/claymore
-  tag: amdgpu-pro-v14.7
+  tag: amdgpu-pro-14.7
   pullPolicy: Always
 
 claymore:
