@@ -21,6 +21,23 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
+          env:
+            - name: LOCATION
+              value: {{ .Values.ethminer.location }}
+            - name: WALLET_ADDRESS
+              value: {{ .Values.ethminer.wallet }}
+            - name: OPTS
+              value: {{ .Values.ethminer.options }}
+            - name: HOSTS
+              value: {{ .Values.ethminer.poolhosts }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -36,9 +53,14 @@ spec:
               path: /
               port: http
           resources:
+            requests:
+              nvidia.com/gpu: {{ .Values.ethminer.gpusperpod }}
+            limits:
+              nvidia.com/gpu: {{ .Values.ethminer.gpusperpod }}
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
       nodeSelector:
+        miner: {{ .Values.ethminer.scalablelabel }}
+      {{- with .Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     {{- with .Values.affinity }}
