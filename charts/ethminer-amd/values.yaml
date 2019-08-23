@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: nexus-jamie-docker.elastiscale.net/ethminer
+  tag: amdgpu-pro-0.18.0-1.0.0
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+ethminer:
+  wallet: "0x331077Cd09209dc9e51c2E44a711f928dE3F669e"
+  poolhosts: "eth-us-east1.nanopool.org:9999 eth-us-west1.nanopool.org:9999"
+  options: "--tstart 50 --tstop 82"
+  scalablelabel: "ethminer"
+  location: "jamiehouse"
+  gpusperpod: 6

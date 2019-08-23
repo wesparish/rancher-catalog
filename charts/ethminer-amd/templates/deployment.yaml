@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ethminer-amd.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "ethminer-amd.name" . }}
+    helm.sh/chart: {{ include "ethminer-amd.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ethminer-amd.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ethminer-amd.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: LOCATION
+              value: {{ .Values.ethminer.location }}
+            - name: WALLET_ADDRESS
+              value: {{ .Values.ethminer.wallet }}
+            - name: OPTS
+              value: {{ .Values.ethminer.options }}
+            - name: HOSTS
+              value: {{ .Values.ethminer.poolhosts }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3333
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              amd.com/gpu: {{ .Values.ethminer.gpusperpod }}
+            limits:
+              amd.com/gpu: {{ .Values.ethminer.gpusperpod }}
+      nodeSelector:
+        miner: {{ .Values.ethminer.scalablelabel }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

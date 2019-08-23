@@ -1,0 +1,52 @@
+categories:
+- miners
+questions:
+- variable: ethminer.wallet
+  default: "0x331077cd09209dc9e51c2e44a711f928de3f669e"
+  description: "Wallet Address"
+  type: string
+  required: true
+  label: Wallet Address
+  group: "miner questions"
+
+- variable: ethminer.poolhosts
+  default: "eth-us-east1.nanopool.org:9999 eth-us-west1.nanopool.org:9999"
+  description: "Pool Hosts"
+  type: string
+  required: true
+  label: Pool Hosts
+  group: "miner questions"
+
+- variable: ethminer.options
+  default: "--tstart 50 --tstop 82"
+  description: "Ethminer Options"
+  type: string
+  required: true
+  label: Ethminer Options
+  group: "miner questions"
+
+- variable: ethminer.scalablelabel
+  default: "ethminer"
+  description: "Scheduling label for ethminer_amd_scalable service"
+  type: string
+  required: true
+  label: Scalable Label
+  group: "miner questions"
+
+- variable: ethminer.location
+  default: "jamiehouse"
+  description: "Location of this gpu-monitor"
+  type: string
+  required: true
+  label: Location
+  group: "gpu-monitor questions"
+
+- variable: ethminer.gpusperpod
+  default: "6"
+  description: "How many GPUs per pod?"
+  type: int
+  min: 1
+  max: 99
+  required: true
+  label: How many GPUs per pod
+  group: "miner questions"
