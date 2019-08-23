@@ -57,7 +57,6 @@ spec:
               nvidia.com/gpu: {{ .Values.ethminer.gpusperpod }}
             limits:
               nvidia.com/gpu: {{ .Values.ethminer.gpusperpod }}
-            {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:
         miner: {{ .Values.ethminer.scalablelabel }}
       {{- with .Values.nodeSelector }}
