@@ -1,0 +1,13 @@
+# Default values for octopi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: test
+domainSuffix: elastiscale.net
+
+endpoint:
+  targetIP: 172.16.1.61
+  targetPort: 80
+
+service:
+  port: 80

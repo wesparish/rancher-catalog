@@ -1,0 +1,9 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+ name: {{ .Values.name }}
+subsets:
+ - addresses:
+     - ip: {{ .Values.endpoint.targetIP }}
+   ports:
+     - port: {{ .Values.endpoint.targetPort }}
