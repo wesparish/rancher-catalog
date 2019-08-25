@@ -10,7 +10,7 @@ questions:
   group: "TSD ml_api"
 
 - variable: image.ml_api.tag
-  default: "0.104"
+  default: "0.178"
   description: "thespaghettidetective/ml_api container tag"
   type: string
   required: true
