@@ -35,7 +35,7 @@ spec:
           command:
             - sh
             - -c
-            - python server.py
+            - gunicorn --bind 0.0.0.0:3333 --workers 1 server:app
           ports:
             - name: http
               containerPort: 3333
