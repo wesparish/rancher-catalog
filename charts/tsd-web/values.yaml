@@ -7,11 +7,7 @@ replicaCount: 1
 image:
   web:
     repository: thespaghettidetective/web
-    tag: 0.95
-    pullPolicy: Always
-  ml_api:
-    repository: thespaghettidetective/ml_api
-    tag: 0.95
+    tag: 0.178
     pullPolicy: Always
   redis:
     repository: redis
