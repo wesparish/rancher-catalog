@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   ml_api:
     repository: thespaghettidetective/ml_api
-    tag: 0.95
+    tag: 0.178
     pullPolicy: Always
 
 nameOverride: ""
@@ -40,7 +40,8 @@ ingress:
       hosts:
         - ml-api.elastiscale.net
 
-nodeSelector: {}
+nodeSelector: 
+  tsd: true
   #  ceph-client: "true"
 
 tolerations: []
