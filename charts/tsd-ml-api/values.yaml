@@ -41,8 +41,7 @@ ingress:
         - ml-api.elastiscale.net
 
 nodeSelector: 
-  tsd: true
-  #  ceph-client: "true"
+  tsd: "true"
 
 tolerations: []
 
