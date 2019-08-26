@@ -69,7 +69,7 @@ spec:
             - name: "REDIS_URL"
               value: "redis://localhost:6379"
             - name: "DATABASE_URL"
-              value: "sqlite:////app/db.sqlite3"
+              value: "sqlite:////db/db.sqlite3"
             - name: "INTERNAL_MEDIA_HOST"
               value: "http://web:3334"
             - name: "ML_API_HOST"
@@ -90,7 +90,7 @@ spec:
               port: 3334
           volumeMounts:
             - name: web
-              mountPath: /app
+              mountPath: /db
           resources:
             {{- toYaml .Values.resources.web | nindent 12 }}
 
