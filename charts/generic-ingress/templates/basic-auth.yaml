@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth
+type: Opaque
+data:
+  username: {{ .Values.userName }}
+  password: {{ .Values.password | b64enc }}

@@ -4,6 +4,6 @@ metadata:
  name: {{ .Values.name }}
 spec:
  ports:
- - port: {{ .Values.service.port }}
-   targetPort: {{ .Values.service.port }}
+ - port: {{ .Values.endpoint.targetPort }}
+   targetPort: {{ .Values.endpoint.targetPort }}
    protocol: TCP
