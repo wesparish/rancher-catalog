@@ -1,0 +1,37 @@
+categories:
+- ingress
+questions:
+- variable: name
+  default: "GenericIngress"
+  description: "Front of URL"
+  type: string
+  required: true
+  label: Front of URL
+  group: "Generic Ingress"
+- variable: domainSuffix
+  default: ".elastiscale.net"
+  description: "Domain Suffix"
+  type: string
+  required: true
+  label: Domain Suffix
+  group: "Generic Ingress"
+- variable: auth
+  default: "wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/"
+  description: "htpasswd string for basic-auth"
+  type: string
+  required: true
+  label: htpasswd string for basic-auth
+  group: "Generic Ingress"
+
+- variable: endpoint.targetIP
+  description: "Backend target IP"
+  type: string
+  required: true
+  label: Backend Target IP
+  group: "Ingress Target"
+- variable: endpoint.targetPort
+  description: "Backend target Port"
+  type: string
+  required: true
+  label: Backend Target Port
+  group: "Ingress Target"
