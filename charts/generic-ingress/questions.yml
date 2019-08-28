@@ -15,18 +15,12 @@ questions:
   required: true
   label: Domain Suffix
   group: "Generic Ingress"
-- variable: userName
-  default: "wes"
-  description: "User Name for basic auth"
+- variable: auth
+  default: "wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/"
+  description: "htpasswd string for basic-auth"
   type: string
   required: true
-  label: User Name for basic auth
-  group: "Generic Ingress"
-- variable: password
-  description: "Password for basic auth"
-  type: password
-  required: true
-  label: Password for basic auth
+  label: htpasswd string for basic-auth
   group: "Generic Ingress"
 
 - variable: endpoint.targetIP

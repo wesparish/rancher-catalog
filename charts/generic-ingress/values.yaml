@@ -1,7 +1,6 @@
 name: HeaterMeter
 domainSuffix: elastiscale.net
-userName: wes
-password: password
+auth: wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/
 
 endpoint:
   targetIP: 172.16.1.79

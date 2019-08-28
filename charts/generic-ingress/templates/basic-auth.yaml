@@ -4,5 +4,4 @@ metadata:
   name: basic-auth
 type: Opaque
 data:
-  username: {{ .Values.userName | b64enc }}
-  password: {{ .Values.password | b64enc }}
+  auth: {{ .Values.auth | b64enc }}
