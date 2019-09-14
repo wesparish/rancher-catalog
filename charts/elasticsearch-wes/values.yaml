@@ -21,12 +21,24 @@ elasticsearch:
   
   # Allows you to add any config files in /usr/share/elasticsearch/config/
   # such as elasticsearch.yml and log4j2.properties
-  esConfig: {}
+  esConfig:
+    elasticsearch.yml: |
+      path.repo: ["/usr/share/elasticsearch/backups"]
+
   #  elasticsearch.yml: |
   #    key:
   #      nestedkey: value
   #  log4j2.properties: |
   #    key = value
+
+  extraVolumes: |
+    - name: elasticsearch-backups
+      persistentVolumeClaim:
+        claimName: elasticsearch-backups
+
+  extraVolumeMounts: |
+    - name: elasticsearch-backups
+      mountPath: /usr/share/elasticsearch/backups
   
   # Extra environment variables to append to this nodeGroup
   # This will be appended to the current 'env:' key. You can use any of the kubernetes env
