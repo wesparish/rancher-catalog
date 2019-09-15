@@ -18,4 +18,4 @@ spec:
     heritage: Tiller
     release: elasticsearch-ssd
   type: LoadBalancer
-  loadBalancerIP: 10.2.2.233
+  loadBalancerIP: 10.2.2.231
