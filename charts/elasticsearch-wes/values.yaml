@@ -1,6 +1,6 @@
 ---
 elasticsearch:
-  clusterName: "elasticsearch"
+  clusterName: "elasticsearch-hdd"
   nodeGroup: "master"
   
   # The service that non master groups will try to connect to when joining the cluster
@@ -23,7 +23,7 @@ elasticsearch:
   # such as elasticsearch.yml and log4j2.properties
   esConfig:
     elasticsearch.yml: |
-      cluster.name: "docker-cluster"
+      cluster.name: "elasticsearch-hdd"
       network.host: 0.0.0.0
       path.repo: ["/usr/share/elasticsearch/backups"]
 
