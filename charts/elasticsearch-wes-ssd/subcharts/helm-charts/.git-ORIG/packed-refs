@@ -1,0 +1,24 @@
+# pack-refs with: peeled fully-peeled sorted 
+9022bde7f22ca4d597c538ad0354f9721677b6d3 refs/remotes/origin/add-jjbb-defs
+934ab5a396847c80e9c54a443a023f5811cac879 refs/remotes/origin/alright_keep_your_secrets
+7d82075080016c063aa46cba709c14ff3baa40a9 refs/remotes/origin/always_always
+9a57905ef374b5685e9190966d0d052df1b00775 refs/remotes/origin/configurator_mapinator
+5fffc89e6d4c044bd51e8ba7eba6436246dd3984 refs/remotes/origin/example/multi-use-child-charts
+2bc3e813f620089c76d332efe736a9a73128a98e refs/remotes/origin/example/settings-and-inheritance
+e1dbc59eb0b98243837ce17071d0223e2790c31e refs/remotes/origin/master
+f4ff57ed89c8cc85e8cca9c3ee58b76838b505de refs/remotes/origin/metric_is_the_future
+4cf38421c427a447b5a556fcb7cb69dbbe80b42f refs/remotes/origin/mind_the_bat
+e14981cf2e189c30782492b2a66bcda82ab1ce8c refs/remotes/origin/pick_a_number
+a07e987a10c34effd1d7c78e821e41cee77a9c3f refs/remotes/origin/securitest
+b5c7d33962ab9e00eeafaa0608eff73fb82a235b refs/tags/6.5.2-alpha1
+12a6356a514233087499f44c34da532a302dd32e refs/tags/6.5.3-alpha1
+9d91b427e84bf15b646d338ee07c9dbebb5d6c4a refs/tags/6.5.4-alpha1
+5f8dd70699c77fe7f4e3d7a71217555b6f0831d0 refs/tags/6.5.4-alpha2
+d82c98ebf71d06baf9368c314c26b82bcf54b2a7 refs/tags/6.5.4-alpha3
+38cb8608eef5c481bbbb3b3a77c5871951be759d refs/tags/6.6.0-alpha1
+071e8659ad78e048dc1d2bbd831d80acff4d7bca refs/tags/6.6.2-alpha1
+c5289d5c3e78820d78baf0984c439c8ed68c893f refs/tags/7.0.0-alpha1
+3425362e5f95d6460c0d0d94a45ff7bd8e547ec9 refs/tags/7.0.1-alpha1
+97f0004c50bdda7bee34069d2fe06f4eead96207 refs/tags/7.1.0
+240ee9e1508a7b5c2a3c2171db1c05a335f2be71 refs/tags/7.1.1
+9a6461b5f3fc518e40ac15d24fc58b37f2bac452 refs/tags/7.2.0

@@ -1,0 +1,6 @@
+dependencies:
+- name: elasticsearch
+  repository: file://subcharts/helm-charts/elasticsearch/
+  version: 7.2.0
+digest: sha256:407d52e0ccf5456982eba3317e62fa5b538db581ec22b00514be8d372a5d804c
+generated: 2019-07-06T12:33:56.383328181Z
