@@ -16,6 +16,6 @@ spec:
     app: elasticsearch-master
     chart: elasticsearch-7.2.0
     heritage: Tiller
-    release: elasticsearch
+    release: elasticsearchssd
   type: LoadBalancer
   loadBalancerIP: 10.2.2.233

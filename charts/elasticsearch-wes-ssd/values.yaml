@@ -1,7 +1,7 @@
 ---
 elasticsearch:
-  clusterName: "elasticsearch-ssd"
-  nodeGroup: "master-ssd"
+  clusterName: "elasticsearchssd"
+  nodeGroup: "masterssd"
   
   # The service that non master groups will try to connect to when joining the cluster
   # This should be set to clusterName + "-" + nodeGroup for your master group
