@@ -2,7 +2,7 @@
 kibana:
   elasticsearchHosts: "elasticsearch.jamiehouse:9200"
   nodeSelector:
-    ingress: true
+    node-role.kubernetes.io/controlplane: "true"
   service:
     type: NodePort
   ingress:
