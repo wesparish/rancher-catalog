@@ -1,7 +1,7 @@
 ---
 elasticsearch:
-  clusterName: "elasticsearchssd"
-  nodeGroup: "masterssd"
+  clusterName: "elasticsearch-ssd"
+  nodeGroup: "master"
   
   # The service that non master groups will try to connect to when joining the cluster
   # This should be set to clusterName + "-" + nodeGroup for your master group
@@ -23,7 +23,7 @@ elasticsearch:
   # such as elasticsearch.yml and log4j2.properties
   esConfig:
     elasticsearch.yml: |
-      cluster.name: "elasticsearchssd"
+      cluster.name: "elasticsearch-ssd"
       network.host: 0.0.0.0
       path.repo: ["/usr/share/elasticsearch/backups"]
 
