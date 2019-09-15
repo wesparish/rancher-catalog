@@ -1,6 +1,6 @@
 ---
 kibana:
-  elasticsearchHosts: "elasticsearch.jamiehouse:9200"
+  elasticsearchHosts: "http://elasticsearch.jamiehouse:9200"
   nodeSelector:
     node-role.kubernetes.io/controlplane: "true"
   service:
