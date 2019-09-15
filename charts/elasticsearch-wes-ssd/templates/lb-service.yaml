@@ -13,7 +13,7 @@ spec:
     protocol: TCP
     port: {{ .Values.elasticsearch.transportPort }}
   selector:
-    app: elasticsearch-master
+    app: elasticsearch-ssd-master
     chart: elasticsearch-7.2.0
     heritage: Tiller
     release: elasticsearch-ssd
