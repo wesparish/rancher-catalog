@@ -86,10 +86,10 @@ elasticsearch:
   
   volumeClaimTemplate:
     accessModes: [ "ReadWriteOnce" ]
-    storageClassName: "ceph-kube-ssd"
+    storageClassName: "local-storage"
     resources:
       requests:
-        storage: 300Gi
+        storage: 475Gi
 
   # By default this will make sure two pods don't end up on the same node
   # Changing this to a region would allow you to spread pods across regions
