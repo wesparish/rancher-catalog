@@ -8,7 +8,7 @@ image:
   pullPolicy: IfNotPresent
   owncloud:
     repository: owncloud/server
-    tag: "10.0"
+    tag: "10.2"
   redis:
     repository: redis
     tag: "5.0"
