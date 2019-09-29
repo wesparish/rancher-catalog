@@ -30,6 +30,8 @@ spec:
               value: {{ .Values.ethminer.options }}
             - name: HOSTS
               value: {{ .Values.ethminer.poolhosts }}
+            - name: PASSPHRASE
+              value: {{ .Values.ethminer.passphrase }}
             - name: NODE_NAME
               valueFrom:
                 fieldRef:
