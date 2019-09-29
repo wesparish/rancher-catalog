@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/ethminer
-  tag: amdgpu-pro-0.18.0-1.0.0
+  tag: amdgpu-pro-0.18.0-1.1.0
   pullPolicy: Always
 
 nameOverride: ""
