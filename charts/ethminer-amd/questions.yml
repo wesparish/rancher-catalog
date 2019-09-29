@@ -55,6 +55,6 @@ questions:
   default: ""
   description: "Passphrase for this miner (after : in URL)"
   type: string
-  required: true
+  required: false
   label: passphrase
   group: "miner questions"
