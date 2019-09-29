@@ -50,3 +50,11 @@ questions:
   required: true
   label: How many GPUs per pod
   group: "miner questions"
+
+- variable: ethminer.passphrase
+  default: ""
+  description: "Passphrase for this miner (after : in URL)"
+  type: string
+  required: true
+  label: passphrase
+  group: "miner questions"

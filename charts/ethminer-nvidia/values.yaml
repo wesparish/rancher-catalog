@@ -19,3 +19,4 @@ ethminer:
   scalablelabel: "ethminer"
   location: "jamiehouse"
   gpusperpod: 6
+  passphrase: ""
