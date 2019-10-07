@@ -10,7 +10,7 @@ logstash:
   terminationGracePeriodSeconds: 30
   
   image:
-    repository: docker.elastic.co/logstash/logstash-oss
+    repository: nexus-jamie-docker.elastiscale.net/logstash/logstash-oss
     tag: 6.7.0
     pullPolicy: Always
     ## Add secrets manually via kubectl on kubernetes cluster and reference here

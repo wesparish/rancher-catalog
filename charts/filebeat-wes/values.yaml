@@ -1,5 +1,5 @@
 ---
-#filebeat:
+filebeat:
 #  # Allows you to add any config files in /usr/share/filebeat
 #  # such as filebeat.yml
 #  filebeatConfig:
@@ -34,8 +34,8 @@
 #  # Root directory where Filebeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
 #  hostPathRoot: /var/lib
 #  
-#  image: "docker.elastic.co/beats/filebeat"
-#  imageTag: "7.2.0"
+  image: "nexus-jamie-docker.elastiscale.net/beats/filebeat"
+  imageTag: "7.2.0"
 #  imagePullPolicy: "IfNotPresent"
 #  imagePullSecrets: []
 #  
