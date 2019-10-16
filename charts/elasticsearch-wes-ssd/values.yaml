@@ -66,15 +66,15 @@ elasticsearch:
   podAnnotations: {}
     # iam.amazonaws.com/role: es-cluster
   
-  esJavaOpts: "-Xmx1g -Xms1g"
+  esJavaOpts: "-Xmx2g -Xms2g"
   
   resources:
     requests:
       cpu: "400m"
-      memory: "1Gi"
+      memory: "2Gi"
     limits:
       cpu: "1"
-      memory: "2Gi"
+      memory: "4Gi"
   
   initResources: {}
     # limits:
@@ -91,7 +91,7 @@ elasticsearch:
     storageClassName: "local-storage"
     resources:
       requests:
-        storage: 468Gi
+        storage: 450Gi
 
   # By default this will make sure two pods don't end up on the same node
   # Changing this to a region would allow you to spread pods across regions
