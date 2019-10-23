@@ -91,7 +91,7 @@ elasticsearch:
     storageClassName: "local-storage"
     resources:
       requests:
-        storage: 450Gi
+        storage: 468Gi
 
   # By default this will make sure two pods don't end up on the same node
   # Changing this to a region would allow you to spread pods across regions
