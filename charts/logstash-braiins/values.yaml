@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: nexus-jamie-docker.elastiscale.net/logstash-braiins
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
