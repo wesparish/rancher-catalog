@@ -9,6 +9,11 @@ image:
   tag: stable
   pullPolicy: IfNotPresent
 
+global:
+  leaderElection:
+    # Override the namespace used to store the ConfigMap for leader election
+    namespace: "cert-manager-wes"
+
 cert-manager:
   ingressShim:
     defaultIssuerName: letsencrypt-production
