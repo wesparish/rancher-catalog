@@ -20,6 +20,8 @@ cert-manager:
     defaultIssuerKind: ClusterIssuer
   nodeSelector:
     ingress: "true"
+  webhook:
+    enabled: false
 
 service:
   type: ClusterIP
