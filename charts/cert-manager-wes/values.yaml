@@ -12,7 +12,7 @@ image:
 global:
   leaderElection:
     # Override the namespace used to store the ConfigMap for leader election
-    namespace: "cert-manager-wes"
+    namespace: "cert-manager"
 
 cert-manager:
   ingressShim:
