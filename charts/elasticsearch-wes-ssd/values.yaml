@@ -67,15 +67,15 @@ elasticsearch:
   podAnnotations: {}
     # iam.amazonaws.com/role: es-cluster
   
-  esJavaOpts: "-Xmx2g -Xms2g"
+  esJavaOpts: "-Xmx3g -Xms3g"
   
   resources:
     requests:
       cpu: "400m"
-      memory: "2Gi"
+      memory: "3Gi"
     limits:
       cpu: "1"
-      memory: "4Gi"
+      memory: "6Gi"
   
   initResources: {}
     # limits:
