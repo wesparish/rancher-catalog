@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: migoller/shinobidocker
+  repository: nexus-jamie-docker.elastiscale.net/migoller/shinobidocker
   tag: latest # microservice-debian
   pullPolicy: IfNotPresent
 
@@ -20,11 +20,11 @@ ingress:
     kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - shinobi.elastiscale.net
+    - shinobi-jamie.elastiscale.net
   tls: #[]
-    - secretName: shinobi-elastiscale.net
+    - secretName: shinobi-jamie-elastiscale.net
       hosts:
-        - shinobi.elastiscale.net
+        - shinobi-jamie.elastiscale.net
 
 resources: {}
  # limits:
