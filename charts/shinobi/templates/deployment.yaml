@@ -96,15 +96,15 @@ spec:
           - name: MOTION_PORT
             value: "8080"
           - name: MYSQL_USER
-            value: "majesticflame"
+            value: "root"
           - name: MYSQL_PASSWORD
-            value: "password"
+            value: "delete"
           - name: MYSQL_HOST
-            value: "localhost"
+            value: "127.0.0.1"
           - name: MYSQL_DATABASE
             value: "ccio"
           - name: MYSQL_ROOT_PASSWORD
-            value: "password"
+            value: "delete"
           - name: MYSQL_ROOT_USER
             value: "root"
 
