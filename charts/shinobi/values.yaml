@@ -10,7 +10,7 @@ image:
   pullPolicy: IfNotPresent
   mariadb:
     repository: nexus-jamie-docker.elastiscale.net/mariadb
-    tag: "10.3"
+    tag: "10.4"
 
 service:
   type: NodePort
