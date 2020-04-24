@@ -9,7 +9,7 @@ image:
   tag: ng #latest # microservice-debian
   pullPolicy: IfNotPresent
   mariadb:
-    repository: mariadb
+    repository: nexus-jamie-docker.elastiscale.net/mariadb
     tag: "10.3"
 
 service:
