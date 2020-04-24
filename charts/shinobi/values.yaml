@@ -6,8 +6,11 @@ replicaCount: 1
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/migoller/shinobidocker
-  tag: latest # microservice-debian
+  tag: ng #latest # microservice-debian
   pullPolicy: IfNotPresent
+  mariadb:
+    repository: mariadb
+    tag: "10.3"
 
 service:
   type: NodePort
