@@ -62,7 +62,7 @@ spec:
               containerPort: 8009
               protocol: TCP
             {{- range untilStep 18000 18100 1 }}
-            - name: rtp-ports
+            - name: rtp-ports-{{ . }}
               containerPort: {{ . }}
               protocol: TCP
             {{ end }}
