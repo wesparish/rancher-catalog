@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metallb.universe.tf/address-pool: default
+  name: {{ include "freepbx-wes.fullname" . }}-voip-service
+  labels:
+    app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
+    helm.sh/chart: {{ include "freepbx-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  ports:
+    {{- range untilStep 18000 18030 1 }}
+    - port: {{ . }}
+      targetPort:  {{ . }}
+      protocol: TCP
+      name: rtp-{{ . }}
+    {{ end }}
+    - name: fop
+      targetPort: 4445
+      port: 4445
+      protocol: TCP
+    - name: iax
+      targetPort: 4569
+      port: 4569
+      protocol: TCP
+    - name: pjsip
+      targetPort: 5060
+      port: 5060
+      protocol: TCP
+    - name: sip
+      targetPort: 5160
+      port: 5160
+      protocol: TCP
+    - name: ucp
+      targetPort: 8001
+      port: 8001
+      protocol: TCP
+    - name: ucp-ssl
+      targetPort: 8003
+      port: 8003
+      protocol: TCP
+    - name: ucp2
+      targetPort: 8008
+      port: 8008
+      protocol: TCP
+    - name: ucp2-ssl
+      targetPort: 8009
+      port: 8009
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  type: LoadBalancer
+  loadBalancerIP: 172.16.1.224
