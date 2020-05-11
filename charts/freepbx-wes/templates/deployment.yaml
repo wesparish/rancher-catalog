@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "freepbx-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
+    helm.sh/chart: {{ include "freepbx-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: "DB_EMBEDDED"
+              value: "TRUE"
+            - name: "RTP_START"
+              value: "18000"
+            - name: "RTP_FINISH"
+              value: "18099"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: fop
+              containerPort: 4445
+              protocol: TCP
+            - name: iax
+              containerPort: 4569
+              protocol: TCP
+            - name: pjsip
+              containerPort: 5060
+              protocol: TCP
+            - name: sip
+              containerPort: 5160
+              protocol: TCP
+            - name: ucp
+              containerPort: 8001
+              protocol: TCP
+            - name: ucp-ssl
+              containerPort: 8003
+              protocol: TCP
+            - name: ucp2
+              containerPort: 8008
+              protocol: TCP
+            - name: ucp2-ssl
+              containerPort: 8009
+              protocol: TCP
+            {{- range untilStep 18000 18100 1 }}
+            - name: rtp-ports
+              containerPort: {{ . }}
+              protocol: TCP
+            {{ end }}
+            - name: 
+              containerPort: 443
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: asterisk-data
+              mountPath: /var/log/
+              subPath: /var/log/
+            - name: asterisk-data
+              mountPath: /data
+              subPath: /data
+            - name: asterisk-data
+              mountPath: /assets/custom
+              subPath: /assets/custom
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: asterisk-data
+          persistentVolumeClaim:
+            claimName: asterisk-pvc
