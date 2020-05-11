@@ -10,7 +10,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    {{- range untilStep 18000 18100 1 }}
+    {{- range untilStep 18000 18030 1 }}
     - port: {{ . }}
       targetPort:  {{ . }}
       protocol: TCP

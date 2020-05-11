@@ -29,7 +29,7 @@ spec:
             - name: "RTP_START"
               value: "18000"
             - name: "RTP_FINISH"
-              value: "18099"
+              value: "18029"
           ports:
             - name: http
               containerPort: 80
@@ -61,7 +61,7 @@ spec:
             - name: ucp2-ssl
               containerPort: 8009
               protocol: TCP
-            {{- range untilStep 18000 18100 1 }}
+            {{- range untilStep 18000 18030 1 }}
             - name: rtp-ports-{{ . }}
               containerPort: {{ . }}
               protocol: TCP
