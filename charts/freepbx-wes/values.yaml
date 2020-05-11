@@ -16,7 +16,7 @@ service:
   type: ClusterIP
   port: 80
 
-auth: wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/
+auth: wes:$apr1$DXlHwUTR$u1co0CSUIBh9FhQs92ZFQ0
 
 ingress:
   enabled: true
