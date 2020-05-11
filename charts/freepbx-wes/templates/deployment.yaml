@@ -82,13 +82,13 @@ spec:
           volumeMounts:
             - name: asterisk-data
               mountPath: /var/log/
-              subPath: /var/log/
+              subPath: var/log/
             - name: asterisk-data
               mountPath: /data
-              subPath: /data
+              subPath: data
             - name: asterisk-data
               mountPath: /assets/custom
-              subPath: /assets/custom
+              subPath: assets/custom
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
