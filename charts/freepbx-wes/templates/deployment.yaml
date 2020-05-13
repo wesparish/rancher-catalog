@@ -31,68 +31,68 @@ spec:
             - name: "RTP_FINISH"
               value: "18029"
           ports:
-            - name: http-TCP
+            - name: http-tcp
               containerPort: 80
               protocol: TCP
-            - name: https-TCP
+            - name: https-tcp
               containerPort: 443
               protocol: TCP
-            - name: fop-TCP
+            - name: fop-tcp
               containerPort: 4445
               protocol: TCP
-            - name: iax-TCP
+            - name: iax-tcp
               containerPort: 4569
               protocol: TCP
-            - name: pjsip-TCP
+            - name: pjsip-tcp
               containerPort: 5060
               protocol: TCP
-            - name: sip-TCP
+            - name: sip-tcp
               containerPort: 5160
               protocol: TCP
-            - name: ucp-TCP
+            - name: ucp-tcp
               containerPort: 8001
               protocol: TCP
-            - name: ucp-ssl-TCP
+            - name: ucp-ssl-tcp
               containerPort: 8003
               protocol: TCP
-            - name: ucp2-TCP
+            - name: ucp2-tcp
               containerPort: 8008
               protocol: TCP
-            - name: ucp2-ssl-TCP
+            - name: ucp2-ssl-tcp
               containerPort: 8009
               protocol: TCP
-            - name: http-UDP
+            - name: http-udp
               containerPort: 80
               protocol: UDP
-            - name: https-UDP
+            - name: https-udp
               containerPort: 443
               protocol: UDP
-            - name: fop-UDP
+            - name: fop-udp
               containerPort: 4445
               protocol: UDP
-            - name: iax-UDP
+            - name: iax-udp
               containerPort: 4569
               protocol: UDP
-            - name: pjsip-UDP
+            - name: pjsip-udp
               containerPort: 5060
               protocol: UDP
-            - name: sip-UDP
+            - name: sip-udp
               containerPort: 5160
               protocol: UDP
-            - name: ucp-UDP
+            - name: ucp-udp
               containerPort: 8001
               protocol: UDP
-            - name: ucp-ssl-UDP
+            - name: ucp-ssl-udp
               containerPort: 8003
               protocol: UDP
-            - name: ucp2-UDP
+            - name: ucp2-udp
               containerPort: 8008
               protocol: UDP
-            - name: ucp2-ssl-UDP
+            - name: ucp2-ssl-udp
               containerPort: 8009
               protocol: UDP
             {{- range untilStep 18000 18030 1 }}
-            - name: rtp-ports-{{ . }}-UDP
+            - name: rtp-ports-{{ . }}-udp
               containerPort: {{ . }}
               protocol: UDP
             {{ end }}
