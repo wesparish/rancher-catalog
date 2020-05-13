@@ -61,10 +61,40 @@ spec:
             - name: ucp2-ssl
               containerPort: 8009
               protocol: TCP
+            - name: http
+              containerPort: 80
+              protocol: UDP
+            - name: https
+              containerPort: 443
+              protocol: UDP
+            - name: fop
+              containerPort: 4445
+              protocol: UDP
+            - name: iax
+              containerPort: 4569
+              protocol: UDP
+            - name: pjsip
+              containerPort: 5060
+              protocol: UDP
+            - name: sip
+              containerPort: 5160
+              protocol: UDP
+            - name: ucp
+              containerPort: 8001
+              protocol: UDP
+            - name: ucp-ssl
+              containerPort: 8003
+              protocol: UDP
+            - name: ucp2
+              containerPort: 8008
+              protocol: UDP
+            - name: ucp2-ssl
+              containerPort: 8009
+              protocol: UDP
             {{- range untilStep 18000 18030 1 }}
             - name: rtp-ports-{{ . }}
               containerPort: {{ . }}
-              protocol: TCP
+              protocol: UDP
             {{ end }}
             - name: 
               containerPort: 443
