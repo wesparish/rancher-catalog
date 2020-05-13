@@ -62,9 +62,9 @@ spec:
             - name: "DB_EMBEDDED"
               value: "FALSE"
             - name: HOST
-              value: 127.0.0.1
+              value: "127.0.0.1"
             - name: PORT
-              value: 3306
+              value: "3306"
             - name: NAME
               value: asterisk
             - name: USER
