@@ -14,7 +14,7 @@ spec:
     {{- range untilStep 18000 18030 1 }}
     - port: {{ . }}
       targetPort:  {{ . }}
-      protocol: TCP
+      protocol: UDP
       name: rtp-{{ . }}
     {{ end }}
     - name: fop
@@ -49,6 +49,39 @@ spec:
       targetPort: 8009
       port: 8009
       protocol: TCP
+
+    - name: fop
+      targetPort: 4445
+      port: 4445
+      protocol: UDP
+    - name: iax
+      targetPort: 4569
+      port: 4569
+      protocol: UDP
+    - name: pjsip
+      targetPort: 5060
+      port: 5060
+      protocol: UDP
+    - name: sip
+      targetPort: 5160
+      port: 5160
+      protocol: UDP
+    - name: ucp
+      targetPort: 8001
+      port: 8001
+      protocol: UDP
+    - name: ucp-ssl
+      targetPort: 8003
+      port: 8003
+      protocol: UDP
+    - name: ucp2
+      targetPort: 8008
+      port: 8008
+      protocol: UDP
+    - name: ucp2-ssl
+      targetPort: 8009
+      port: 8009
+      protocol: UDP
   selector:
     app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
