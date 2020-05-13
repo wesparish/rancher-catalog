@@ -8,6 +8,9 @@ image:
   repository: tiredofit/freepbx
   tag: 15
   pullPolicy: IfNotPresent
+  mariadb:
+    repository: mariadb
+    tag: 10.4
 
 nameOverride: ""
 fullnameOverride: ""
