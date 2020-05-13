@@ -92,7 +92,7 @@ spec:
               containerPort: 8009
               protocol: UDP
             {{- range untilStep 18000 18030 1 }}
-            - name: rtp-ports-{{ . }}-udp
+            - name: rtp-{{ . }}-udp
               containerPort: {{ . }}
               protocol: UDP
             {{ end }}
