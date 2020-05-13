@@ -15,70 +15,70 @@ spec:
     - port: {{ . }}
       targetPort:  {{ . }}
       protocol: UDP
-      name: rtp-{{ . }}
+      name: rtp-{{ . }}-UDP
     {{ end }}
-    - name: fop
+    - name: fop-TCP
       targetPort: 4445
       port: 4445
       protocol: TCP
-    - name: iax
+    - name: iax-TCP
       targetPort: 4569
       port: 4569
       protocol: TCP
-    - name: pjsip
+    - name: pjsip-TCP
       targetPort: 5060
       port: 5060
       protocol: TCP
-    - name: sip
+    - name: sip-TCP
       targetPort: 5160
       port: 5160
       protocol: TCP
-    - name: ucp
+    - name: ucp-TCP
       targetPort: 8001
       port: 8001
       protocol: TCP
-    - name: ucp-ssl
+    - name: ucp-ssl-TCP
       targetPort: 8003
       port: 8003
       protocol: TCP
-    - name: ucp2
+    - name: ucp2-TCP
       targetPort: 8008
       port: 8008
       protocol: TCP
-    - name: ucp2-ssl
+    - name: ucp2-ssl-TCP
       targetPort: 8009
       port: 8009
       protocol: TCP
 
-    - name: fop
+    - name: fop-UDP
       targetPort: 4445
       port: 4445
       protocol: UDP
-    - name: iax
+    - name: iax-UDP
       targetPort: 4569
       port: 4569
       protocol: UDP
-    - name: pjsip
+    - name: pjsip-UDP
       targetPort: 5060
       port: 5060
       protocol: UDP
-    - name: sip
+    - name: sip-UDP
       targetPort: 5160
       port: 5160
       protocol: UDP
-    - name: ucp
+    - name: ucp-UDP
       targetPort: 8001
       port: 8001
       protocol: UDP
-    - name: ucp-ssl
+    - name: ucp-ssl-UDP
       targetPort: 8003
       port: 8003
       protocol: UDP
-    - name: ucp2
+    - name: ucp2-UDP
       targetPort: 8008
       port: 8008
       protocol: UDP
-    - name: ucp2-ssl
+    - name: ucp2-ssl-UDP
       targetPort: 8009
       port: 8009
       protocol: UDP
