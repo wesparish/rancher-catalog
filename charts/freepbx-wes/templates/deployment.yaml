@@ -61,15 +61,15 @@ spec:
           env:
             - name: "DB_EMBEDDED"
               value: "FALSE"
-            - name: HOST
+            - name: DB_HOST
               value: "127.0.0.1"
-            - name: PORT
+            - name: DB_PORT
               value: "3306"
-            - name: NAME
+            - name: DB_NAME
               value: asterisk
-            - name: USER
+            - name: DB_USER
               value: majesticflame
-            - name: PASS
+            - name: DB_PASS
               value: password
             - name: "RTP_START"
               value: "18000"
