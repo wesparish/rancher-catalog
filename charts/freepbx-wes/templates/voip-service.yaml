@@ -107,4 +107,4 @@ spec:
     app.kubernetes.io/name: {{ include "freepbx-wes.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   type: LoadBalancer
-  loadBalancerIP: 172.16.1.224
+  loadBalancerIP: 172.16.1.225
