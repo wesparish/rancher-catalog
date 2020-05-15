@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: homeassistant/home-assistant
+  repository: nexus-jamie-docker.elastiscale.net/homeassistant/home-assistant
   tag: stable
   pullPolicy: IfNotPresent
 
@@ -42,7 +42,8 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 
-nodeSelector: {}
+nodeSelector:
+  ceph-client: "true"
 
 tolerations: []
 
