@@ -17,7 +17,7 @@ service:
   port: 80
 
 codeServer:
-  auth: 'wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/'
+  auth: 'wes:$apr1$kuDRD5qo$dQ.34/ujkU478sXKXhz/31'
   projectName: wes
 
 ingress:
@@ -31,7 +31,7 @@ ingress:
     - code.elastiscale.net
   tls:
     - secretName: code-elastiscale.net
-      hosts:
+      osts:
         - code.elastiscale.net
 
 resources: {}
