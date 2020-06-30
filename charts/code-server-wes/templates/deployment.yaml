@@ -39,7 +39,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: code-data
-              mountPath: "/home/coder/project"
+              mountPath: "/home/coder"
               subPath: {{ .Values.codeServer.projectName }}
       volumes:
         - name: code-data
