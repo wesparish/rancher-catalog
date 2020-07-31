@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "teamredminer-amd-scalable.fullname" . }}
+  labels:
+    app: {{ template "teamredminer-amd-scalable.name" . }}
+    chart: {{ template "teamredminer-amd-scalable.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "teamredminer-amd-scalable.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "teamredminer-amd-scalable.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: WALLET_ADDRESS
+              value: {{ .Values.teamredminer.wallet }}
+            - name: EXTRA_OPTS
+              value: {{ .Values.teamredminer.options }}
+            - name: POOL
+              value: {{ .Values.teamredminer.pool }}
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /sys
+            name: sys
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add:
+              - ALL
+            privileged: true
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          livenessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "teamredminer"
+          readinessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "teamredminer"
+          resources:
+            requests:
+              amd.com/gpu: {{ .Values.teamredminer.gpusperpod }}
+            limits:
+              amd.com/gpu: {{ .Values.teamredminer.gpusperpod }}
+      volumes:
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      nodeSelector:
+        miner: {{ .Values.teamredminer.scalablelabel }}
+    {{- with .Values.nodeSelector }}
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
