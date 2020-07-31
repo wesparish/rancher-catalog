@@ -21,7 +21,7 @@ questions:
   default: ""
   description: "teamredminer extra options"
   type: string
-  required: true
+  required: false
   label: teamredminer extra options
   group: "miner questions"
 
