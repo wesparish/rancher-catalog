@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: nexus-jamie-docker.elastiscale.net/curator
   tag: 5.8.1-1.0
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
