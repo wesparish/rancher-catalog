@@ -36,12 +36,14 @@ spec:
             initialDelaySeconds: 120
             timeoutSeconds: 5
             failureThreshold: 6
+            periodSeconds: 60
           readinessProbe:
             tcpSocket:
               port: 6379
             initialDelaySeconds: 30
             timeoutSeconds: 3
-            periodSeconds: 5
+            failureThreshold: 6
+            periodSeconds: 60
           resources:
             {{- toYaml .Values.resources.owncloud | nindent 12 }}
         - name: {{ .Chart.Name }}-mariadb
