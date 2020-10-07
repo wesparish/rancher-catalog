@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   owncloud:
     repository: owncloud/server
     tag: "10.2"
