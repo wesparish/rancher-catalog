@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rocketchat-wes.fullname" . }}-gotify
+  labels:
+    app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-gotify
+    helm.sh/chart: {{ include "rocketchat-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}-gotify
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-gotify
+    app.kubernetes.io/instance: {{ .Release.Name }}

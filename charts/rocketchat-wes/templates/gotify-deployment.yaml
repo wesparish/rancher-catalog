@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rocketchat-wes.fullname" . }}-gotify
+  labels:
+    app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-gotify
+    helm.sh/chart: {{ include "rocketchat-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}-gotify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-gotify
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-gotify
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-gotify
+          image: "{{ .Values.image.gotify.repository }}:{{ .Values.image.gotify.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 36
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 36
+            periodSeconds: 5
+          volumeMounts:
+          - name: rocket-data
+            mountPath: /app/data
+            subPath: gotify
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: rocket-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.rocketchat.persistence.existingClaim }}

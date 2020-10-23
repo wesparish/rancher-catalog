@@ -31,6 +31,9 @@ image:
   repository: rocketchat/rocket.chat
   tag: latest
   pullPolicy: Always
+  gotify:
+    repository: gotify/server
+    tag: latest
 
 nameOverride: ""
 fullnameOverride: ""
@@ -54,6 +57,7 @@ ingress:
     - secretName: chat-elastiscale.net
       hosts:
         - chat.elastiscale.net
+        - push.elastiscale.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

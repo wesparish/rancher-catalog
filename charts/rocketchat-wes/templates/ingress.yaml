@@ -37,4 +37,11 @@ spec:
               servicePort: http
 	{{- end }}
   {{- end }}
+    - host: "push.elastiscale.net"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}-gotify
+              servicePort: http
 {{- end }}
