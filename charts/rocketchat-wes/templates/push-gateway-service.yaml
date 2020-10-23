@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rocketchat-wes.fullname" . }}-pushgateway
+  labels:
+    app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-pushgateway
+    helm.sh/chart: {{ include "rocketchat-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}-pushgateway
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 5000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "rocketchat-wes.name" . }}-pushgateway
+    app.kubernetes.io/instance: {{ .Release.Name }}
