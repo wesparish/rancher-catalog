@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "zoneminder-wes.fullname" . }}-zoneminder
+  labels:
+    app.kubernetes.io/name: {{ include "zoneminder-wes.name" . }}-zoneminder
+    helm.sh/chart: {{ include "zoneminder-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}-zoneminder
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "zoneminder-wes.name" . }}-zoneminder
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "zoneminder-wes.name" . }}-zoneminder
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+        - name: zoneminder-init
+          image: "{{ .Values.image.zoneminder.repository }}:{{ .Values.image.zoneminder.tag }}"
+          env:
+            - name: ZM_DB_HOST
+              value: zoneminder-mariadb
+            - name: ZM_DB_USER
+              value: root
+            - name: ZM_DB_PASS
+              value: password
+            - name: ZM_DB_NAME
+              value: zm
+          args:
+          - /bin/sh
+          - -c
+          - >
+            set -x;
+            echo -n "Waiting for mariadb to start...";
+            while ! mysqladmin --connect-timeout=1 ping -u${ZM_DB_USER} -p${ZM_DB_PASS} -h${ZM_DB_HOST} > /dev/null ; do
+              sleep 1;
+              echo ".";
+            done
+      containers:
+        - name: {{ .Chart.Name }}-zoneminder
+          image: "{{ .Values.image.zoneminder.repository }}:{{ .Values.image.zoneminder.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ZM_DB_HOST
+              value: zoneminder-mariadb
+            - name: ZM_DB_USER
+              value: root
+            - name: ZM_DB_PASS
+              value: password
+            - name: ZM_DB_NAME
+              value: zm
+          volumeMounts:
+            - name: zoneminder-data
+              mountPath: /var/cache/zoneminder/events
+              subPath: zoneminder/events/
+            - name: zoneminder-data
+              mountPath: /var/cache/zoneminder/images
+              subPath: zoneminder/images/
+            - name: dev-shm
+              mountPath: /dev/shm
+          ports:
+            - name: zoneminder
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command: ["pgrep", "-f", "zmdc"]
+          readinessProbe:
+            exec:
+              command: ["pgrep", "-f", "zmdc"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: zoneminder-data
+          hostPath:
+          persistentVolumeClaim:
+            claimName: zoneminder-data
+        - name: dev-shm
+          hostPath:
+            path: /dev/shm
+            type: Directory
+#          emptyDir:
+#            medium: "Memory"
