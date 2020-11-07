@@ -65,8 +65,7 @@ mariadb:
     rootPassword: password
   primary:
     nodeSelector:
-      ceph-client: "true"
-      kubernetes.io/hostname: "w-dock8"
+      zoneminder: "true"
     persistence:
       enabled: true
       existingClaim: zoneminder-mariadb-data
