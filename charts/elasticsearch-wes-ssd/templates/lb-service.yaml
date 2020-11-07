@@ -5,6 +5,7 @@ metadata:
   annotations:
     metallb.universe.tf/address-pool: default
 spec:
+  publishNotReadyAddresses: true
   ports:
   - name: http-lb
     protocol: TCP
