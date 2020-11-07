@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zoneminder-wes.fullname" . }}-zoneminder
+  labels:
+    app.kubernetes.io/name: {{ include "zoneminder-wes.name" . }}-zoneminder
+    helm.sh/chart: {{ include "zoneminder-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}-zoneminder
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.zoneminder.port }}
+      targetPort: 80
+      protocol: TCP
+      name: zoneminder
+  selector:
+    app.kubernetes.io/name: {{ include "zoneminder-wes.name" . }}-zoneminder
+    app.kubernetes.io/instance: {{ .Release.Name }}
