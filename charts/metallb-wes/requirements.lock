@@ -1,6 +1,6 @@
 dependencies:
 - name: metallb
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 0.8.3
-digest: sha256:9fa52186a9a403977006737dbf00252919e53359348bfe39a989214f808b0f2d
-generated: 2018-12-17T21:13:39.95441541-06:00
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.0.1
+digest: sha256:7bd51e8eb3c309b044402fca934533fb5d91d0a91075d2473675d04856ad9517
+generated: 2020-11-22T23:23:39.533697727Z

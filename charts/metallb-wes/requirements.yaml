@@ -1,4 +1,4 @@
 dependencies:
   - name: metallb
-    version: "0.8.3"
-    repository: "@stable"
+    version: "1.0.1"
+    repository: "@bitnami"
