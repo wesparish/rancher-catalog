@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/teamredminer
-  tag: amdgpu-pro-0.7.7
+  tag: amdgpu-pro-0.7.21
   pullPolicy: Always
 
 teamredminer:
@@ -15,6 +15,7 @@ teamredminer:
   options: ""
   scalablelabel: "teamredminer"
   gpusperpod: 6
+  eth_4g_max_alloc: 4078
 
 service:
   type: ClusterIP
