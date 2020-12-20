@@ -29,7 +29,7 @@ spec:
             - name: POOL
               value: {{ .Values.teamredminer.pool }}
             - name: ETH_4G_MAX_ALLOC
-              value: {{ .Values.teamredminer.eth_4g_max_alloc }}
+              value: "{{ .Values.teamredminer.eth_4g_max_alloc }}"
             - name: HOSTNAME
               valueFrom:
                 fieldRef:
