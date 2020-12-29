@@ -1,0 +1,6 @@
+dependencies:
+- name: generic-ingress
+  repository: file://../generic-ingress/
+  version: 0.1.0
+digest: sha256:a11604522e94220a5fad6d36161414ec98c92f8a03a1ab60c8de562445894869
+generated: 2020-12-24T14:30:33.36176889Z

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "virt-manager-wes.fullname" . }}-test-connection"
+  labels:
+    app.kubernetes.io/name: {{ include "virt-manager-wes.name" . }}
+    helm.sh/chart: {{ include "virt-manager-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['{{ include "virt-manager-wes.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

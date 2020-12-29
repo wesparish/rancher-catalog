@@ -1,0 +1,4 @@
+dependencies:
+  - name: generic-ingress
+    version: "0.1.0"
+    repository: "file://../generic-ingress/"
