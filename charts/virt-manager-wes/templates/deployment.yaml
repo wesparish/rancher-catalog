@@ -25,7 +25,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 5800
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -35,6 +35,13 @@ spec:
             httpGet:
               path: /
               port: http
+          volumeMounts:
+          - name: virt-manager-data
+            mountPath: /config
+          - name: dev-urandom
+            mountPath: /dev/urandom
+          - name: ssh-config
+            mountPath: /etc/ssh
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -49,3 +56,16 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+      - name: virt-manager-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.virtManager.persistence.existingClaim }}
+      - name: dev-urandom
+        hostPath:
+          path: /dev/urandom
+      - name: ssh-config
+        configMap:
+          name: ssh-config
+          items:
+          - key: ssh_config
+            path: ssh_config

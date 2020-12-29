@@ -12,14 +12,10 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
-generic-ingress:
-  name: virt-manager
-  domainSuffix: elastiscale.net
-  auth: wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/
-  
-  endpoint:
-    targetIP: 172.16.1.79
-    targetPort: 80
+virtManager:
+  auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+  persistence:
+    existingClaim: virt-manager-data
 
 #############
 #############
@@ -29,17 +25,21 @@ service:
   port: 5800
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  paths: []
+  enabled: true
+  annotations:
+      kubernetes.io/ingress.class: "nginx-wes"
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/auth-realm: Authentication Required - virt-manager
+      nginx.ingress.kubernetes.io/auth-secret: basic-auth
+      nginx.ingress.kubernetes.io/auth-type: basic
+  paths:
+    - /
   hosts:
-    - chart-example.local
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - virt-manager.elastiscale.net
+  tls:
+    - secretName: virt-manager-elastiscale.net
+      hosts:
+        - virt-manager.elastiscale.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
