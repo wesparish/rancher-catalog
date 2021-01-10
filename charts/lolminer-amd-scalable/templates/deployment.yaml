@@ -56,13 +56,13 @@ spec:
             exec:
               command:
                 - "pgrep"
-                - "lolminer"
+                - "lolMiner"
           readinessProbe:
             initialDelaySeconds: 30
             exec:
               command:
                 - "pgrep"
-                - "lolminer"
+                - "lolMiner"
           resources:
             requests:
               amd.com/gpu: {{ .Values.lolminer.gpusperpod }}
