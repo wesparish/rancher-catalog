@@ -28,8 +28,8 @@ spec:
               value: {{ .Values.lolminer.options }}
             - name: POOL
               value: {{ .Values.lolminer.pool }}
-            - name: ZOMBIE_MODE
-              value: "{{ .Values.lolminer.zombiemode }}"
+            - name: ZOMBIE_TUNE
+              value: "{{ .Values.lolminer.zombietune }}"
             - name: HOSTNAME
               valueFrom:
                 fieldRef:

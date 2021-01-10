@@ -15,7 +15,7 @@ lolminer:
   options: ""
   scalablelabel: "lolminer"
   gpusperpod: 6
-  zombiemode: 2
+  zombietune: 2
 
 service:
   type: ClusterIP

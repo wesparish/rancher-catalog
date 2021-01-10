@@ -43,12 +43,12 @@ questions:
   label: How many GPUs per pod
   group: "miner questions"
 
-- variable: lolminer.zombiemode
+- variable: lolminer.zombietune
   default: "2"
-  description: "Value for --zombie_mode"
+  description: "Value for --zombie_tune"
   type: int
   min: 1
   max: 5000
   required: false
-  label: Value for --zombie_mode
+  label: Value for --zombie_tune
   group: "miner questions"
