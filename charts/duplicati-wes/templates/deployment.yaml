@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "duplicati-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "duplicati-wes.name" . }}
+    helm.sh/chart: {{ include "duplicati-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "duplicati-wes.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "duplicati-wes.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8200
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+          - name: duplicati-data
+            mountPath: /data
+          - name: source-data
+            mountPath: /source-data
+          - name: dest-data
+            mountPath: /dest-data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: duplicati-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.duplicati.persistence.duplicatiDataClaim }}
+      - name: source-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.duplicati.persistence.sourceDataClaim }}
+      - name: dest-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.duplicati.persistence.destDataClaim }}
