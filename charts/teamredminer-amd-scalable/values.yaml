@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/teamredminer
-  tag: amdgpu-pro-0.7.21
+  tag: amdgpu-pro-0.7.22
   pullPolicy: Always
 
 teamredminer:
