@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "duplicacy-wes.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "duplicacy-wes.name" . }}
+    helm.sh/chart: {{ include "duplicacy-wes.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "duplicacy-wes.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "duplicacy-wes.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.duplicacyWeb.repository }}:{{ .Values.image.duplicacyWeb.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: "America/Chicago"
+          ports:
+            - name: http
+              containerPort: 3875
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+          - name: duplicacy-config
+            mountPath: /config
+          - name: duplicacy-logs
+            mountPath: /logs
+          - name: duplicacy-storage
+            mountPath: /storage
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: duplicacy-config
+        persistentVolumeClaim:
+          claimName: {{ .Values.duplicacy.persistence.duplicacyConfigClaim }}
+      - name: duplicacy-logs
+        hostPath:
+          path: /var/log/duplicacy
+          type: ""
+      - name: duplicacy-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.duplicacy.persistence.duplicacyStorageClaim }}
