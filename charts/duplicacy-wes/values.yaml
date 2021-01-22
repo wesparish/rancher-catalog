@@ -26,6 +26,28 @@ duplicacy:
     duplicacyConfigClaim: duplicacy-config
     duplicacyStorageClaim: duplicacy-storage
 
+  backups:
+    - name: raid5kdrive-home
+      persistence:
+        source:
+          claim: duplicacy-backup-raid5kdrive
+          subPath: home
+        storage:
+          claim: duplicacy-backup-storage
+      cron: '@daily'
+      args: [ 'backup', '-threads', '4', '-stats' ]
+    - name: raid5kdrive
+      persistence:
+        source:
+          claim: duplicacy-backup-raid5kdrive
+          #subPath: home
+        storage:
+          claim: duplicacy-backup-storage
+      cron: '@weekly'
+      args: [ 'backup', '-threads', '4', '-stats' ]
+      filters: |
+        -VMWARE_VMS/
+
 ingress:
   enabled: true
   annotations:

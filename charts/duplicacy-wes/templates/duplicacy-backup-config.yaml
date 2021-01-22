@@ -1,0 +1,27 @@
+{{- range .Values.duplicacy.backups }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: duplicacy-preferences-{{ .name }}
+data:
+  preferences: |
+    [
+        {
+            "name": "default",
+            "id": "{{ .name }}",
+            "repository": "",
+            "storage": "/storage",
+            "encrypted": false,
+            "no_backup": false,
+            "no_restore": false,
+            "no_save_password": false,
+            "nobackup_file": "",
+            "keys": null,
+            "filters": "",
+            "exclude_by_attribute": false
+        }
+    ]
+  filters: |
+{{ default "" .filters | indent 4 }}
+{{- end }}

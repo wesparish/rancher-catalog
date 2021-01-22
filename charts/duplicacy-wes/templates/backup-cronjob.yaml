@@ -1,0 +1,58 @@
+{{- range .Values.duplicacy.backups }}
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "duplicacy-backup-{{ .name }}"
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "{{ .cron }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- with $.Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: duplicacy-backup-drive
+            image: "{{ $.Values.image.duplicacyCLI.repository }}:{{ $.Values.image.duplicacyCLI.tag }}"
+            workingDir: "/source"
+            volumeMounts:
+            - name: source
+              mountPath: "/source"
+              {{- if .persistence.source.subPath }}
+              subPath: "{{ .persistence.source.subPath }}"
+              {{- end }}
+            - name: storage
+              mountPath: "/storage"
+              {{- if .persistence.storage.subPath }}
+              subPath: "{{ .persistence.storage.subPath }}"
+              {{- end }}
+            - name: duplicacy-config
+              mountPath: "/source/.duplicacy/preferences"
+              subPath: "preferences"
+            - name: duplicacy-config
+              mountPath: "/source/.duplicacy/filters"
+              subPath: "filters"
+            args: 
+            {{- toYaml .args | nindent 12 }}
+          restartPolicy: Never
+          volumes:
+          - name: source
+            persistentVolumeClaim:
+              claimName: "{{ .persistence.source.claim }}"
+          - name: storage
+            persistentVolumeClaim:
+              claimName: "{{ .persistence.storage.claim }}"
+          - name: duplicacy-config 
+            configMap:
+              name: duplicacy-preferences-{{ .name }}
+              items:
+              - key: preferences
+                path: preferences
+              - key: filters
+                path: filters
+
+{{- end }}
