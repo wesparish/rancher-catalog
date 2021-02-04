@@ -14,4 +14,6 @@ spec:
     app.kubernetes.io/name: {{ include "pihole.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   type: LoadBalancer
+  # Forced sourceIP to be kept
+  externalTrafficPolicy: Local
   loadBalancerIP: 172.16.1.222
