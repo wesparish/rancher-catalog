@@ -14,11 +14,6 @@ questions:
   required: true
   label: "loadBalancerIP"
 
-  external_relay:
-    host: "smtp.postmarkapp.com:2525"
-    username: efd46241-e909-4249-aa36-eb00432307b8
-    password: efd46241-e909-4249-aa36-eb00432307b8
-
 - variable: mailu.external_relay.host
   description: "external_relay.host"
   default: smtp.postmarkapp.com:2525
