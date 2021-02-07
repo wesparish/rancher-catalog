@@ -1,0 +1,39 @@
+namespace: mailu
+
+questions:
+- variable: mailu.secret_key
+  description: "SECRET_KEY used for internal encryption"
+  type: password
+  required: true
+  label: SECRET_KEY used for internal encryption
+
+- variable: mailu.front.loadBalancer.loadBalancerIP
+  description: "loadBalancerIP"
+  default: 172.16.1.227
+  type: string
+  required: true
+  label: "loadBalancerIP"
+
+  external_relay:
+    host: "smtp.postmarkapp.com:2525"
+    username: efd46241-e909-4249-aa36-eb00432307b8
+    password: efd46241-e909-4249-aa36-eb00432307b8
+
+- variable: mailu.external_relay.host
+  description: "external_relay.host"
+  default: smtp.postmarkapp.com:2525
+  type: string
+  required: true
+  label: "external_relay.host"
+- variable: mailu.external_relay.username
+  description: "external_relay.username"
+  default: <SECRET FROM POSTMARK>
+  type: string
+  required: true
+  label: "external_relay.username"
+- variable: mailu.external_relay.password
+  description: "external_relay.password"
+  default: <SECRET FROM POSTMARK>
+  type: string
+  required: true
+  label: "external_relay.password"

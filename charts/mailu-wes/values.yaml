@@ -1,0 +1,48 @@
+# Default values for mailu-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+mailu:
+  domain: mail.elastiscale.net
+  hostnames:
+  # Web UI
+  - mailu.elastiscale.net
+  # Mail domains
+  - mail.elastiscale.net
+  - mail.cowtownt.org
+  - mail.firstshotprecision.com
+#  Instead: exec to admin pod and create with: 
+#    flask mailu admin root example.com password
+#  initialAccount:
+#    domain: mailu.elastiscale.net
+#    password: password
+#    username: admin
+  logLevel: INFO
+  mail:
+    authRatelimit: 100/minute;3600/hour
+    messageSizeLimitInMegabytes: 200
+  persistence:
+    existingClaim: mailu
+  secretKey: SET_BY_RANCHER_QUESTION
+  
+  front:
+    loadBalancer: 
+      loadBalancerIP: 172.16.1.227
+      externalTrafficPolicy: Local
+
+  certmanager:
+    issuerType: ClusterIssuer
+    issuerName: letsencrypt-production
+
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: nginx-wes
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+  nodeSelector:
+    ceph-client: "true"
+
+  external_relay:
+    host: "smtp.postmarkapp.com:2525"
+    username: SET_BY_RANCHER_QUESTION
+    password: SET_BY_RANCHER_QUESTION

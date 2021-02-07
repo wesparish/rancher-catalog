@@ -1,0 +1,4 @@
+dependencies:
+  - name: mailu
+    version: "0.3.0"
+    repository: "file://subcharts/mailu-helm-charts/mailu/"
