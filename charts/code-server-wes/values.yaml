@@ -31,7 +31,7 @@ ingress:
     - code.elastiscale.net
   tls:
     - secretName: code-elastiscale.net
-      osts:
+      hosts:
         - code.elastiscale.net
 
 resources: {}
