@@ -1,35 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "teamredminer-amd-scalable.fullname" . }}
+  name: {{ template "lolminer-amd-scalable.fullname" . }}
   labels:
-    app: {{ template "teamredminer-amd-scalable.name" . }}
-    chart: {{ template "teamredminer-amd-scalable.chart" . }}
+    app: {{ template "lolminer-amd-scalable.name" . }}
+    chart: {{ template "lolminer-amd-scalable.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "teamredminer-amd-scalable.name" . }}
+      app: {{ template "lolminer-amd-scalable.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "teamredminer-amd-scalable.name" . }}
+        app: {{ template "lolminer-amd-scalable.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
             - name: WALLET_ADDRESS
-              value: {{ .Values.teamredminer.wallet }}
+              value: {{ .Values.lolminer.wallet }}
             - name: EXTRA_OPTS
-              value: {{ .Values.teamredminer.options }}
+              value: {{ .Values.lolminer.options }}
             - name: POOL
-              value: {{ .Values.teamredminer.pool }}
-            - name: ETH_4G_MAX_ALLOC
-              value: "{{ .Values.teamredminer.eth_4g_max_alloc }}"
+              value: {{ .Values.lolminer.pool }}
+            - name: ZOMBIE_TUNE
+              value: "{{ .Values.lolminer.zombietune }}"
             - name: HOSTNAME
               valueFrom:
                 fieldRef:
@@ -56,18 +56,18 @@ spec:
             exec:
               command:
                 - "pgrep"
-                - "teamredminer"
+                - "lolMiner"
           readinessProbe:
             initialDelaySeconds: 30
             exec:
               command:
                 - "pgrep"
-                - "teamredminer"
+                - "lolMiner"
           resources:
             requests:
-              amd.com/gpu: {{ .Values.teamredminer.gpusperpod }}
+              amd.com/gpu: {{ .Values.lolminer.gpusperpod }}
             limits:
-              amd.com/gpu: {{ .Values.teamredminer.gpusperpod }}
+              amd.com/gpu: {{ .Values.lolminer.gpusperpod }}
       volumes:
         - hostPath:
             path: /sys
@@ -78,7 +78,7 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
       nodeSelector:
-        miner: {{ .Values.teamredminer.scalablelabel }}
+        miner: {{ .Values.lolminer.scalablelabel }}
     {{- with .Values.nodeSelector }}
 {{ toYaml . | indent 8 }}
     {{- end }}

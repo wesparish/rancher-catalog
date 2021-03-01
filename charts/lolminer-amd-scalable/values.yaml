@@ -1,21 +1,21 @@
-# Default values for teamredminer-amd-scalable.
+# Default values for lolminer-amd-scalable.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: nexus-jamie-docker.elastiscale.net/teamredminer
-  tag: amdgpu-pro-20.40-0.8.0
+  repository: nexus-jamie-docker.elastiscale.net/lolminer
+  tag: amdgpu-pro-1.18
   pullPolicy: Always
 
-teamredminer:
+lolminer:
   wallet: "0x331077Cd09209dc9e51c2E44a711f928dE3F669e"
   pool: "stratum+tcp://us1.ethermine.org:4444"
   options: ""
-  scalablelabel: "teamredminer"
+  scalablelabel: "lolminer"
   gpusperpod: 6
-  eth_4g_max_alloc: 4078
+  zombietune: 2
 
 service:
   type: ClusterIP

@@ -1,7 +1,7 @@
 categories:
 - miners
 questions:
-- variable: teamredminer.wallet
+- variable: lolminer.wallet
   default: "0x331077cd09209dc9e51c2e44a711f928de3f669e"
   description: "Wallet Address"
   type: string
@@ -9,7 +9,7 @@ questions:
   label: Wallet Address
   group: "miner questions"
 
-- variable: teamredminer.pool
+- variable: lolminer.pool
   default: "stratum+tcp://us1.ethermine.org:4444"
   description: "Pool Host"
   type: string
@@ -17,23 +17,23 @@ questions:
   label: Pool Host
   group: "miner questions"
 
-- variable: teamredminer.options
+- variable: lolminer.options
   default: ""
-  description: "teamredminer extra options"
+  description: "lolminer extra options"
   type: string
   required: false
-  label: teamredminer extra options
+  label: lolminer extra options
   group: "miner questions"
 
-- variable: teamredminer.scalablelabel
-  default: "teamredminer"
-  description: "Scheduling label for teamredminer"
+- variable: lolminer.scalablelabel
+  default: "lolminer"
+  description: "Scheduling label for lolminer"
   type: string
   required: true
   label: Scalable Label
   group: "miner questions"
 
-- variable: teamredminer.gpusperpod
+- variable: lolminer.gpusperpod
   default: "6"
   description: "How many GPUs per pod?"
   type: int
@@ -43,12 +43,12 @@ questions:
   label: How many GPUs per pod
   group: "miner questions"
 
-- variable: teamredminer.eth_4g_max_alloc
-  default: "4078"
-  description: "Value for --eth_4g_max_alloc"
+- variable: lolminer.zombietune
+  default: "2"
+  description: "Value for --zombie_tune"
   type: int
   min: 1
   max: 5000
   required: false
-  label: Value for --eth_4g_max_alloc
+  label: Value for --zombie_tune
   group: "miner questions"
