@@ -2,7 +2,7 @@ categories:
 - miners
 questions:
 - variable: verthashminer.wallet
-  default: "0x331077cd09209dc9e51c2e44a711f928de3f669e"
+  default: "3NRZzUYhoFyA9aL7edLA9D4SwcNfAwhhNf"
   description: "Wallet Address"
   type: string
   required: true
@@ -10,7 +10,7 @@ questions:
   group: "miner questions"
 
 - variable: verthashminer.pool
-  default: "stratum+tcp://us1.ethermine.org:4444"
+  default: "stratum+tcp://mining.hashalot.net:3950"
   description: "Pool Host"
   type: string
   required: true

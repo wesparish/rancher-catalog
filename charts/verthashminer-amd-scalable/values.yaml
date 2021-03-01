@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: nexus-jamie-docker.elastiscale.net/verthashminer
+  repository: nexus-jamie-docker.elastiscale.net/docker-verthashminer
   tag: amdgpu-pro-18.50-0.7.0
   pullPolicy: Always
 
