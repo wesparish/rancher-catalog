@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "verthashminer-amd-scalable.fullname" . }}
+  labels:
+    app: {{ template "verthashminer-amd-scalable.name" . }}
+    chart: {{ template "verthashminer-amd-scalable.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "verthashminer-amd-scalable.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "verthashminer-amd-scalable.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: WALLET_ADDRESS
+              value: {{ .Values.verthashminer.wallet }}
+            - name: EXTRA_OPTS
+              value: {{ .Values.verthashminer.options }}
+            - name: POOL
+              value: {{ .Values.verthashminer.pool }}
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /sys
+            name: sys
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add:
+              - ALL
+            privileged: true
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          livenessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "verthashminer"
+          readinessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "verthashminer"
+          resources:
+            requests:
+              amd.com/gpu: {{ .Values.verthashminer.gpusperpod }}
+            limits:
+              amd.com/gpu: {{ .Values.verthashminer.gpusperpod }}
+      volumes:
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      nodeSelector:
+        miner: {{ .Values.verthashminer.scalablelabel }}
+    {{- with .Values.nodeSelector }}
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
