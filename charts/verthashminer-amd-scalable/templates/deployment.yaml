@@ -54,13 +54,13 @@ spec:
             exec:
               command:
                 - "pgrep"
-                - "verthashminer"
+                - "VerthashMiner"
           readinessProbe:
             initialDelaySeconds: 30
             exec:
               command:
                 - "pgrep"
-                - "verthashminer"
+                - "VerthashMiner"
           resources:
             requests:
               amd.com/gpu: {{ .Values.verthashminer.gpusperpod }}
