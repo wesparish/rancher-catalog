@@ -44,6 +44,8 @@ spec:
                   name: crypto-config
                   key: addresses
           livenessProbe:
+            failureThreshold: 30
+            periodSeconds: 10
             httpGet:
               path: /
               port: http
