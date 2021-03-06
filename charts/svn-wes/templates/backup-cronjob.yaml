@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "svn-wes.fullname" . }}-backup
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: svn-backup
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            volumeMounts:
+            - name: svn-backup
+              mountPath: /svn-backup/
+            - name: svn-data
+              mountPath: /svn-data/
+            command: ["/bin/sh"]
+            args:
+            - "-c"
+            - |
+              #!/bin/sh
+              for dir in $(ls -1d /svn-data/*/locks | cut -d/ -f1-3); do 
+                repo_name=$(echo $dir | cut -d/ -f3)
+                svnadmin dump $dir > /svn-backup/${repo_name}_$(date -Iseconds).dmp
+                find /svn-backup/ -mtime +30 -delete
+              done
+          restartPolicy: OnFailure
+          volumes:
+          - name: svn-backup
+            persistentVolumeClaim:
+              claimName: svn-backup
+          - name: svn-data
+            persistentVolumeClaim:
+              claimName: svn-data
