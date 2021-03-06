@@ -29,7 +29,7 @@ spec:
               for dir in $(ls -1d /svn-data/*/locks | cut -d/ -f1-3); do 
                 repo_name=$(echo $dir | cut -d/ -f3)
                 svnadmin dump $dir > /svn-backup/${repo_name}_$(date -Iseconds).dmp
-                find /svn-backup/ -mtime +30 -delete
+                find /svn-backup/ -mtime +10 -delete
               done
           restartPolicy: OnFailure
           volumes:
