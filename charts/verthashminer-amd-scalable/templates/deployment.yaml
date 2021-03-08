@@ -63,6 +63,13 @@ spec:
               command:
                 - "pgrep"
                 - "VerthashMiner"
+          startupProbe:
+            exec:
+              command:
+                - "pgrep"
+                - "VerthashMiner"
+            failureThreshold: 30
+            periodSeconds: 10
           resources:
             requests:
               amd.com/gpu: {{ .Values.verthashminer.gpusperpod }}
