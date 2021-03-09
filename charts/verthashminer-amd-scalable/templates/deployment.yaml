@@ -42,7 +42,7 @@ spec:
           - mountPath: /sys
             name: sys
           - mountPath: /data
-            name: var_tmp_data
+            name: var-tmp-data
           securityContext:
             allowPrivilegeEscalation: true
             capabilities:
@@ -83,7 +83,7 @@ spec:
         - hostPath:
             path: /var/tmp/data
             type: ""
-          name: var_tmp_data
+          name: var-tmp-data
     {{- with .Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
