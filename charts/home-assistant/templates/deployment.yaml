@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
+  strategy: 
+    type: Recreate
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -20,6 +22,27 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        - name: wait-for-db
+          image: "docker.io/bitnami/mariadb:10.5.6-debian-10-r0"
+          env:
+            - name: DB_HOST
+              value: home-assistant-mariadb
+            - name: DB_USER
+              value: root
+            - name: DB_PASS
+              value: password
+          args:
+          - /bin/sh
+          - -c
+          - >
+            set -x;
+            echo -n "Waiting for mariadb to start...";
+            while ! mysqladmin --connect-timeout=1 ping -u${DB_USER} --password=${DB_PASS} -h${DB_HOST} > /dev/null ; do
+              sleep 1;
+              echo ".";
+            done
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

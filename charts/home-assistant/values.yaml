@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: homeassistant/home-assistant
   tag: stable
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
@@ -47,3 +47,17 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+mariadb:
+  architecture: standalone
+  auth:
+    rootPassword: password
+    database: home-assistant
+  primary:
+    nodeSelector:
+      ceph-client: "true"
+    persistence:
+      enabled: true
+      existingClaim: homeassistant-db
+  secondary:
+    replicaCount: 0
