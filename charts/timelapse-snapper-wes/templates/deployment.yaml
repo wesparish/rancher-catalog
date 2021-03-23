@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "timelapse-snapper-wes.fullname" . }}
+  labels:
+    {{- include "timelapse-snapper-wes.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "timelapse-snapper-wes.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "timelapse-snapper-wes.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "timelapse-snapper-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: "TIMELAPSE_SNAPPER_IMG_URL"
+              value: "{{ .Values.timelapsesnapper.imgUrl }}"
+            - name: "TIMELAPSE_SNAPPER_IMG_SAVE_PATH"
+              value: "{{ .Values.timelapsesnapper.imgSavePath }}"
+            - name: "TIMELAPSE_SNAPPER_IMG_PREFIX"
+              value: "{{ .Values.timelapsesnapper.imgPrefix }}"
+            - name: "TIMELAPSE_SNAPPER_SNAPSHOT_INTERVAL"
+              value: "{{ .Values.timelapsesnapper.snapshotInterval }}"
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+          - name: timelapse-snapper-data
+            mountPath: /data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: timelapse-snapper-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.timelapsesnapper.persistence.existingClaim }}

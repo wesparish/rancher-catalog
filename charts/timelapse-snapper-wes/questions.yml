@@ -1,0 +1,29 @@
+namespace: timelapse-snapper
+
+questions:
+- variable: timelapsesnapper.imgUrl
+  description: "Image URL, including credentials"
+  required: true
+  label: Image URL, including credentials
+  group: "Timelapse Snapper"
+
+- variable: timelapsesnapper.imgSavePath
+  default: "/data"
+  description: "Image Save Path"
+  required: true
+  label: Image Save Path
+  group: "Timelapse Snapper"
+
+- variable: timelapsesnapper.imgPrefix
+  default: "snapshot"
+  description: "Image filename prefix"
+  required: true
+  label: Image filename prefix
+  group: "Timelapse Snapper"
+
+- variable: timelapsesnapper.snapshotInterval
+  default: "60"
+  description: "Seconds between snapshots"
+  required: true
+  label: Seconds between snapshots
+  group: "Timelapse Snapper"
