@@ -52,3 +52,10 @@ questions:
   required: false
   label: Value for --eth_4g_max_alloc
   group: "miner questions"
+
+- variable: teamredminer.algo
+  default: "ethash"
+  description: "Value for --algo"
+  required: true
+  label: Value for --algo
+  group: "miner questions"

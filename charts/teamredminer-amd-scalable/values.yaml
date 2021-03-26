@@ -16,6 +16,7 @@ teamredminer:
   scalablelabel: "teamredminer"
   gpusperpod: 6
   eth_4g_max_alloc: 4078
+  algo: ethash
 
 service:
   type: ClusterIP
