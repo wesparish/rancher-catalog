@@ -1,0 +1,44 @@
+categories:
+- miners
+questions:
+- variable: verthashminer.wallet
+  default: "3NRZzUYhoFyA9aL7edLA9D4SwcNfAwhhNf"
+  description: "Wallet Address"
+  type: string
+  required: true
+  label: Wallet Address
+  group: "miner questions"
+
+- variable: verthashminer.pool
+  default: "stratum+tcp://mining.hashalot.net:3950"
+  description: "Pool Host"
+  type: string
+  required: true
+  label: Pool Host
+  group: "miner questions"
+
+- variable: verthashminer.options
+  default: ""
+  description: "verthashminer extra options"
+  type: string
+  required: false
+  label: verthashminer extra options
+  group: "miner questions"
+
+- variable: verthashminer.scalablelabel
+  default: "verthashminer"
+  description: "Scheduling label for verthashminer"
+  type: string
+  required: true
+  label: Scalable Label
+  group: "miner questions"
+
+- variable: verthashminer.gpusperpod
+  default: "6"
+  description: "How many GPUs per pod?"
+  type: int
+  min: 1
+  max: 99
+  required: true
+  label: How many GPUs per pod
+  group: "miner questions"
