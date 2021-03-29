@@ -46,6 +46,7 @@ questions:
 - variable: teamredminer.eth_4g_max_alloc
   default: "4078"
   description: "Value for --eth_4g_max_alloc"
+  type: string
   required: false
   label: Value for --eth_4g_max_alloc
   group: "miner questions"
