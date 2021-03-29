@@ -57,5 +57,6 @@ questions:
   default: "ethash"
   description: "Value for --algo"
   required: true
+  type: string
   label: Value for --algo
   group: "miner questions"
