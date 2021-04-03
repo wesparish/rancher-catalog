@@ -1,0 +1,24 @@
+# Default values for mosquitto-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+mosquitto:
+  config: |
+    persistence true
+    persistence_location /mosquitto/data/
+    log_dest stdout
+    listener 1883
+    allow_anonymous true
+    listener 9090
+    allow_anonymous true
+    protocol websockets
+
+  service:
+    type: LoadBalancer
+    loadBalancerIP: "172.16.1.229"
+
+  persistence:
+    existingClaim: "mosquitto-data"
+
+  nodeSelector:
+    ceph-client: "true"
