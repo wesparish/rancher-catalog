@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "teamredminer-daemonset.fullname" . }}
+  labels:
+    {{- include "teamredminer-daemonset.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "teamredminer-daemonset.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "teamredminer-daemonset.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: WALLET_ADDRESS
+              value: {{ .Values.teamredminer.wallet }}
+            - name: EXTRA_OPTS
+              value: {{ .Values.teamredminer.options }}
+            - name: POOL
+              value: {{ .Values.teamredminer.pool }}
+            - name: ETH_4G_MAX_ALLOC
+              value: "{{ .Values.teamredminer.eth_4g_max_alloc }}"
+            - name: ALGO
+              value: "{{ .Values.teamredminer.algo }}"
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "teamredminer"
+          readinessProbe:
+            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "teamredminer"
+          resources:
+            limits:
+              amd.com/gpu: {{ .Values.teamredminer.gpusperpod }}
+            {{- with .Values.resources }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /sys
+              name: sys
+      volumes:
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
+      nodeSelector:
+        miner: {{ .Values.teamredminer.scalablelabel }}
+      {{- with .Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
