@@ -1,3 +1,4 @@
+{{- if .Values.auth }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,3 +6,4 @@ metadata:
 type: Opaque
 data:
   auth: {{ .Values.auth | b64enc }}
+{{- end }}
