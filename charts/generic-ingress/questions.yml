@@ -19,7 +19,7 @@ questions:
   default: "wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0"
   description: "htpasswd string for basic-auth"
   type: string
-  required: true
+  required: false
   label: htpasswd string for basic-auth
   group: "Generic Ingress"
 - variable: backendProtocol
