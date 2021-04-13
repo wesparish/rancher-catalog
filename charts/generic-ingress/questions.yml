@@ -16,7 +16,7 @@ questions:
   label: Domain Suffix
   group: "Generic Ingress"
 - variable: auth
-  default: "wes:$apr1$oocn7oVj$b7eyOvAOJsSRWcdhmGTsi."
+  default: "wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0"
   description: "htpasswd string for basic-auth"
   type: string
   required: true
