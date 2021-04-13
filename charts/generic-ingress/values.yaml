@@ -1,6 +1,6 @@
 name: HeaterMeter
 domainSuffix: elastiscale.net
-auth: wes:$apr1$yJ2R.XTR$2L.SPdJ0Ki9Ad.X3YzUOx/
+auth: wes:$apr1$oocn7oVj$b7eyOvAOJsSRWcdhmGTsi.
 backendProtocol: #HTTPS
 
 endpoint:
