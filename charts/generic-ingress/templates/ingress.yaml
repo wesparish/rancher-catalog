@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.name | lower | quote }}
@@ -20,9 +20,12 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: {{ .Values.name | lower }}
-              servicePort: {{ .Values.endpoint.targetPort }}
+              service:
+                  name: {{ .Values.name | lower }}
+                  port:
+                      number: {{ .Values.endpoint.targetPort }}
   tls:
     - hosts:
       - {{ .Values.name | lower }}.elastiscale.net
