@@ -22,6 +22,13 @@ questions:
   required: true
   label: htpasswd string for basic-auth
   group: "Generic Ingress"
+- variable: backendProtocol
+  default: ""
+  description: "Backend protocol, e.g. HTTPS"
+  type: string
+  required: false
+  label: "Backend protocol, e.g. HTTPS"
+  group: "Generic Ingress"
 
 - variable: endpoint.targetIP
   description: "Backend target IP"
