@@ -80,10 +80,10 @@ logstash:
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
       cpu: 500m
-      memory: 2Gi
+      memory: 4Gi
     requests:
-      cpu: 100m
-      memory: 1Gi
+      cpu: 300m
+      memory: 2Gi
   
   priorityClassName: ""
   
