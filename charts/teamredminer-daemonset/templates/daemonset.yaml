@@ -3,15 +3,15 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ include "teamredminer-daemonset.fullname" $ }}-{{ . }}
+  name: "{{ include "teamredminer-daemonset.fullname" $ }}-{{ . }}"
   labels:
     {{- include "teamredminer-daemonset.labels" $ | nindent 4 }}
-    teamredminer-instance-num: {{ . }}
+    teamredminer-instance-num: "{{ . }}"
 spec:
   selector:
     matchLabels:
       {{- include "teamredminer-daemonset.selectorLabels" $ | nindent 6 }}
-      teamredminer-instance-num: {{ . }}
+      teamredminer-instance-num: "{{ . }}"
   template:
     metadata:
     {{- with $.Values.podAnnotations }}
@@ -20,7 +20,7 @@ spec:
     {{- end }}
       labels:
         {{- include "teamredminer-daemonset.selectorLabels" $ | nindent 8 }}
-        teamredminer-instance-num: {{ . }}
+        teamredminer-instance-num: "{{ . }}"
     spec:
       {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
@@ -29,7 +29,7 @@ spec:
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ $.Chart.Name }}-{{.}}
+        - name: "{{ $.Chart.Name }}-{{.}}"
           env:
             - name: WALLET_ADDRESS
               value: {{ $.Values.teamredminer.wallet }}
