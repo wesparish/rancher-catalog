@@ -89,7 +89,7 @@ spec:
             type: ""
           name: sys
       nodeSelector:
-        miner: {{ $.Values.teamredminer.scalablelabel }}
+        miner: {{ $.Values.teamredminer.scalablelabel }}-{{ . }}
       {{- with $.Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
