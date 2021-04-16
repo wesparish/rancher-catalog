@@ -53,14 +53,6 @@ questions:
   label: Max GPUs per pod
   group: "miner questions"
 
-- variable: teamredminer.eth_4g_max_alloc
-  default: ""
-  description: "Value for --eth_4g_max_alloc"
-  type: string
-  required: false
-  label: Value for --eth_4g_max_alloc
-  group: "miner questions"
-
 - variable: teamredminer.algo
   default: "kawpow"
   description: "Value for --algo"
