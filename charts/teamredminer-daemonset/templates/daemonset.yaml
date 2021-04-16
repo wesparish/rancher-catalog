@@ -1,4 +1,5 @@
 {{- range untilStep (int .Values.teamredminer.minGPUs) (int (add .Values.teamredminer.maxGPUs 1)) 1 }}
+---
 # DaemonSet instance #{{ . }}
 apiVersion: apps/v1
 kind: DaemonSet
