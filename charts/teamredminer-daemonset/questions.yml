@@ -2,7 +2,7 @@ categories:
 - miners
 questions:
 - variable: teamredminer.wallet
-  default: "RKAw8jRBterhRMvRZciiqENZDcFme8Jf8N"
+  default: "RLc6t64c2zeHgdj2P76vqQmvWR8vnVPSFH"
   description: "Wallet Address"
   type: string
   required: true

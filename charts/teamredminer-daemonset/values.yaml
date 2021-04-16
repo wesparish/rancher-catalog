@@ -10,13 +10,15 @@ image:
   pullPolicy: Always
 
 teamredminer:
-  wallet: "RKAw8jRBterhRMvRZciiqENZDcFme8Jf8N"
+  wallet: "RLc6t64c2zeHgdj2P76vqQmvWR8vnVPSFH"
   pool: "stratum+tcp://stratum-ravencoin.flypool.org:3333"
   options: ""
   scalablelabel: "teamredminer-daemonset-wes"
   gpusperpod: 6
   eth_4g_max_alloc: ""
   algo: kawpow
+  minGPUs: 1
+  maxGPUs: 6
 
 imagePullSecrets: []
 nameOverride: ""

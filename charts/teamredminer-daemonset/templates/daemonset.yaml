@@ -1,41 +1,46 @@
+{{- range untilStep (int .Values.teamredminer.minGPUs) (int (add .Values.teamredminer.maxGPUs 1)) 1 }}
+# DaemonSet instance #{{ . }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ include "teamredminer-daemonset.fullname" . }}
+  name: {{ include "teamredminer-daemonset.fullname" $ }}-{{ . }}
   labels:
-    {{- include "teamredminer-daemonset.labels" . | nindent 4 }}
+    {{- include "teamredminer-daemonset.labels" $ | nindent 4 }}
+    teamredminer-instance-num: {{ . }}
 spec:
   selector:
     matchLabels:
-      {{- include "teamredminer-daemonset.selectorLabels" . | nindent 6 }}
+      {{- include "teamredminer-daemonset.selectorLabels" $ | nindent 6 }}
+      teamredminer-instance-num: {{ . }}
   template:
     metadata:
-    {{- with .Values.podAnnotations }}
+    {{- with $.Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "teamredminer-daemonset.selectorLabels" . | nindent 8 }}
+        {{- include "teamredminer-daemonset.selectorLabels" $ | nindent 8 }}
+        teamredminer-instance-num: {{ . }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ $.Chart.Name }}-{{.}}
           env:
             - name: WALLET_ADDRESS
-              value: {{ .Values.teamredminer.wallet }}
+              value: {{ $.Values.teamredminer.wallet }}
             - name: EXTRA_OPTS
-              value: {{ .Values.teamredminer.options }}
+              value: {{ $.Values.teamredminer.options }}
             - name: POOL
-              value: {{ .Values.teamredminer.pool }}
+              value: {{ $.Values.teamredminer.pool }}
             - name: ETH_4G_MAX_ALLOC
-              value: "{{ .Values.teamredminer.eth_4g_max_alloc }}"
+              value: "{{ $.Values.teamredminer.eth_4g_max_alloc }}"
             - name: ALGO
-              value: "{{ .Values.teamredminer.algo }}"
+              value: "{{ $.Values.teamredminer.algo }}"
             - name: HOSTNAME
               valueFrom:
                 fieldRef:
@@ -45,29 +50,34 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            initialDelaySeconds: 30
             exec:
               command:
                 - "pgrep"
                 - "teamredminer"
           readinessProbe:
-            initialDelaySeconds: 30
+            exec:
+              command:
+                - "pgrep"
+                - "teamredminer"
+          startupProbe:
+            failureThreshold: 12
+            periodSeconds: 10
             exec:
               command:
                 - "pgrep"
                 - "teamredminer"
           resources:
             limits:
-              amd.com/gpu: {{ .Values.teamredminer.gpusperpod }}
-            {{- with .Values.resources }}
+              amd.com/gpu: {{ . }}
+            {{- with $.Values.resources }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
@@ -79,15 +89,16 @@ spec:
             type: ""
           name: sys
       nodeSelector:
-        miner: {{ .Values.teamredminer.scalablelabel }}
-      {{- with .Values.nodeSelector }}
+        miner: {{ $.Values.teamredminer.scalablelabel }}
+      {{- with $.Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with $.Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with $.Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}
