@@ -38,10 +38,6 @@ spec:
               value: {{ $.Values.verthashminer.options }}
             - name: POOL
               value: {{ $.Values.verthashminer.pool }}
-            - name: ETH_4G_MAX_ALLOC
-              value: "{{ $.Values.verthashminer.eth_4g_max_alloc }}"
-            - name: ALGO
-              value: "{{ $.Values.verthashminer.algo }}"
             - name: HOSTNAME
               valueFrom:
                 fieldRef:
