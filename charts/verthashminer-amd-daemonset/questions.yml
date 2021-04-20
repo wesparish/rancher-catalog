@@ -33,12 +33,22 @@ questions:
   label: Scalable Label
   group: "miner questions"
 
-- variable: verthashminer.gpusperpod
-  default: "6"
-  description: "How many GPUs per pod?"
+- variable: verthashminer.minGPUs
+  default: "1"
+  description: "Min GPUs per pod"
   type: int
   min: 1
   max: 99
   required: true
-  label: How many GPUs per pod
+  label: Min GPUs per pod
+  group: "miner questions"
+
+- variable: verthashminer.maxGPUs
+  default: "6"
+  description: "Max GPUs per pod"
+  type: int
+  min: 1
+  max: 99
+  required: true
+  label: Max GPUs per pod
   group: "miner questions"
