@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "ethminer-nvidia-daemonset.fullname" . }}-test-connection"
+  labels:
+    {{- include "ethminer-nvidia-daemonset.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "ethminer-nvidia-daemonset.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
