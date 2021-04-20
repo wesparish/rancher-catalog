@@ -1,0 +1,105 @@
+{{- range untilStep (int .Values.verthashminer.minGPUs) (int (add .Values.verthashminer.maxGPUs 1)) 1 }}
+---
+# DaemonSet instance #{{ . }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: "{{ include "verthashminer-amd-daemonset.fullname" $ }}-{{ . }}"
+  labels:
+    {{- include "verthashminer-amd-daemonset.labels" $ | nindent 4 }}
+    verthashminer-instance-num: "{{ . }}"
+spec:
+  selector:
+    matchLabels:
+      {{- include "verthashminer-amd-daemonset.selectorLabels" $ | nindent 6 }}
+      verthashminer-instance-num: "{{ . }}"
+  template:
+    metadata:
+    {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "verthashminer-amd-daemonset.selectorLabels" $ | nindent 8 }}
+        verthashminer-instance-num: "{{ . }}"
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: "{{ $.Chart.Name }}-{{.}}"
+          env:
+            - name: WALLET_ADDRESS
+              value: {{ $.Values.verthashminer.wallet }}
+            - name: EXTRA_OPTS
+              value: {{ $.Values.verthashminer.options }}
+            - name: POOL
+              value: {{ $.Values.verthashminer.pool }}
+            - name: ETH_4G_MAX_ALLOC
+              value: "{{ $.Values.verthashminer.eth_4g_max_alloc }}"
+            - name: ALGO
+              value: "{{ $.Values.verthashminer.algo }}"
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - "pgrep"
+                - "VerthashMiner"
+          readinessProbe:
+            exec:
+              command:
+                - "pgrep"
+                - "VerthashMiner"
+          startupProbe:
+            failureThreshold: 30
+            periodSeconds: 10
+            exec:
+              command:
+                - "pgrep"
+                - "VerthashMiner"
+          resources:
+            limits:
+              amd.com/gpu: {{ . }}
+            {{- with $.Values.resources }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /sys
+              name: sys
+      volumes:
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
+      nodeSelector:
+        miner: {{ $.Values.verthashminer.scalablelabel }}-{{ . }}
+      {{- with $.Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
