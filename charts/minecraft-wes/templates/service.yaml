@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "minecraft-wes.fullname" . }}
+  labels:
+    {{- include "minecraft-wes.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: minecraft
+      protocol: UDP
+      name: minecraft
+  selector:
+    {{- include "minecraft-wes.selectorLabels" . | nindent 4 }}
