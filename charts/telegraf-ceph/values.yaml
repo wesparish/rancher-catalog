@@ -1,0 +1,54 @@
+# Default values for telegraf-ceph.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+telegraf:
+#  args:
+#  - "--debug"
+  image:
+    repo: "wesparish/docker-telegraf-ceph"
+    tag: "buster"
+    pullPolicy: IfNotPresent
+# docker run --rm -ti --entrypoint telegraf \
+#  -v /etc/ceph/:/etc/ceph:ro \
+#  -v $PWD/telegraf-ceph.config:/telegraf-ceph.config \
+#  -v /var/run/ceph:/var/run/ceph:ro \
+#  wesparish/docker-telegraf-ceph:buster \
+  volumes:
+  - name: etc-ceph
+    hostPath:
+      path: /etc/ceph
+  - name: var-run-ceph
+    hostPath:
+      path: /var/run/ceph
+  mountPoints:
+  - name: etc-ceph
+    mountPath: /etc/ceph
+  - name: var-run-ceph
+    mountPath: /var/run/ceph
+  nodeSelector:
+    ceph-client: "true"
+  service:
+    enabled: false
+  env:
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+  config:
+    outputs:
+       - influxdb_v2:
+           urls:
+             - "http://influxdb-influxdb2.influxdb"
+           token: CHANGEME
+           organization: default
+           bucket: telegraf
+#       - file:
+#           files: [ 'stdout' ]
+#           data_format: 'influx'
+    inputs:
+      - ceph:
