@@ -1,0 +1,168 @@
+# Default values for telegraf-miner-grok.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+telegraf-ds:
+#  args:
+#  - "--debug"
+  image:
+    repo: "nexus-jamie-docker.elastiscale.net/telegraf"
+    tag: "1.17-alpine"
+    pullPolicy: IfNotPresent
+  volumes:
+  - name: var-lib-docker
+    hostPath:
+      path: /var/lib/docker
+  - name: var-run-dockersock
+    hostPath:
+      path: /var/run/docker.sock
+  mountPoints:
+  - name: var-run-dockersock
+    mountPath: /var/run/docker.sock
+  nodeSelector:
+    telegraf-ds: "miner"
+  service:
+    enabled: false
+  env:
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+  config:
+    global_tags:
+      hostname: ${HOSTNAME}
+      podname: ${POD_NAME}
+    outputs:
+       - influxdb_v2:
+           urls:
+             - "http://influxdb-influxdb2.influxdb"
+           token: oAo4pkm_8rz3NdLAPbJP17wD_7ZMg5zvJzIdvyjLoQR9Ompby0MamBqpDeX8qT4EOuhIiwQvAHv73ltiO_EGFg==
+           organization: default
+           bucket: telegraf-miner
+       - file:
+           files: [ 'stdout' ]
+           data_format: 'influx'
+    inputs:
+      - docker_log:
+          container_name_include:
+            - '*verhashminer*'
+            - '*teamredminer*'
+            - '*ethminer*'
+    processors:
+      - parser:
+          merge: override
+          parse_fields:
+          - "message"
+          data_format: grok
+          grok_patterns:
+          ## verthashminer ##
+          -  '\A\[%{TIMESTAMP_ISO8601:timestamp}] %{LOGLEVEL}  cl_device\(0\): err:%{INT:gpu0_hardware_errors:int}, temp:%{INT:gpu0_temp:int}C, power:%{INT:gpu0_power:int}W, fan:%{INT:gpu0_fan:int}%, hashrate: %{NUMBER:gpu0_hash_rate:float}%{GREEDYDATA}'
+          -  '\A\[%{TIMESTAMP_ISO8601:timestamp}] %{LOGLEVEL}  cl_device\(1\): err:%{INT:gpu1_hardware_errors:int}, temp:%{INT:gpu1_temp:int}C, power:%{INT:gpu1_power:int}W, fan:%{INT:gpu1_fan:int}%, hashrate: %{NUMBER:gpu1_hash_rate:float}%{GREEDYDATA}'
+          -  '\A\[%{TIMESTAMP_ISO8601:timestamp}] %{LOGLEVEL}  cl_device\(2\): err:%{INT:gpu2_hardware_errors:int}, temp:%{INT:gpu2_temp:int}C, power:%{INT:gpu2_power:int}W, fan:%{INT:gpu2_fan:int}%, hashrate: %{NUMBER:gpu2_hash_rate:float}%{GREEDYDATA}'
+          -  '\A\[%{TIMESTAMP_ISO8601:timestamp}] %{LOGLEVEL}  cl_device\(3\): err:%{INT:gpu3_hardware_errors:int}, temp:%{INT:gpu3_temp:int}C, power:%{INT:gpu3_power:int}W, fan:%{INT:gpu3_fan:int}%, hashrate: %{NUMBER:gpu3_hash_rate:float}%{GREEDYDATA}'
+          -  '\A\[%{TIMESTAMP_ISO8601:timestamp}] %{LOGLEVEL}  cl_device\(4\): err:%{INT:gpu4_hardware_errors:int}, temp:%{INT:gpu4_temp:int}C, power:%{INT:gpu4_power:int}W, fan:%{INT:gpu4_fan:int}%, hashrate: %{NUMBER:gpu4_hash_rate:float}%{GREEDYDATA}'
+          -  '\A\[%{TIMESTAMP_ISO8601:timestamp}] %{LOGLEVEL}  cl_device\(5\): err:%{INT:gpu5_hardware_errors:int}, temp:%{INT:gpu5_temp:int}C, power:%{INT:gpu5_power:int}W, fan:%{INT:gpu5_fan:int}%, hashrate: %{NUMBER:gpu5_hash_rate:float}%{GREEDYDATA}'
+          -  '\A\[%{TIMESTAMP_ISO8601}] %{LOGLEVEL}  accepted: %{INT:verthashminer_accepted_shares:int}/%{INT:verthashminer_rejected_shares:int} \(%{NUMBER:verthashminer_pct_accepted_shares:float}%\), total hashrate: %{NUMBER:hash_rate_sum:float}%{GREEDYDATA}'
+
+          ## teamredminer - ethash ##
+          - '\A\[%{TIMESTAMP_ISO8601:timestamp}] GPU 0 \[%{INT:gpu0_temp:int}C, fan %{INT:gpu0_fan:int}%]%{SPACE}ethash: %{NUMBER:gpu0_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:accepted_shares:int} r:%{INT} hw:%{INT:gpu0_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601:timestamp}] GPU 1 \[%{INT:gpu1_temp:int}C, fan %{INT:gpu1_fan:int}%]%{SPACE}ethash: %{NUMBER:gpu1_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:accepted_shares:int} r:%{INT} hw:%{INT:gpu1_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601:timestamp}] GPU 2 \[%{INT:gpu2_temp:int}C, fan %{INT:gpu2_fan:int}%]%{SPACE}ethash: %{NUMBER:gpu2_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:accepted_shares:int} r:%{INT} hw:%{INT:gpu2_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601:timestamp}] GPU 3 \[%{INT:gpu3_temp:int}C, fan %{INT:gpu3_fan:int}%]%{SPACE}ethash: %{NUMBER:gpu3_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:accepted_shares:int} r:%{INT} hw:%{INT:gpu3_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601:timestamp}] GPU 4 \[%{INT:gpu4_temp:int}C, fan %{INT:gpu4_fan:int}%]%{SPACE}ethash: %{NUMBER:gpu4_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:accepted_shares:int} r:%{INT} hw:%{INT:gpu4_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601:timestamp}] GPU 5 \[%{INT:gpu5_temp:int}C, fan %{INT:gpu5_fan:int}%]%{SPACE}ethash: %{NUMBER:gpu5_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:accepted_shares:int} r:%{INT} hw:%{INT:gpu5_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] Total%{SPACE}ethash: %{NUMBER:hash_rate_sum:float}%{GREEDYDATA}'
+
+          ## teamredminer - kawpow ##
+          - '\A\[%{TIMESTAMP_ISO8601}] GPU 0 \[%{INT:gpu0_temp:int}C, fan %{INT:gpu0_fan:int}%]%{SPACE}kawpow: %{NUMBER:gpu0_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:gpu0_accepted_shares:int} r:%{INT:gpu0_rejected_shares:int} hw:%{INT:gpu0_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] GPU 1 \[%{INT:gpu1_temp:int}C, fan %{INT:gpu1_fan:int}%]%{SPACE}kawpow: %{NUMBER:gpu1_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:gpu1_accepted_shares:int} r:%{INT:gpu1_rejected_shares:int} hw:%{INT:gpu1_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] GPU 2 \[%{INT:gpu2_temp:int}C, fan %{INT:gpu2_fan:int}%]%{SPACE}kawpow: %{NUMBER:gpu2_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:gpu2_accepted_shares:int} r:%{INT:gpu2_rejected_shares:int} hw:%{INT:gpu2_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] GPU 3 \[%{INT:gpu3_temp:int}C, fan %{INT:gpu3_fan:int}%]%{SPACE}kawpow: %{NUMBER:gpu3_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:gpu3_accepted_shares:int} r:%{INT:gpu3_rejected_shares:int} hw:%{INT:gpu3_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] GPU 4 \[%{INT:gpu4_temp:int}C, fan %{INT:gpu4_fan:int}%]%{SPACE}kawpow: %{NUMBER:gpu4_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:gpu4_accepted_shares:int} r:%{INT:gpu4_rejected_shares:int} hw:%{INT:gpu4_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] GPU 5 \[%{INT:gpu5_temp:int}C, fan %{INT:gpu5_fan:int}%]%{SPACE}kawpow: %{NUMBER:gpu5_hash_rate:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{INT:gpu5_accepted_shares:int} r:%{INT:gpu5_rejected_shares:int} hw:%{INT:gpu5_hardware_errors:int}'
+          - '\A\[%{TIMESTAMP_ISO8601}] Total%{SPACE}kawpow: %{NUMBER:hash_rate_sum:float}Mh/s, avg %{NUMBER}Mh/s, pool %{NUMBER}Mh/s a:%{NUMBER:total_accepted_shares:int} r:%{INT:total_rejected_shares:int} hw:%{INT:total_hardware_errors:int}'
+
+          # # nvidia
+          #  m 11:29:26 ethminer 90:44 A9992:R42 130.47 Mh - cu0 21.92 42C 40%, cu1 21.93 47C 40%, cu2 21.56 46C 40%, cu3 21.98 56C 50%, cu4 21.53 45C 40%, cu5 21.55 50C 50%
+          - '\A m %{TIME} ethminer %{NOTSPACE} A%{NUMBER:accepted_shares:int} %{NUMBER:hash_rate_sum:float} Mh - cu0 %{NUMBER:gpu0_hash_rate:float} %{NUMBER:gpu0_temp:int}C %{NUMBER:gpu0_fan:int}%, cu1 %{NUMBER:gpu1_hash_rate:float} %{NUMBER:gpu1_temp:int}C %{NUMBER:gpu1_fan:int}%, cu2 %{NUMBER:gpu2_hash_rate:float} %{NUMBER:gpu2_temp:int}C %{NUMBER:gpu2_fan:int}%, cu3 %{NUMBER:gpu3_hash_rate:float} %{NUMBER:gpu3_temp:int}C %{NUMBER:gpu3_fan:int}%, cu4 %{NUMBER:gpu4_hash_rate:float} %{NUMBER:gpu4_temp:int}C %{NUMBER:gpu4_fan:int}%, cu5 %{NUMBER:gpu5_hash_rate:float} %{NUMBER:gpu5_temp:int}C %{NUMBER:gpu5_fan:int}%'
+          - '\A m %{TIME} ethminer %{NOTSPACE} A%{NUMBER:accepted_shares:int}:F%{NUMBER:failed_shares:int} %{NUMBER:hash_rate_sum:int} Mh - cu0 %{NUMBER:gpu0_hash_rate:float} %{NUMBER:gpu0_temp:int}C %{NUMBER:gpu0_fan:int}%, cu1 %{NUMBER:gpu1_hash_rate:float} %{NUMBER:gpu1_temp:int}C %{NUMBER:gpu1_fan:int}%, cu2 %{NUMBER:gpu2_hash_rate:float} %{NUMBER:gpu2_temp:int}C %{NUMBER:gpu2_fan:int}%, cu3 %{NUMBER:gpu3_hash_rate:float} %{NUMBER:gpu3_temp:int}C %{NUMBER:gpu3_fan:int}%, cu4 %{NUMBER:gpu4_hash_rate:float} %{NUMBER:gpu4_temp:int}C %{NUMBER:gpu4_fan:int}%, cu5 %{NUMBER:gpu5_hash_rate:float} %{NUMBER:gpu5_temp:int}C %{NUMBER:gpu5_fan:int}%'
+          - '\A m %{TIME} ethminer %{NOTSPACE} A%{NUMBER:accepted_shares:int}:R%{NUMBER:rejected_shares:int} %{NUMBER:hash_rate_sum:int} Mh - cu0 %{NUMBER:gpu0_hash_rate:float} %{NUMBER:gpu0_temp:int}C %{NUMBER:gpu0_fan:int}%, cu1 %{NUMBER:gpu1_hash_rate:float} %{NUMBER:gpu1_temp:int}C %{NUMBER:gpu1_fan:int}%, cu2 %{NUMBER:gpu2_hash_rate:float} %{NUMBER:gpu2_temp:int}C %{NUMBER:gpu2_fan:int}%, cu3 %{NUMBER:gpu3_hash_rate:float} %{NUMBER:gpu3_temp:int}C %{NUMBER:gpu3_fan:int}%, cu4 %{NUMBER:gpu4_hash_rate:float} %{NUMBER:gpu4_temp:int}C %{NUMBER:gpu4_fan:int}%, cu5 %{NUMBER:gpu5_hash_rate:float} %{NUMBER:gpu5_temp:int}C %{NUMBER:gpu5_fan:int}%'
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+
+tolerations: []
+
+affinity: {}
