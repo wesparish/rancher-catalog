@@ -1,0 +1,6 @@
+dependencies:
+- name: telegraf-ds
+  repository: file://subcharts/telegraf-ds-configurable-inputs/charts/telegraf-ds/
+  version: 1.0.21
+digest: sha256:39e9a5d7b2abbdec526e2343840621d7cf19c6474f5a6e2b1f7f02eb95b7109c
+generated: "2021-04-24T03:52:27.369676888Z"
