@@ -6,8 +6,6 @@ telegraf:
 #  args:
 #  - "--debug"
   image:
-    repo: "wesparish/docker-telegraf-ceph"
-    tag: "buster"
     pullPolicy: IfNotPresent
 # docker run --rm -ti --entrypoint telegraf \
 #  -v /etc/ceph/:/etc/ceph:ro \
@@ -46,9 +44,11 @@ telegraf:
              - "http://influxdb-influxdb2.influxdb"
            token: CHANGEME
            organization: default
-           bucket: telegraf
+           bucket: ceph
 #       - file:
 #           files: [ 'stdout' ]
 #           data_format: 'influx'
     inputs:
-      - ceph:
+      - prometheus:
+          urls: [ "http://w-dock4:9283/metrics" ]
+          metric_version: 2
