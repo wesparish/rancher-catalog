@@ -52,12 +52,12 @@ telegraf-ds:
        - influxdb_v2:
            urls:
              - "http://influxdb-influxdb2.influxdb"
-           token: oAo4pkm_8rz3NdLAPbJP17wD_7ZMg5zvJzIdvyjLoQR9Ompby0MamBqpDeX8qT4EOuhIiwQvAHv73ltiO_EGFg==
+           token: CHANGEME
            organization: default
            bucket: telegraf-miner
-       - file:
-           files: [ 'stdout' ]
-           data_format: 'influx'
+#       - file:
+#           files: [ 'stdout' ]
+#           data_format: 'influx'
     inputs:
       - docker_log:
           container_name_include:
