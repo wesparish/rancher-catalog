@@ -84,11 +84,17 @@ spec:
           volumeMounts:
             - mountPath: /sys
               name: sys
+            - mountPath: /data
+              name: vartmpdata
       volumes:
         - hostPath:
             path: /sys
             type: ""
           name: sys
+        - hostPath:
+            path: /var/tmp/data/
+            type: ""
+          name: vartmpdata
       nodeSelector:
         miner: {{ $.Values.teamredminer.scalablelabel }}-{{ . }}
       {{- with $.Values.nodeSelector }}
