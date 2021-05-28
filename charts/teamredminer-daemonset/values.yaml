@@ -6,7 +6,7 @@
 
 image:
   repository: nexus-jamie-docker.elastiscale.net/docker-teamredminer
-  tag: amdgpu-pro-20.40-0.8.0
+  tag: amdgpu-pro-20.40-0.8.3
   pullPolicy: Always
 
 teamredminer:
