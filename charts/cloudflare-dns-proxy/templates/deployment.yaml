@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cloudflare-dns-proxy.fullname" . }}
+  labels:
+    {{- include "cloudflare-dns-proxy.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cloudflare-dns-proxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cloudflare-dns-proxy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cloudflare-dns-proxy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash"]
+          args:
+          - "-c"
+          - |
+            apt-get update && \
+            apt-get install curl dnsutils procps -y && \
+            curl -LO https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb && \
+            apt-get install ./cloudflared-stable-linux-amd64.deb && \
+            cloudflared -v && \
+            cloudflared proxy-dns \
+              --address 0.0.0.0 \
+              --port 5053 \
+              --metrics 0.0.0.0:39055 \
+              --upstream https://1.1.1.1/dns-query \
+              --upstream https://1.0.0.1/dns-query
+          ports:
+            - name: dns
+              containerPort: 5053
+              protocol: TCP
+            - name: metrics
+              containerPort: 39055
+              protocol: TCP
+          startupProbe:
+            exec:
+              command:
+              - pgrep
+              - cloudflared
+            failureThreshold: 12
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+              - nslookup 
+              - google.com.
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
