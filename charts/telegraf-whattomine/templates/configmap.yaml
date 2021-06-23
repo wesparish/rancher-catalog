@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  processors.conf: |-
+    [[processors.converter]]
+      [processors.converter.fields]
+        float = [
+            "lastTradeRate"
+        ]
+kind: ConfigMap
+metadata:
+  name: telegraf-whattomine-processors

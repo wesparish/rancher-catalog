@@ -1,0 +1,45 @@
+telegraf:
+  nodeSelector:
+    node-role.kubernetes.io/controlplane: "true"
+  args:
+  - "--debug"
+  service:
+    enabled: false
+  env:
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+  config:
+    outputs:
+       - influxdb_v2:
+           urls:
+             - "http://influxdb-influxdb2.influxdb"
+           token: CHANGEME
+           organization: default
+           bucket: wesminers
+       - file:
+           files: [ 'stdout' ]
+           data_format: 'influx'
+    inputs:
+      - http:
+          urls: 
+            # generic info
+#            - "https://whattomine.com/coins.json"
+            - "https://api-etc.ethermine.org/poolStats"
+            # wes etc
+            - "https://api-etc.ethermine.org/miner/93cb46bec07bedabedea62d2245918c204912917/currentStats"
+            - "https://api-etc.ethermine.org/miner/93cb46bec07bedabedea62d2245918c204912917/workers"
+#            # wes rvn
+#            - ""
+#            - ""
+#            # jamie etc
+#            - ""
+#            - ""
+#            # jamie eth
+#            - ""
+#            - ""
+#            # jamie rvn
+#            - ""
+#            - ""
+          data_format: json

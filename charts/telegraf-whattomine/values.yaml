@@ -1,0 +1,53 @@
+telegraf:
+  nodeSelector:
+    node-role.kubernetes.io/controlplane: "true"
+  args:
+  - "--debug"
+  service:
+    enabled: false
+  env:
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+  volumes:
+    - name: config
+      configMap:
+        name: telegraf-whattomine-processors
+  mountPoints:
+    - name: config
+      mountPath: /additional_config
+  args:
+    - "--config=/etc/telegraf/telegraf.conf" # The chart configuration file
+    - "--config-directory=/additional_config"
+
+  config:
+    agent:
+      flush_interval: 60s
+    outputs:
+       - influxdb_v2:
+           urls:
+             - "http://influxdb-influxdb2.influxdb"
+           token: CHANGEME 
+           organization: default
+           bucket: whattomine
+       - file:
+           files: [ 'stdout' ]
+           data_format: 'influx'
+    inputs:
+      - http:
+          urls:
+            - "https://whattomine.com/coins.json"
+          data_format: json
+      - http:
+          interval: 60s
+          urls:
+            - "https://api.bittrex.com/v3/markets/tickers"
+          data_format: json
+          json_string_fields: [ "lastTradeRate" ]
+          tag_keys:
+            - "symbol"

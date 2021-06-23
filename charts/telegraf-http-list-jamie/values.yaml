@@ -1,0 +1,38 @@
+telegraf:
+  nodeSelector:
+    node-role.kubernetes.io/controlplane: "true"
+  args:
+  - "--debug"
+  service:
+    enabled: false
+  env:
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+  config:
+    outputs:
+       - influxdb_v2:
+           urls:
+             - "http://influxdb-influxdb2.influxdb"
+           token: CHANGEME
+           organization: default
+           bucket: jamieminers
+       - file:
+           files: [ 'stdout' ]
+           data_format: 'influx'
+    inputs:
+      - http:
+          urls: 
+            # generic info
+            - "https://api-etc.ethermine.org/poolStats"
+            # jamie etc
+            - "https://api-etc.ethermine.org/miner/805099c240d86C77428A38167f38Aeb7ebe30568/workers"
+            - "https://api-etc.ethermine.org/miner/805099c240d86C77428A38167f38Aeb7ebe30568/currentStats"
+#            # jamie eth
+#            - ""
+#            - ""
+#            # jamie rvn
+#            - ""
+#            - ""
+          data_format: json

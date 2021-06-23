@@ -85,7 +85,9 @@ affinity: {}
 
 influxdb2:
   nodeSelector:
-    node-role.kubernetes.io/controlplane: "true"
+    # node-role.kubernetes.io/controlplane: "true"
+    # Pin to j-dock1 for local var storage
+    kubernetes.io/hostname: "j-dock2"
   ## Create default user through Kubernetes job
   ## Defaults indicated below
   ##
