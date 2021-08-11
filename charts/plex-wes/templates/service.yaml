@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: plex
+  {{- with .Values.plex.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.plex.service.type }}
+  {{- if .Values.plex.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.plex.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.plex.service.port }}
+      targetPort: {{ .Values.plex.service.port }}
+      protocol: TCP
+      name: plex-http
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: plex

@@ -1,0 +1,26 @@
+{{- if .Values.plex.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}
+  {{- with .Values.plex.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.plex.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}
+                port: 
+                  number: {{ .Values.plex.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.plex.ingress.fqdn }}
+      secretName: {{ .Values.plex.ingress.secretName }}
+{{- end }}

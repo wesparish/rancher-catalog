@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: plex
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  # Plex is not scalable
+  replicas: 1
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: plex
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: plex
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.plex.repository }}:{{ .Values.image.plex.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: HOSTNAME
+            value: "{{ .Values.plex.hostname }}"
+          - name: TZ
+            value: "America/Chicago"
+          {{- if .Values.plex.claimToken }}
+          - name: PLEX_CLAIM
+            value: "{{ .Values.plex.claimToken }}"
+          {{- end }}
+          - name: ADVERTISE_IP
+            value: "{{ .Values.plex.advertiseIPs }}"
+          - name: PLEX_UID
+            value: "{{ .Values.plex.uid }}"
+          - name: PLEX_GID
+            value: "{{ .Values.plex.gid }}"
+          - name: CHANGE_CONFIG_DIR_OWNERSHIP
+            value: "false"
+          - name: ALLOWED_NETWORKS
+            value: "{{ .Values.plex.allowedNetworks }}"
+          ports:
+            - name: plexhttp
+              containerPort:  {{ .Values.plex.service.port }}
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /identity
+              port: {{ .Values.plex.service.port }}
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /identity
+              port: {{ .Values.plex.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /identity
+              port: {{ .Values.plex.service.port }}
+          resources:
+            {{- toYaml .Values.plex.resources | nindent 12 }}
+      volumes:
+      - name: plex-config
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexConfig }}
+      - name: plex-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexData }}
+      - name: plex-transcode
+        {{- if .Values.plex.claimToken }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexTranscode }}
+        {{- else }}
+        emptyDir:
+          medium: Memory
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

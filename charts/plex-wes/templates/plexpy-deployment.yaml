@@ -1,0 +1,70 @@
+# Deploys plexpy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-plexpy
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: plexpy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: plexpy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: plexpy
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-plexpy
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.plexpy.repository }}:{{ .Values.image.plexpy.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          ports:
+            - name: plexpy
+              containerPort: 8181
+              protocol: TCP
+          volumeMounts:
+          - name: plexpy-data
+            mountPath: /config
+          env:
+            - name: TZ
+              value: {{ .Values.plexpy.timezone }}
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8181
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8181
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8181
+          resources:
+            {{- toYaml .Values.plexpy.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plexpy-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexpyData }}

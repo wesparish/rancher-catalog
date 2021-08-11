@@ -1,0 +1,85 @@
+# Deploys deluge
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-deluge
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: deluge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: deluge
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: deluge
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-deluge
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.deluge.repository }}:{{ .Values.image.deluge.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          ports:
+            - name: deluge-web
+              containerPort: 8282
+              protocol: TCP
+            - name: deluge2
+              containerPort: 8444
+              protocol: TCP
+            - name: deluge-daemon
+              containerPort: 58846
+              protocol: TCP
+          volumeMounts:
+          - name: plex-data
+            mountPath: /plex_media
+          - name: deluge-config
+            mountPath: /config
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8282
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8282
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8282
+          resources:
+            {{- toYaml .Values.deluge.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plex-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexData }}
+      - name: deluge-config
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.delugeConfig }}

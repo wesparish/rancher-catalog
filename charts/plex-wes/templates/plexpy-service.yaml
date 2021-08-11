@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-plexpy
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: plexpy
+spec:
+  type: {{ .Values.plexpy.service.type }}
+  ports:
+    - port: {{ .Values.plexpy.service.port }}
+      targetPort: {{ .Values.plexpy.service.port }}
+      protocol: TCP
+      name: plexpy
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: plexpy

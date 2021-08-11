@@ -1,0 +1,34 @@
+namespace: plex
+
+questions:
+- variable: plex.claimToken
+  default: ""
+  description: "Plex claim token from plex.tv/claim"
+  type: string
+  required: false
+  label: Plex Claim Token
+  group: "Plex Server"
+
+- variable: plex.hostname
+  default: "plexserver-kube"
+  description: "Plex server name"
+  type: string
+  required: true
+  label: Plex server name
+  group: "Plex Server"
+
+- variable: plex.advertiseIPs
+  default: "https://plex.elastiscale.net:443,http://plex.elastiscale.net:80"
+  description: "IPs to advertise to plex.com for this server"
+  type: string
+  required: true
+  label: IPs to advertise to plex.com for this server
+  group: "Plex Server"
+
+- variable: plex.allowedNetworks
+  default: "172.16.0.0/16"
+  description: "Plex allowed networks"
+  type: string
+  required: true
+  label: Plex allowed networks
+  group: "Plex Server"

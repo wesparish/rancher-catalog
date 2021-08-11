@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-deluge
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: deluge
+spec:
+  type: {{ .Values.deluge.service.type }} 
+  ports:
+    - port: {{ .Values.deluge.service.port }}
+      targetPort: {{ .Values.deluge.service.port }}
+      protocol: TCP
+      name: deluge
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: deluge
