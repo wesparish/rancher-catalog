@@ -78,6 +78,13 @@ spec:
               port: {{ .Values.plex.service.port }}
           resources:
             {{- toYaml .Values.plex.resources | nindent 12 }}
+          volumeMounts:
+          - name: plex-config
+            mountPath: /config
+          - name: plex-data
+            mountPath: /data
+          - name: plex-transcode
+            mountPath: /transcode
       volumes:
       - name: plex-config
         persistentVolumeClaim:
@@ -86,7 +93,7 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.plex.persistence.plexData }}
       - name: plex-transcode
-        {{- if .Values.plex.claimToken }}
+        {{- if .Values.plex.persistence.plexTranscode }}
         persistentVolumeClaim:
           claimName: {{ .Values.plex.persistence.plexTranscode }}
         {{- else }}

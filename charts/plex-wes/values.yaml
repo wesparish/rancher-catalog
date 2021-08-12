@@ -34,8 +34,7 @@ plex:
   service:
     annotations:
       metallb.universe.tf/address-pool: default
-    type: LoadBalancer
-    loadBalancerIP: 172.16.1.220
+    type: ClusterIP
     port: 32400
   ingress:
     enabled: true
