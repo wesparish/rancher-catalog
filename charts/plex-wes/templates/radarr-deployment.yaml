@@ -1,0 +1,80 @@
+# Deploys radarr
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-radarr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: radarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: radarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: radarr
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-radarr
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.radarr.repository }}:{{ .Values.image.radarr.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          ports:
+            - name: radarr-web
+              containerPort: {{ .Values.radarr.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: plex-data
+            mountPath: /data
+          - name: servarr-data
+            subPath: radarr-config
+            mountPath: /config
+          startupProbe:
+            httpGet:
+              path: /
+              port: radarr-web
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: radarr-web
+          readinessProbe:
+            httpGet:
+              path: /
+              port: radarr-web
+          resources:
+            {{- toYaml .Values.radarr.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plex-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexData }}
+      - name: servarr-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.servarrData }}
