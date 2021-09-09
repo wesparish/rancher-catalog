@@ -13,7 +13,7 @@ image:
     repository: tautulli/tautulli
     tag: latest
   radarr:
-    repository: hotio/radar
+    repository: hotio/radarr
     tag: release
   pullPolicy: Always
 
