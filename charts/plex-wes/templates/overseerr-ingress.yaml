@@ -1,0 +1,26 @@
+{{- if .Values.overseerr.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-overseerr
+  {{- with .Values.overseerr.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.overseerr.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-overseerr
+                port: 
+                  number: {{ .Values.overseerr.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.overseerr.ingress.fqdn }}
+      secretName: {{ .Values.overseerr.ingress.secretName }}
+{{- end }}

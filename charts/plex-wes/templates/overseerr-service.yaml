@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-overseerr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: overseerr
+spec:
+  type: {{ .Values.overseerr.service.type }} 
+  ports:
+    - port: {{ .Values.overseerr.service.port }}
+      targetPort: {{ .Values.overseerr.service.port }}
+      protocol: TCP
+      name: overseerr
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: overseerr
