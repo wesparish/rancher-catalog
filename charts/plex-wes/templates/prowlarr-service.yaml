@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-prowlarr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: prowlarr
+spec:
+  type: {{ .Values.prowlarr.service.type }} 
+  ports:
+    - port: {{ .Values.prowlarr.service.port }}
+      targetPort: {{ .Values.prowlarr.service.port }}
+      protocol: TCP
+      name: prowlarr
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: prowlarr

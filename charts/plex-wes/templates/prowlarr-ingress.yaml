@@ -1,0 +1,26 @@
+{{- if .Values.prowlarr.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-prowlarr
+  {{- with .Values.prowlarr.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.prowlarr.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-prowlarr
+                port: 
+                  number: {{ .Values.prowlarr.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.prowlarr.ingress.fqdn }}
+      secretName: {{ .Values.prowlarr.ingress.secretName }}
+{{- end }}
