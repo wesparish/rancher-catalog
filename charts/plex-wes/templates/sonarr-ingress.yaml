@@ -1,0 +1,26 @@
+{{- if .Values.sonarr.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-sonarr
+  {{- with .Values.sonarr.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.sonarr.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-sonarr
+                port: 
+                  number: {{ .Values.sonarr.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.sonarr.ingress.fqdn }}
+      secretName: {{ .Values.sonarr.ingress.secretName }}
+{{- end }}

@@ -1,24 +1,24 @@
-# Deploys radarr
+# Deploys sonarr
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "plex-wes.fullname" . }}-radarr
+  name: {{ include "plex-wes.fullname" . }}-sonarr
   labels:
     {{- include "plex-wes.labels" . | nindent 4 }}
-    app.kubernetes.io/extraService: radarr
+    app.kubernetes.io/extraService: sonarr
 spec:
   replicas: 1
   selector:
     matchLabels:
       {{- include "plex-wes.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/extraService: radarr
+      app.kubernetes.io/extraService: sonarr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         {{- include "plex-wes.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/extraService: radarr
+        app.kubernetes.io/extraService: sonarr
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -28,10 +28,10 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-radarr
+        - name: {{ .Chart.Name }}-sonarr
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.radarr.repository }}:{{ .Values.image.radarr.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.sonarr.repository }}:{{ .Values.image.sonarr.tag | default .Chart.AppVersion }}"
           env:
             - name: PUID
               value: "{{ .Values.allServarr.puid }}"
@@ -41,31 +41,31 @@ spec:
               value: "{{ .Values.allServarr.tz }}"
           imagePullPolicy: Always
           ports:
-            - name: radarr-web
-              containerPort: {{ .Values.radarr.service.port }}
+            - name: sonarr-web
+              containerPort: {{ .Values.sonarr.service.port }}
               protocol: TCP
           volumeMounts:
           - name: plex-data
             mountPath: /data
           - name: servarr-data
-            subPath: radarr-config
+            subPath: sonarr-config
             mountPath: /config
           startupProbe:
             httpGet:
               path: /
-              port: radarr-web
+              port: sonarr-web
             failureThreshold: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: radarr-web
+              port: sonarr-web
           readinessProbe:
             httpGet:
               path: /
-              port: radarr-web
+              port: sonarr-web
           resources:
-            {{- toYaml .Values.radarr.resources | nindent 12 }}
+            {{- toYaml .Values.sonarr.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

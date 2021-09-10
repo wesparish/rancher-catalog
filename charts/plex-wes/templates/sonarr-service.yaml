@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-sonarr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: sonarr
+spec:
+  type: {{ .Values.sonarr.service.type }} 
+  ports:
+    - port: {{ .Values.sonarr.service.port }}
+      targetPort: {{ .Values.sonarr.service.port }}
+      protocol: TCP
+      name: sonarr
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: sonarr
