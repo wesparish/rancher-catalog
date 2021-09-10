@@ -1,0 +1,26 @@
+{{- if .Values.lidarr.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-lidarr
+  {{- with .Values.lidarr.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.lidarr.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-lidarr
+                port: 
+                  number: {{ .Values.lidarr.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.lidarr.ingress.fqdn }}
+      secretName: {{ .Values.lidarr.ingress.secretName }}
+{{- end }}

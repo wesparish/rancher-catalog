@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-lidarr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: lidarr
+spec:
+  type: {{ .Values.lidarr.service.type }} 
+  ports:
+    - port: {{ .Values.lidarr.service.port }}
+      targetPort: {{ .Values.lidarr.service.port }}
+      protocol: TCP
+      name: lidarr
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: lidarr
