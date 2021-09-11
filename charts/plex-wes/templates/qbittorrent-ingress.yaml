@@ -1,0 +1,26 @@
+{{- if .Values.qbittorrent.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-qbittorrent
+  {{- with .Values.qbittorrent.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.qbittorrent.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-qbittorrent
+                port: 
+                  number: {{ .Values.qbittorrent.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.qbittorrent.ingress.fqdn }}
+      secretName: {{ .Values.qbittorrent.ingress.secretName }}
+{{- end }}

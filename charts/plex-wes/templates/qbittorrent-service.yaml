@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-qbittorrent
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: qbittorrent
+spec:
+  type: {{ .Values.qbittorrent.service.type }} 
+  ports:
+    - port: {{ .Values.qbittorrent.service.port }}
+      targetPort: {{ .Values.qbittorrent.service.port }}
+      protocol: TCP
+      name: qbittorrent
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: qbittorrent

@@ -1,0 +1,95 @@
+# Deploys qbittorrent
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-qbittorrent
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: qbittorrent
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: qbittorrent
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-qbittorrent
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.qbittorrent.repository }}:{{ .Values.image.qbittorrent.tag | default .Chart.AppVersion }}"
+          env:
+            - name: PUID
+              value: "{{ .Values.allServarr.puid }}"
+            - name: PGID
+              value: "{{ .Values.allServarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.allServarr.tz }}"
+            {{- if .Values.qbittorrent.vpn.enabled }}
+            - name: VPN_ENABLED
+              value: "{{ .Values.qbittorrent.vpn.enabled }}"
+            - name: VPN_LAN_NETWORK
+              value: "10.42.0.0/16,10.43.0.0/16"
+            - name: VPN_ADDITIONAL_PORTS
+              value: "8080,8118,{{ .Values.radarr.service.port }},{{ .Values.sonarr.service.port }},{{ .Values.prowlarr.service.port }},{{ .Values.lidarr.service.port }},{{ .Values.overseerr.service.port }}"
+            {{- end }}
+          imagePullPolicy: Always
+          ports:
+            - name: qbittorrent-web
+              containerPort: {{ .Values.qbittorrent.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: plex-data
+            mountPath: /data
+          - name: servarr-data
+            subPath: qbittorrent-config
+            mountPath: /config
+          startupProbe:
+            httpGet:
+              path: /
+              port: qbittorrent-web
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: qbittorrent-web
+          readinessProbe:
+            httpGet:
+              path: /
+              port: qbittorrent-web
+          resources:
+            {{- toYaml .Values.qbittorrent.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plex-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexData }}
+      - name: servarr-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.servarrData }}
