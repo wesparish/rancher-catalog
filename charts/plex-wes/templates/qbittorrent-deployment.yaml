@@ -27,6 +27,17 @@ spec:
       serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-sysctl
+          image: ubuntu:18.04
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          command: ["/bin/bash"]
+          args:
+            - "-c"
+            - |
+              sysctl -w net.ipv4.conf.all.src_valid_mark=1
       containers:
         - name: {{ .Chart.Name }}-qbittorrent
           securityContext:
@@ -43,7 +54,7 @@ spec:
             - name: VPN_ENABLED
               value: "{{ .Values.qbittorrent.vpn.enabled }}"
             - name: VPN_LAN_NETWORK
-              value: "10.42.0.0/16,10.43.0.0/16"
+              value: "10.42.0.0/16,10.43.0.0/16,172.16.0.0/12,192.168.0.0/16,10.0.0.0/8"
             - name: VPN_ADDITIONAL_PORTS
               value: "8080,8118,{{ .Values.radarr.service.port }},{{ .Values.sonarr.service.port }},{{ .Values.prowlarr.service.port }},{{ .Values.lidarr.service.port }},{{ .Values.overseerr.service.port }}"
             {{- end }}
