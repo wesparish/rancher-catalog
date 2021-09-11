@@ -159,7 +159,7 @@ overseerr:
 
 qbittorrent:
   vpn:
-    enabled: true
+    enabled: false
   ingress:
     enabled: true
     annotations:
