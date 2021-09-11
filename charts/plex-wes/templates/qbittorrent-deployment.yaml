@@ -41,7 +41,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-qbittorrent
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            privileged: true
           image: "{{ .Values.image.qbittorrent.repository }}:{{ .Values.image.qbittorrent.tag | default .Chart.AppVersion }}"
           env:
             - name: PUID
