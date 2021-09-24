@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: djaydev/docker-virt-manager
+  repository: wesparish/docker-virt-manager
   tag: latest
   pullPolicy: Always
 
