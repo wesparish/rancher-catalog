@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "squid-wes.fullname" . }}
+  labels:
+    {{- include "squid-wes.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/address-pool: "{{ .Values.service.addressPool }}"
+spec:
+  type: {{ .Values.service.type }}
+  {{- if .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "squid-wes.selectorLabels" . | nindent 4 }}
