@@ -33,11 +33,11 @@ ingress:
   paths:
     - /
   hosts:
-    - pihole.elastiscale.net
+    - pihole-jamie.elastiscale.net
   tls:
-    - secretName: pihole-elastiscale.net
+    - secretName: pihole-jamie-elastiscale.net
       hosts:
-        - pihole.elastiscale.net
+        - pihole-jamie.elastiscale.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
