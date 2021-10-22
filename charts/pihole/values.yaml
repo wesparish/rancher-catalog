@@ -20,7 +20,6 @@ service:
 dnsConfig:
   nameservers:
     - 10.2.1.1
-    - 172.16.1.1
 
 pihole:
   persistence:
