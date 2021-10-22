@@ -16,4 +16,4 @@ spec:
   type: LoadBalancer
   # Forced sourceIP to be kept
   externalTrafficPolicy: Local
-  loadBalancerIP: 172.16.1.222
+  loadBalancerIP: 10.2.2.235
