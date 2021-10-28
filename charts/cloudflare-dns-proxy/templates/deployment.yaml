@@ -35,12 +35,12 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash"]
           args:
-          - "-c"
+          - -c
           - |
             apt-get update && \
-            apt-get install curl dnsutils procps -y && \
-            curl -LO https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb && \
-            apt-get install ./cloudflared-stable-linux-amd64.deb && \
+            apt-get install ca-certificates curl dnsutils procps -y && \
+            curl -LO https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && \
+            apt-get install ./cloudflared-linux-amd64.deb && \
             cloudflared -v && \
             cloudflared proxy-dns \
               --address 0.0.0.0 \
