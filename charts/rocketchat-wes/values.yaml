@@ -11,7 +11,6 @@ mongodb:
     existingClaim: mongodb-data
   usePassword: false
   mongodbExtraFlags:
-    - "--smallfiles"
     - "--oplogSize=128"
     - "--replSet=rs0"
 
