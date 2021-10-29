@@ -11,9 +11,10 @@ mongodb:
     existingClaim: mongodb-data
   auth:
     enabled: false
-  mongodbExtraFlags:
+  extraFlags:
     - "--oplogSize=128"
     - "--replSet=rs0"
+  architecture: standalone
 
 rocketchat:
   config:
