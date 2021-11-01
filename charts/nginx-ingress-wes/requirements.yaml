@@ -1,4 +1,0 @@
-dependencies:
-  - name: nginx-ingress
-    version: "0.28.2"
-    repository: "@stable"
