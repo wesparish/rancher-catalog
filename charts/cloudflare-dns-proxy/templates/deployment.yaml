@@ -38,7 +38,7 @@ spec:
           - -c
           - |
             apt-get update && \
-            apt-get install ca-certificates curl bind9-utils procps -y && \
+            apt-get install ca-certificates curl bind9-utils dnsutils procps -y && \
             curl -LO https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && \
             apt-get install ./cloudflared-linux-amd64.deb && \
             cloudflared -v && \
