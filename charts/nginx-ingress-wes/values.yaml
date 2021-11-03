@@ -5,12 +5,16 @@
 nginx-ingress:
   controller:
     ingressClass: nginx-wes
-    setAsDefaultIngress: true
     service:
       type: LoadBalancer
       loadBalancerIP: 172.16.1.223
       annotations:
         metallb.universe.tf/address-pool: default
     kind: DaemonSet
+    daemonset:
+      useHostPort: true
+      hostPorts:
+        http: 30080
+        https: 30443
     nodeSelector:
       ingress: "true"
