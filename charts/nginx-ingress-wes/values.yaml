@@ -11,6 +11,6 @@ nginx-ingress:
       loadBalancerIP: 172.16.1.223
       annotations:
         metallb.universe.tf/address-pool: default
-    kind: DaemonSet
+    kind: daemonset
     nodeSelector:
       ingress: "true"
