@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-nginx-ingress:
+ingress-nginx:
   controller:
     ingressClass: nginx-wes
     service:
@@ -11,10 +11,5 @@ nginx-ingress:
       annotations:
         metallb.universe.tf/address-pool: default
     kind: DaemonSet
-    daemonset:
-      useHostPort: true
-      hostPorts:
-        http: 30080
-        https: 30443
     nodeSelector:
       ingress: "true"
