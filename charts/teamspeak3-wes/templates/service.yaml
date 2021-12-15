@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "teamspeak3-wes.fullname" . }}-udp
+  labels:
+    {{- include "teamspeak3-wes.labels" . | nindent 4 }}
+    teamspeak3-service-type: udp
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: default
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.voicePort }}
+      targetPort: voice
+      protocol: UDP
+      name: voice
+  selector:
+    {{- include "teamspeak3-wes.selectorLabels" . | nindent 4 }}
+  externalTrafficPolicy: Local
+  loadBalancerIP: 172.16.1.231
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "teamspeak3-wes.fullname" . }}-tcp
+  labels:
+    {{- include "teamspeak3-wes.labels" . | nindent 4 }}
+    teamspeak3-service-type: tcp
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: default
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.filetransferPort }}
+      targetPort: filetransfer
+      protocol: TCP
+      name: filetransfer
+  selector:
+    {{- include "teamspeak3-wes.selectorLabels" . | nindent 4 }}
+  externalTrafficPolicy: Local
+  loadBalancerIP: 172.16.1.231

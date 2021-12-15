@@ -1,0 +1,6 @@
+dependencies:
+- name: netmaker
+  repository: file://subcharts/netmaker-helm/
+  version: 0.1.0
+digest: sha256:8f561143ea6ac7475f67be56e4e855f3ddbc4aee2b37d2640f5991db1f233010
+generated: "2021-10-31T20:16:27.347917489Z"
