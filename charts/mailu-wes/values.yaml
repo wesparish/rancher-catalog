@@ -46,3 +46,10 @@ mailu:
     host: "smtp.postmarkapp.com:2525"
     username: SET_BY_RANCHER_QUESTION
     password: SET_BY_RANCHER_QUESTION
+
+  rspamd:
+    resources:
+      # rspamd fails to start with 200Mi/200m defaults
+      limits:
+        memory: 800Mi
+        cpu: 800m
