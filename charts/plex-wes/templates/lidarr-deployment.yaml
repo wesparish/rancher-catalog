@@ -50,6 +50,9 @@ spec:
           - name: servarr-data
             subPath: lidarr-config
             mountPath: /config
+          - name: servarr-data
+            subPath: qbittorrent-config/downloads
+            mountPath: /app/qBittorrent/downloads
           startupProbe:
             httpGet:
               path: /
