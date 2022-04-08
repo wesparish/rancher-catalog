@@ -30,8 +30,8 @@ replicaCount: 1
 
 image:
   repository: rocketchat/rocket.chat
-  tag: latest
-  pullPolicy: Always
+  tag: 4.6.0
+  pullPolicy: IfNotPresent
   gotify:
     repository: gotify/server
     tag: latest
