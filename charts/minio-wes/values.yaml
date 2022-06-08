@@ -1,0 +1,29 @@
+# Default values for minio-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+minio:
+  auth:
+    rootPassword: SET_BY_RANCHER_QUESTION
+  service:
+    type: LoadBalancer
+    loadBalancerIP: 172.16.1.234
+# Private only, no ingress for now
+#  ingress:
+#    enabled: true
+#    ingressClassName: nginx-wes
+#    annotations:
+#     kubernetes.io/ingress.class: nginx-wes
+#      kubernetes.io/tls-acme: "true"
+#  apiIngress:
+#    enabled: true
+#    ingressClassName: nginx-wes
+#    annotations:
+#     kubernetes.io/ingress.class: nginx-wes
+#      kubernetes.io/tls-acme: "true"
+  persistence:
+    enabled: true
+    existingClaim: minio-data
+  volumePermissions:
+    enabled: true
+

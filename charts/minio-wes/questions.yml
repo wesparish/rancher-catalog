@@ -1,0 +1,18 @@
+namespace: minio
+
+questions:
+- variable: minio.auth.rootPassword
+  default: "CHANGEME"
+  description: "password for admin account"
+  type: string
+  required: true
+  label: "password for admin account"
+  group: "MinIO"
+- variable: minio.service.loadBalancerIP
+  default: "172.16.1.234"
+  description: "LoadBalancer IP for minio service"
+  type: string
+  required: true
+  label: "LoadBalancer IP for minio service"
+  group: "MinIO"
+
