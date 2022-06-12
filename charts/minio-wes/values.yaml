@@ -3,8 +3,6 @@
 # Declare variables to be passed into your templates.
 
 minio:
-  auth:
-    rootPassword: SET_BY_RANCHER_QUESTION
   service:
     type: LoadBalancer
     loadBalancerIP: 172.16.1.234
@@ -26,4 +24,6 @@ minio:
     existingClaim: minio-data
   volumePermissions:
     enabled: true
-
+  extraEnvVars:
+    - name: MINIO_SERVER_URL
+      value: http://172.16.1.234:9000
