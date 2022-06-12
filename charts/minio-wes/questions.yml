@@ -1,0 +1,11 @@
+namespace: minio
+
+questions:
+- variable: minio.service.loadBalancerIP
+  default: "10.2.2.237"
+  description: "LoadBalancer IP for minio service"
+  type: string
+  required: true
+  label: "LoadBalancer IP for minio service"
+  group: "MinIO"
+
