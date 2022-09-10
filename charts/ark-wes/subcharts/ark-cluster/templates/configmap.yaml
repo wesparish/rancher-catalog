@@ -1,0 +1,54 @@
+{{- $fullname := (include "ark-cluster.fullname" .) }}
+{{- $labels := (include "ark-cluster.labels" .) }}
+{{- range $name, $server := .Values.servers }}
+---
+{{- $gameudp := $.Values.containerPorts.gameudp }}
+{{- $queryudp := $.Values.containerPorts.queryudp }}
+{{- $rcon := $.Values.containerPorts.rcon }}
+{{- if .ports }}
+  {{- $gameudp = default $gameudp .ports.gameudp }}
+  {{- $queryudp = default $queryudp .ports.queryudp }}
+  {{- $rcon = default $rcon .ports.rcon }}
+{{- end }}
+{{- $engineini := default dict $.Values.customConfigMap.EngineIni }}
+{{- $gameini := default dict $.Values.customConfigMap.GameIni }}
+{{- $gameusersettingsini := default dict $.Values.customConfigMap.GameUserSettingsIni }}
+{{- if .customConfigMap }}
+  {{- $gameini = default $gameini .customConfigMap.GameIni }}
+  {{- $gameusersettingsini = default $gameusersettingsini .customConfigMap.GameUserSettingsIni }}
+  {{- $engineini = default $engineini .customConfigMap.EngineIni }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels: {{- $labels | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+    {{- include "ark-cluster.tplValue" (dict "value" $.Values.commonLabels "context" $) | nindent 4 }}
+  annotations:
+    checksum/values: {{ toYaml $server | sha256sum | trunc 10 | quote }}
+    {{- include "ark-cluster.annotations" (dict "annotations" $.Values.commonAnnotations "context" $) | indent 4 }}
+data:
+  Engine.ini: |
+  {{- if $engineini }}
+    # from {{ $name }}.customConfig.EngineIni
+    {{- tpl $engineini (dict "server" $server "Template" $.Template) | nindent 4 }}
+  {{- else }}
+    {{- tpl ($.Files.Get "files/Engine.ini") (dict "server" $server "Template" $.Template) | nindent 4 }}
+  {{- end }}
+  Game.ini: |
+  {{- if $gameini }}
+    # from {{ $name }}.customConfig.GameIni
+    {{- tpl $gameini (dict "server" $server "Template" $.Template) | nindent 4 }}
+  {{- else }}
+    {{- tpl ($.Files.Get "files/Game.ini") (dict "server" $server "Template" $.Template) | nindent 4 }}
+  {{- end }}
+  GameUserSettings.ini: |
+  {{- if $gameusersettingsini }}
+    # from {{ $name }}.customConfig.GameUserSettingsIni
+    {{- tpl $gameusersettingsini (dict "server" $server "Template" $.Template) | nindent 4 }}
+  {{- else }}
+    {{- tpl ($.Files.Get "files/GameUserSettings.ini") (dict "server" $server "Template" $.Template) | nindent 4 }}
+  {{- end }}
+{{- end }}
