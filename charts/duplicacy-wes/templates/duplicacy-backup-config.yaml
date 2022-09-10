@@ -11,7 +11,11 @@ data:
             "name": "default",
             "id": "{{ .name }}",
             "repository": "",
+            {{- if .persistence.storage.override }}
+            "storage": {{ .persistence.storage.override | quote }},
+            {{- else }}
             "storage": "/storage",
+            {{- end }}
             "encrypted": false,
             "no_backup": false,
             "no_restore": false,
