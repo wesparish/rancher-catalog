@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-ersatztv
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: ersatztv
+spec:
+  type: {{ .Values.ersatztv.service.type }} 
+  ports:
+    - port: {{ .Values.ersatztv.service.port }}
+      targetPort: {{ .Values.ersatztv.service.port }}
+      protocol: TCP
+      name: ersatztv
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: ersatztv
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-ersatztv-nodeport
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: ersatztv-nodeport
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  loadBalancerIP: 172.16.1.236
+  ports:
+    - port: {{ .Values.ersatztv.service.nodePort }}
+      targetPort: {{ .Values.ersatztv.service.port }}
+      protocol: TCP
+      name: ersatztv
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: ersatztv

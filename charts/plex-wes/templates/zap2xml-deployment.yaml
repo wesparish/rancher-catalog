@@ -1,0 +1,73 @@
+# Deploys zap2xml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-zap2xml
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: zap2xml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: zap2xml
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: zap2xml
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-zap2xml
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.zap2xml.repository }}:{{ .Values.image.zap2xml.tag | default .Chart.AppVersion }}"
+          env:
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: zap2xml
+                  key: username
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zap2xml
+                  key: password
+            - name: OPT_ARGS
+              # github recommands "-I -D", seems really slow
+              value: "" 
+            - name: XMLTV_FILENAME
+              value: "{{ .Values.zap2xml.xmltvFilename }}"
+          imagePullPolicy: Always
+          volumeMounts:
+          - name: plex-data
+            subPath: xmltv
+            mountPath: /data
+          resources:
+            {{- toYaml .Values.zap2xml.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plex-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexData }}
