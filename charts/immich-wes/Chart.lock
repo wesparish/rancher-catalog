@@ -1,0 +1,6 @@
+dependencies:
+- name: immich
+  repository: file://subcharts/immich-charts/charts/apps/immich/
+  version: 0.0.1
+digest: sha256:5f84b6c26bba50b970b15ac47f52123a5a5c664a449af67cc7558376a368f60f
+generated: "2022-11-16T04:46:46.404815942-06:00"
