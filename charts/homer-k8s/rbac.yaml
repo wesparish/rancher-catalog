@@ -1,0 +1,24 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: homer-k8s
+rules:
+- apiGroups: [""] 
+  resources: ["pods", "ingresses"]
+  verbs: ["get", "watch", "list"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: homer-k8s
+  namespace: homer-k8s
+subjects:
+- kind: ServiceAccount
+  name: homer-k8s
+  namespace: homer-k8s
+roleRef:
+  kind: ClusterRole
+  name: homer-k8s
+  apiGroup: rbac.authorization.k8s.io

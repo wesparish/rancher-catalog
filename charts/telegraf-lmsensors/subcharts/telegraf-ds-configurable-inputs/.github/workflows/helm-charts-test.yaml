@@ -1,0 +1,57 @@
+name: "helm-charts/test"
+
+on: pull_request
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Fetch history
+        run: git fetch --prune --unshallow
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.4.0
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Install chart-testing tools
+        id: lint
+        uses: helm/chart-testing-action@v2.0.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed)
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+          fi
+
+      - name: Run chart-testing (lint)
+        run: ct lint
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.0.0
+        with:
+          installLocalPathProvisioner: true
+        if: steps.list-changed.outputs.changed == 'true'
+
+      # Our Enterprise chart requires some resources created
+      - name: Create Enterprise Test Resources
+        run: |
+          kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.1/cert-manager.yaml
+          sleep 30 # wait for CertManager
+          kubectl apply -f ./charts/influxdb-enterprise/example-resources.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install)
+        run: ct install
+        env:
+          INFLUXDB_ENTERPRISE_LICENSE_KEY: "${{ secrets.INFLUXDB_ENTERPRISE_LICENSE_KEY }}"
+        if: steps.list-changed.outputs.changed == 'true'

@@ -1,0 +1,46 @@
+telegraf:
+  image:
+    repo: "nexus-jamie-docker.elastiscale.net/docker-telegraf-pdu-scrape"
+    tag: "telegraf-1.18"
+    pullPolicy: Always
+  nodeSelector:
+    node-role.kubernetes.io/controlplane: "true"
+  args:
+  - "--debug"
+  service:
+    enabled: false
+  env:
+    - name: HOSTNAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: PDU_SCRAPE_HOSTS
+      value: "10.2.1.18,10.2.1.102"
+  args:
+    - "--config=/etc/telegraf/telegraf.conf" # The chart configuration file
+
+  config:
+    agent:
+      flush_interval: 60s
+    outputs:
+       - influxdb_v2:
+           urls:
+             - "http://influxdb-influxdb2.influxdb"
+           token: qkaxFH5lEochKzq9h4Q6X7UjZN5YmUuhw30hqmm116eydGbs4GRMG-E8fqu7ygl7HxXcBJ7lvgO0ZM4TX_oETA==
+           organization: default
+           bucket: pdu-scrape
+       - file:
+           files: [ 'stdout' ]
+           data_format: 'influx'
+    inputs:
+      - exec:
+          commands:
+            - "/pdu-scrape.py"
+          timeout: 60s
+          data_format: json
+          tag_keys:
+            - "host"
