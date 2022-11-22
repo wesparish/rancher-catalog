@@ -52,13 +52,13 @@ ingress:
     nginx.ingress.kubernetes.io/auth-secret: basic-auth
     nginx.ingress.kubernetes.io/auth-type: basic
   hosts:
-    - host: eqbcs.elastiscale.net
+    - host: eqbcs-test.elastiscale.net
       paths:
         - path: /
   tls:
-    - secretName: eqbcs-elastiscale.net
+    - secretName: eqbcs-test-elastiscale.net
       hosts:
-        - eqbcs.elastiscale.net
+        - eqbcs-test.elastiscale.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
