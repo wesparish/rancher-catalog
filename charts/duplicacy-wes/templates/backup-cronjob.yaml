@@ -16,20 +16,37 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           containers:
-          - name: duplicacy-backup-drive
+          - name: duplicacy-backup-{{ .name }}
             image: "{{ $.Values.image.duplicacyCLI.repository }}:{{ $.Values.image.duplicacyCLI.tag }}"
             workingDir: "/source"
+            env:
+              {{- if .persistence.storage.secrets }}
+                {{- if .persistence.storage.secrets.s3 }}
+              - name: DUPLICACY_S3_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .persistence.storage.secrets.s3 }}
+                    key: duplicacy_s3_id
+              - name: DUPLICACY_S3_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .persistence.storage.secrets.s3 }}
+                    key: duplicacy_s3_secret
+                {{- end }}
+              {{- end }}
             volumeMounts:
             - name: source
               mountPath: "/source"
               {{- if .persistence.source.subPath }}
               subPath: "{{ .persistence.source.subPath }}"
               {{- end }}
+            {{- if .persistence.storage.claim }}
             - name: storage
               mountPath: "/storage"
               {{- if .persistence.storage.subPath }}
               subPath: "{{ .persistence.storage.subPath }}"
               {{- end }}
+            {{- end }}
             - name: duplicacy-config
               mountPath: "/source/.duplicacy/preferences"
               subPath: "preferences"
@@ -43,9 +60,11 @@ spec:
           - name: source
             persistentVolumeClaim:
               claimName: "{{ .persistence.source.claim }}"
+          {{- if .persistence.storage.claim }}
           - name: storage
             persistentVolumeClaim:
               claimName: "{{ .persistence.storage.claim }}"
+          {{- end }}
           - name: duplicacy-config 
             configMap:
               name: duplicacy-preferences-{{ .name }}

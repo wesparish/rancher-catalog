@@ -1,0 +1,6 @@
+dependencies:
+- name: ark-cluster
+  repository: file://subcharts/ark-cluster/
+  version: 0.1.3
+digest: sha256:296a278fa776d6ddc3d8840ea8faa47281ec27019ee8477192dd98eae98a5725
+generated: "2022-08-13T07:30:25.476975427-05:00"

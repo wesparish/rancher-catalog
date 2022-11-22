@@ -1,0 +1,109 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.game.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "ark-cluster.fullname" . }}-game
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "ark-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: game
+    {{- if $.Values.commonLabels }}
+      {{- include "ark-cluster.tplValue" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "ark-cluster.annotations" (dict "annotations" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- range .Values.persistence.game.accessModes }}
+  - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.game.size | quote }}
+  storageClassName: {{ .Values.persistence.game.storageClass | quote }}
+  {{- if .Values.persistence.game.volumeMode }}
+  volumeMode: {{ .Values.persistence.game.volumeMode }}
+  {{- end }}
+  {{- if .Values.persistence.game.existingVolume }}
+  volumeName: {{ tpl .Values.persistence.game.existingVolume . }}
+  {{- else }}
+  volumeName: {{ template "ark-cluster.fullname" . }}-game
+  {{- end }}
+{{- end }}
+{{- if and .Values.persistence.enabled (not .Values.persistence.cluster.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "ark-cluster.fullname" . }}-cluster
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "ark-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cluster
+    {{- if $.Values.commonLabels }}
+      {{- include "ark-cluster.tplValue" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "ark-cluster.annotations" (dict "annotations" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- range .Values.persistence.cluster.accessModes }}
+  - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.cluster.size | quote }}
+  storageClassName: {{ .Values.persistence.cluster.storageClass | quote }}
+  {{- if .Values.persistence.cluster.volumeMode }}
+  volumeMode: {{ .Values.persistence.cluster.volumeMode }}
+  {{- end }}
+  {{- if .Values.persistence.game.existingVolume }}
+  volumeName: {{ tpl .Values.persistence.cluster.existingVolume . }}
+  {{- else }}
+  volumeName: {{ template "ark-cluster.fullname" . }}-cluster
+  {{- end }}
+{{- end }}
+
+{{- $chart_name := (include "ark-cluster.fullname" .) -}}
+{{- $labels := (include "ark-cluster.labels" .) -}}
+{{- $selectorLabels := (include "ark-cluster.selectorLabels" .) -}}
+{{- range $name, $server := .Values.servers }}
+{{- if and $.Values.persistence.enabled (not $.Values.persistence.save.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $chart_name }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- $labels | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+    {{- if $.Values.commonLabels }}
+      {{- include "ark-cluster.tplValue" (dict "value" $.Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if $.Values.commonAnnotations }}
+  annotations:
+    {{- include "ark-cluster.annotations" (dict "annotations" $.Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- range $.Values.persistence.save.accessModes }}
+  - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $.Values.persistence.save.size | quote }}
+  storageClassName: {{ $.Values.persistence.save.storageClass | quote }}
+  {{- if $.Values.persistence.save.volumeMode }}
+  volumeMode: {{ $.Values.persistence.save.volumeMode }}
+  {{- end }}
+  {{- if $.Values.persistence.save.existingVolume }}
+  volumeName: {{ printf "%s-%s" (tpl $.Values.persistence.save.existingVolume .) $name }}
+  {{- else }}
+  volumeName: {{ printf "%s-%s" $chart_name $name }}
+  {{- end }}
+{{- end }}
+{{- end }}

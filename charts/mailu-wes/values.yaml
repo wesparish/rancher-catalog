@@ -10,7 +10,7 @@ mailu:
   # Mail domains
   - mail.elastiscale.net
 #  - mail.cowtownt.org
-  - mail.firstshotprecision.com
+#  - mail.firstshotprecision.com
 #  Instead: exec to admin pod and create with: 
 #    flask mailu admin root example.com password
 #  initialAccount:
