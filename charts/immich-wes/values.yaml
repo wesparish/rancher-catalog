@@ -38,23 +38,23 @@ immich:
 
   server:
     image:
-      tag:  v1.35.0_54-dev
+      tag:  v1.36.2_56-dev
 
   microservice:
     image:
-      tag: v1.35.0_54-dev
+      tag: v1.36.2_56-dev
 
   machine_learning:
     image:
-      tag: v1.35.0_54-dev
+      tag: v1.36.2_56-dev
 
   web:
     image:
-      tag: v1.35.0_54-dev
+      tag: v1.36.2_56-dev
 
   proxy:
     image:
-      tag: v1.35.0_54-dev
+      tag: v1.36.2_56-dev
 
   ingress:
     main:
@@ -63,6 +63,7 @@ immich:
       annotations:
         kubernetes.io/ingress.class: "nginx-wes"
         kubernetes.io/tls-acme: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: 2000m
       hosts:
         - host: immich.elastiscale.net
           paths:
