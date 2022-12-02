@@ -1,0 +1,29 @@
+auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+
+node-red:
+  persistence:
+    enabled: true
+    existingClaim: node-red-data
+
+  ingress:
+    enabled: true
+    className: "nginx-wes"
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+      nginx.ingress.kubernetes.io/auth-realm: Authentication Required - node-red
+      nginx.ingress.kubernetes.io/auth-secret: basic-auth
+      nginx.ingress.kubernetes.io/auth-type: basic
+    hosts:
+      - host: node-red.elastiscale.net
+        paths:
+          - path: "/"
+            pathType: Prefix
+    tls:
+      - secretName: node-red-elastiscale.net
+        hosts:
+          - node-red.elastiscale.net
+        certificate:
+          enabled: false
+  nodeSelector:
+    ceph-client: "true"

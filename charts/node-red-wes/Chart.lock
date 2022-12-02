@@ -1,0 +1,6 @@
+dependencies:
+- name: node-red
+  repository: https://schwarzit.github.io/node-red-chart/
+  version: 0.21.2
+digest: sha256:ddaeb31038ce596ab9a9a3adf5d07bc56acae506b2fb5e85bdd61e9ddc2ec616
+generated: "2022-12-01T20:39:14.206965955-06:00"
