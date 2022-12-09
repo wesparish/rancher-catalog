@@ -26,6 +26,12 @@ frigate:
 #      runtimeClassName: 
 
   config: |
+    ffmpeg:
+      output_args:
+        # Optional: output args for record streams (default: shown below)
+        #record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an
+        # Record audio also: https://docs.frigate.video/faqs/
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
     mqtt:
       # Required: host name
       host: 172.16.1.229
