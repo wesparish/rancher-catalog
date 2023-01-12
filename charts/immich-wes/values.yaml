@@ -38,23 +38,28 @@ immich:
 
   server:
     image:
-      tag:  v1.36.2_56-dev
+      tag:  release
+      pullPolicy: Always
 
   microservice:
     image:
-      tag: v1.36.2_56-dev
+      tag: release
+      pullPolicy: Always
 
   machine_learning:
     image:
-      tag: v1.36.2_56-dev
+      tag: release
+      pullPolicy: Always
 
   web:
     image:
-      tag: v1.36.2_56-dev
+      tag: release
+      pullPolicy: Always
 
   proxy:
     image:
-      tag: v1.36.2_56-dev
+      tag: release
+      pullPolicy: Always
 
   ingress:
     main:
