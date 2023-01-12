@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: settings-config
+data:
+  settings.js: |-
+{{ .Files.Get "static-config-files/settings.js" | indent 4 }}
