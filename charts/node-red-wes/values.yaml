@@ -31,3 +31,18 @@ node-red:
   settings:
     name: settings-config
     configMapName: settings-config
+
+  env:
+    - name: TZ
+      value: "America/Chicago"
+    - name: GIT_SSH_COMMAND
+      value: "ssh -i /data/projects/.sshkeys/__default_node-red"
+
+  podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+
+  securityContext:
+    runAsGroup: 1000
+    runAsUser: 1000
+
