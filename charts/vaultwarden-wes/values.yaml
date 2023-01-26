@@ -1,0 +1,40 @@
+# Default values for vaultwarden-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+vaultwarden:
+  vaultwarden:
+    domain: https://vaultwarden.elastiscale.net
+    allowSignups: true
+    signupDomains: elastiscale.net
+    verifySignup: true
+    requireEmail: true
+
+    smtp:
+      enabled: true
+      host: mailu-postfix.mailu
+      from: vaultwarden@elastiscale.net
+      security: "off"
+      port: 25
+
+    service:
+      externalTrafficPolicy: local
+
+  ingress:
+    enabled: true
+    className: nginx-wes
+    host: vaultwarden.elastiscale.net
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+    tls:
+      - hosts:
+        - vaultwarden.elastiscale.net
+        secretName: vaultwarden-elastiscale.net
+
+  persistence:
+    enabled: true
+    existingClaim: vaultwarden-data
+
+  nodeSelector:
+    ceph-client: "true"

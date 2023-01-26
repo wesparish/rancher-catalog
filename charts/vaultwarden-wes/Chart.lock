@@ -1,0 +1,6 @@
+dependencies:
+- name: vaultwarden
+  repository: https://gissilabs.github.io/charts/
+  version: 1.0.0
+digest: sha256:a6e8cb89178b2837a8a668b1c9c0bb9019f50e18b401cf8dfefdd08a2ad18148
+generated: "2023-01-25T04:26:13.798564261-06:00"
