@@ -47,9 +47,14 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            privileged: true
           volumeMounts:
             - name: homeassistant-config
               mountPath: /config
+            - name: host-dbus-socket
+              mountPath: /run/dbus
+              readOnly: true
           ports:
             - name: http
               containerPort: 8123
@@ -80,4 +85,6 @@ spec:
         - name: homeassistant-config
           persistentVolumeClaim:
             claimName: homeassistant-config
-
+        - name: host-dbus-socket
+          hostPath:
+            path: /run/dbus
