@@ -1,0 +1,21 @@
+name: Helm Charts
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download pluto
+        uses: FairwindsOps/pluto/github-action
+
+      - name: Pluto exists?
+        run: |
+          pluto version
