@@ -15,3 +15,7 @@ jobs:
       - name: Pluto exists?
         run: |
           pluto version
+          
+      - name: Run pluto
+        run: |
+          pluto detect-files -d charts --ignore-deprecations --ignore-removals --output=markdown
