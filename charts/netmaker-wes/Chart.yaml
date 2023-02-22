@@ -25,6 +25,9 @@ appVersion: "0.8.4"
 
 dependencies:
   - name: netmaker
-    version: "0.1.0"
+    version: "0.3.4"
     repository: "file://subcharts/netmaker-helm/"
+  - name: "postgresql"
+    version: "12.2.1"
+    repository: https://charts.bitnami.com/bitnami
 

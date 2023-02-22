@@ -1,6 +1,9 @@
 dependencies:
 - name: netmaker
   repository: file://subcharts/netmaker-helm/
-  version: 0.1.0
-digest: sha256:8f561143ea6ac7475f67be56e4e855f3ddbc4aee2b37d2640f5991db1f233010
-generated: "2021-10-31T20:16:27.347917489Z"
+  version: 0.3.4
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.2.1
+digest: sha256:82b84ac885d643be48d6bfbd50ff5c882c1b38eb8f3e4b1083b76635b4094601
+generated: "2023-02-21T09:48:06.650756323-06:00"
