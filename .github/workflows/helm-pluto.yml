@@ -1,0 +1,21 @@
+name: Helm Charts
+
+on: [push, pull_request]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download pluto
+        uses: FairwindsOps/pluto/github-action@master
+
+      - name: Pluto exists?
+        run: |
+          pluto version
+          
+      - name: Run pluto
+        run: |
+          pluto detect-files -d charts --ignore-deprecations --ignore-removals --output=markdown
