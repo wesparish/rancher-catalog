@@ -1,0 +1,63 @@
+# Overrides for Bitnami Keycloak chart
+keycloak:
+  auth:
+    # kubectl -n keycloak create secret generic keycloak-passwords \
+    # --from-literal=admin-password='password' \
+    # --from-literal=postgres-password='password' \
+    # --from-literal=password='password'
+    existingSecret: "keycloak-passwords"
+    adminUser: "admin"
+  service:
+    loadBalancerIP: 172.16.1.237
+  ingress:
+    enabled: "true"
+    ingressClassName: "nginx-wes"
+    hostname: "keycloak.elastiscale.net"
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 16k
+    tls: "true"
+
+  postgresql:
+    auth:
+      existingSecret: "keycloak-passwords"
+    primary:
+      persistence:
+        existingClaim: keycloak-data
+      nodeSelector:
+        ceph-client: "true"
+
+oauth2-proxy:
+  configuration:
+    # kubectl -n keycloak create secret generic oauth2-proxy-secrets \
+    # --from-literal=client-id='oauth2-proxy' \
+    # --from-literal=client-secret='<from Keycloak client / credentials tab>' \
+    # --from-literal=cookie-secret="$(openssl rand -base64 32 | head -c 32 | base64)"
+    existingSecret: "oauth2-proxy-secrets"
+    content: |-
+      provider="keycloak-oidc"
+      oidc_issuer_url="https://keycloak.elastiscale.net/realms/master"
+      email_domains=["elastiscale.net"]
+      cookie_refresh = "1m"
+      cookie_expire = "7d"
+      cookie_domains = ["elastiscale.net"]
+      whitelist_domains = ["*.elastiscale.net"]
+      show_debug_on_error = true
+      silence_ping_logging = true
+  ingress:
+    enabled: "true"
+    ingressClassName: "nginx-wes"
+    hostname: "oauth2-proxy.elastiscale.net"
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 16k
+    tls: "true"
+    certManager: "true"
+
+  redis:
+    master:
+      persistence:
+        existingClaim: "keycloak-data"
+        subPath: "redis-master-data"

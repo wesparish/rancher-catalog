@@ -1,0 +1,9 @@
+dependencies:
+- name: keycloak
+  repository: https://charts.bitnami.com/bitnami
+  version: 13.1.0
+- name: oauth2-proxy
+  repository: https://charts.bitnami.com/bitnami
+  version: 3.4.6
+digest: sha256:652b357be9fd50d017d2d03c222b7e830de611eb125bcfae062e5a0a468425ff
+generated: "2023-02-22T08:37:53.739459449-06:00"
