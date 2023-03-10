@@ -49,17 +49,17 @@ spec:
               protocol: UDP
           startupProbe:
             httpGet:
-              path: /
+              path: /admin/login.php
               port: http
             failureThreshold: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /
+              path: /admin/login.php
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /admin/login.php
               port: http
           volumeMounts:
           - name: pihole-data
