@@ -1,6 +1,6 @@
 frigate:
   nodeSelector:
-    kubernetes.io/hostname: w-dock5
+    kubernetes.io/hostname: w-dock9
     ceph-client: "true"
 
   image:
