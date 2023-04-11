@@ -1,0 +1,138 @@
+frigate-wes:
+  frigate:
+    nodeSelector:
+      ceph-client: "true"
+      # Broken for subcharts: https://github.com/helm/helm/issues/9027
+      # --set frigate-wes.frigate.nodeSelector."kubernetes\.io/hostname"=null with helm CLI also didn't work
+      kubernetes.io/hostname: "j-dock2"
+
+    config: |
+      birdseye:
+        enabled: True
+        mode: continuous
+      ffmpeg:
+        output_args:
+          # Optional: output args for record streams (default: shown below)
+          # Record audio also: https://docs.frigate.video/faqs/
+          record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
+      mqtt:
+        # Required: host name
+        host: 10.2.2.239
+        # Optional: port (default: shown below)
+        port: 1883
+        # Optional: topic prefix (default: shown below)
+        # WARNING: must be unique if you are running multiple instances
+        topic_prefix: frigate
+        # Optional: client id (default: shown below)
+        # WARNING: must be unique if you are running multiple instances
+        client_id: frigate
+        # Optional: user
+        # user: mqtt_user
+        # Optional: password
+        # NOTE: Environment variables that begin with 'FRIGATE_' may be referenced in {}.
+        #       eg. password: '{FRIGATE_MQTT_PASSWORD}'
+        # password: password
+        # Optional: interval in seconds for publishing stats (default: shown below)
+        stats_interval: 60
+      detectors:
+        # coral:
+        #   type: edgetpu
+        #   device: usb
+        cpu1:
+          type: cpu
+        cpu2:
+          type: cpu
+        cpu3:
+          type: cpu
+        cpu4:
+          type: cpu
+      cameras:
+        # Name of your camera
+        barnoutside:
+          ffmpeg:
+            inputs:
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.191/Streaming/channels/101
+                roles:
+                  - detect
+                  - rtmp
+          detect:
+            width: 1280
+            height: 720
+            fps: 5
+        barninside:
+          ffmpeg:
+            inputs:
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.15
+                roles:
+                  - detect
+                  - rtmp
+          detect:
+            width: 1280
+            height: 720
+            fps: 5
+        easemententrance:
+          ffmpeg:
+            inputs:
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.94
+                roles:
+                  - detect
+                  - rtmp
+          detect:
+            width: 1280
+            height: 720
+            fps: 5
+        backpatio:
+          ffmpeg:
+            inputs:
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.33
+                roles:
+                  - detect
+                  - rtmp
+          detect:
+            width: 1280
+            height: 720
+            fps: 5
+        frontporch:
+          ffmpeg:
+            inputs:
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.56/Streaming/channels/102
+                roles:
+                  - detect
+                  - rtmp
+          detect:
+            width: 1280
+            height: 720
+            fps: 5
+        Driveway:
+          ffmpeg:
+            inputs:
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.29
+                roles:
+                  - detect
+                  - rtmp
+          detect:
+            width: 1280
+            height: 720
+            fps: 5
+      record:
+        enabled: True
+        #retain:
+        #  days: 10
+        #  mode: motion
+        events:
+          retain:
+            default: 10
+        #    mode: motion
+      snapshots:
+        enabled: True
+        # Optional: draw bounding box on the snapshots (default: shown below)
+        bounding_box: True
+        # Optional: crop the snapshot (default: shown below)
+        crop: False
+        # Optional: Camera override for retention settings (default: global values)
+        retain:
+          # Required: Default retention days (default: shown below)
+          default: 10
+
+    service:
+      loadBalancerIP: 10.2.2.238

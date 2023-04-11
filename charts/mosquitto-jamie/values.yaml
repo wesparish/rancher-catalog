@@ -1,0 +1,4 @@
+mosquitto-wes:
+  mosquitto:
+    service:
+      loadBalancerIP: 10.2.2.239

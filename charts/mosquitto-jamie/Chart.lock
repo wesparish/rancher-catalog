@@ -1,0 +1,6 @@
+dependencies:
+- name: mosquitto-wes
+  repository: file://../mosquitto-wes/
+  version: 0.1.0
+digest: sha256:d599663814432696e5e79d0c2ce23ff5806b1ec183daf278f9af7df7640fc123
+generated: "2023-04-10T14:48:22.13933283Z"

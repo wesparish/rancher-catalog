@@ -1,0 +1,6 @@
+dependencies:
+- name: frigate-wes
+  repository: file://../frigate-wes/
+  version: 0.1.0
+digest: sha256:b7dd99fc9e589937a4168553a0f5a4ef0278840681ff15efbed82a2d9e728b90
+generated: "2023-04-10T14:50:45.044859454Z"
