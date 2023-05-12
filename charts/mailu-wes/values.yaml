@@ -11,7 +11,7 @@ mailu:
   - mail.elastiscale.net
 #  - mail.cowtownt.org
 #  - mail.firstshotprecision.com
-#  Instead: exec to admin pod and create with: 
+#  Instead: exec to admin pod and create with:
 #    flask mailu admin root example.com password
 #  initialAccount:
 #    domain: mailu.elastiscale.net
@@ -24,9 +24,9 @@ mailu:
   persistence:
     existingClaim: mailu
   secretKey: SET_BY_RANCHER_QUESTION
-  
+
   front:
-    loadBalancer: 
+    loadBalancer:
       loadBalancerIP: 172.16.1.227
       externalTrafficPolicy: Local
 
@@ -53,3 +53,8 @@ mailu:
       limits:
         memory: 800Mi
         cpu: 800m
+
+  dovecot:
+    overrides:
+      dovecot.conf: |
+        mail_max_userip_connections=100

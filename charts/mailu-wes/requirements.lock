@@ -2,5 +2,5 @@ dependencies:
 - name: mailu
   repository: file://subcharts/mailu-helm-charts/mailu/
   version: 0.3.0
-digest: sha256:cf318c36571c88b19cafd9304c3c4d6af6b823252b1d51767bfb18385a64797c
-generated: 2021-02-04T03:44:13.658841928Z
+digest: sha256:650cc7f8267fec2ac1f1e79a31f97d179de723dc2712dc59f6fbd74bfb4bcea7
+generated: "2023-05-12T08:20:48.905624037-05:00"
