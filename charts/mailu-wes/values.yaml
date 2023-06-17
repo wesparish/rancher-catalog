@@ -57,4 +57,9 @@ mailu:
   dovecot:
     overrides:
       dovecot.conf: |
-        mail_max_userip_connections=100
+        ###############
+        # IMAP & POP
+        ###############
+        protocol imap {
+          mail_max_userip_connections = 100
+        }

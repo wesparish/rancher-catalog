@@ -24,12 +24,35 @@ immich:
         existingClaim: immich-data
         subPath: redis-data
 
-  common_env:
-    JWT_SECRET:
-      valueFrom:
-        secretKeyRef:
-          name: postgres-secret
-          key: postgres-password
+  image:
+    tag: v1.60.0
+
+  immich:
+    persistence:
+      library:
+        enabled: true
+        type: pvc
+        existingClaim: immich-data
+        # Seems to be broken? 20230608
+        subPath: immich
+
+  typesense:
+    enabled: true
+    persistence:
+      tsdata:
+        enabled: true
+        existingClaim: immich-typesense-data
+      library:
+        enabled: true
+        type: pvc
+        existingClaim: immich-data
+        subPath: immich
+    image:
+      repository: docker.io/typesense/typesense
+      tag: 0.24.0
+      pullPolicy: IfNotPresent
+
+  env:
     DB_PASSWORD:
       valueFrom:
         secretKeyRef:
@@ -38,49 +61,52 @@ immich:
 
   server:
     image:
-      tag:  release
       pullPolicy: Always
+    persistence:
+      library:
+        subPath: immich
 
-  microservice:
+  microservices:
     image:
-      tag: release
       pullPolicy: Always
+    persistence:
+      library:
+        subPath: immich
 
-  machine_learning:
+  machine-learning:
     image:
-      tag: release
       pullPolicy: Always
+    persistence:
+      library:
+        subPath: immich
 
   web:
     image:
-      tag: release
       pullPolicy: Always
+    persistence:
+      library:
+        subPath: immich
 
   proxy:
     image:
-      tag: release
       pullPolicy: Always
+    persistence:
+      library:
+        subPath: immich
 
-  ingress:
-    main:
-      enabled: true
-      primary: false
-      annotations:
-        kubernetes.io/ingress.class: "nginx-wes"
-        kubernetes.io/tls-acme: "true"
-        nginx.ingress.kubernetes.io/proxy-body-size: 2000m
-      hosts:
-        - host: immich.elastiscale.net
-          paths:
-            - path: "/"
-      tls:
-        - secretName: immich-elastiscale.net
-          hosts:
-            - immich.elastiscale.net
-
-  persistence:
-    library:
-      enabled: true
-      type: pvc
-      existingClaim: immich-data
-      subPath: immich
+    ingress:
+      main:
+        enabled: true
+        primary: false
+        annotations:
+          kubernetes.io/ingress.class: "nginx-wes"
+          kubernetes.io/tls-acme: "true"
+          nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+        hosts:
+          - host: immich.elastiscale.net
+            paths:
+              - path: "/"
+        tls:
+          - secretName: immich-elastiscale.net
+            hosts:
+              - immich.elastiscale.net

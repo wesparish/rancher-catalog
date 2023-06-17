@@ -43,11 +43,11 @@ duplicacy:
           subPath: home
         storage:
           # Chose either override (specify URL) or claim (PVC)
-          override: "minio://region@10.2.2.237:9000/wes-backup-1/raid5kdrive-home"
+          override: "minio://region@10.2.1.5:9000/wes-backup-1/raid5kdrive-home"
           secrets:
             # For S3, create a secret with keys
             # duplicacy_s3_id and duplicacy_s3_secret
-            s3: minio-remote-keys
+            s3: minio-remote-keys-omv
       cron: '@daily'
       args: [ 'backup', '-threads', '4', '-stats' ]
     - name: raid5kdrive
@@ -66,15 +66,59 @@ duplicacy:
           claim: duplicacy-backup-raid5kdrive
         storage:
           # Chose either override (specify URL) or claim (PVC)
-          override: "minio://region@10.2.2.237:9000/wes-backup-1/raid5kdrive"
+          override: "minio://region@10.2.1.5:9000/wes-backup-1/raid5kdrive"
           secrets:
             # For S3, create a secret with keys
             # duplicacy_s3_id and duplicacy_s3_secret
-            s3: minio-remote-keys
+            s3: minio-remote-keys-omv
       cron: '@weekly'
       args: [ 'backup', '-threads', '4', '-stats' ]
       filters: |
         -VMWARE_VMS/
+    - name: cephfs-remote
+      persistence:
+        source:
+          claim: duplicacy-backup-cephfs
+        storage:
+          # Chose either override (specify URL) or claim (PVC)
+          override: "minio://region@10.2.1.5:9000/wes-backup-1/cephfs"
+          secrets:
+            # For S3, create a secret with keys
+            # duplicacy_s3_id and duplicacy_s3_secret
+            s3: minio-remote-keys-omv
+      cron: '@daily'
+      args: [ 'backup', '-threads', '4', '-stats' ]
+      filters: |
+        +k8s-volumes/minio-data/*
+        +k8s-volumes/vaultwarden-data/*
+        +k8s-volumes/deluge-config/*
+        +k8s-volumes/duplicacy-config/*
+        +k8s-volumes/keycloak-data/*
+        +k8s-volumes/node-red-data/*
+        +k8s-volumes/onlyoffice-data/*
+        +k8s-volumes/homeassistant-config/*
+        +k8s-volumes/owncloud-mariadb-pvc/*
+        +k8s-volumes/netmaker-data/*
+        +k8s-volumes/code-server/*
+        +k8s-volumes/homeassistant-db/*
+        +k8s-volumes/virt-manager-data/*
+        +k8s-volumes/mongodb-data/*
+        +k8s-volumes/frigate-data/*
+        +k8s-volumes/plexpy-data/*
+        +k8s-volumes/rocketchat-data/*
+        +k8s-volumes/pihole-data/*
+        +k8s-volumes/asterisk-pvc/*
+        +k8s-volumes/svn-data/*
+        +k8s-volumes/rocketchat-backup/*
+        +k8s-volumes/nexus-data/*
+        +k8s-volumes/servarr-data/*
+        +k8s-volumes/mailu/*
+        +k8s-volumes/immich-data/*
+        +k8s-volumes/owncloud-data-pvc/*
+        +k8s-volumes/
+        +backups/*
+        +backups/
+        -*
 
 ingress:
   enabled: true
