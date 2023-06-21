@@ -1,0 +1,44 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: immich-postgres-backup
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: immich-postgres-backup
+            image: docker.io/bitnami/postgresql:14.5.0-debian-11-r6
+            volumeMounts:
+            - name: immich-postgres-backup
+              mountPath: /immich-postgres-backup/
+              subPath: immich-postgres-backup
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-password
+            command: ["/opt/bitnami/scripts/postgresql/entrypoint.sh"]
+            args:
+            - /bin/bash
+            - -c
+            - |
+              backup_dir="/immich-postgres-backup/$(date -I)"
+              mkdir $backup_dir
+              echo "Backing up immich postgresql to: $backup_dir"
+              cd $backup_dir
+              pg_dump -v --host immich-postgresql -U postgres -d immich -p 5432 > immich.sql
+              find /immich-postgres-backup/ -mtime +10 -delete
+          restartPolicy: OnFailure
+          volumes:
+          - name: immich-postgres-backup
+            persistentVolumeClaim:
+              claimName: immich-data
