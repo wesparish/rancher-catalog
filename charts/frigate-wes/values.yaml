@@ -26,6 +26,9 @@ frigate:
 #      runtimeClassName:
 
   config: |
+    birdseye:
+      enabled: True
+      mode: continuous
     ffmpeg:
       output_args:
         # Optional: output args for record streams (default: shown below)
@@ -123,6 +126,9 @@ frigate:
           width: 1280
           height: 720
           fps: 5
+        objects:
+          track:
+            - car
         motion:
           mask:
             - 1280,0,1075,0,936,0,1052,42,1082,56,1176,97,1241,87,1280,91
