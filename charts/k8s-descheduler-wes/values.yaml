@@ -1,0 +1,5 @@
+
+descheduler:
+  image:
+    # tag should match K8s version
+    tag: v0.19.0
