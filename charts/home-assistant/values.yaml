@@ -48,7 +48,16 @@ nodeSelector:
 
 tolerations: []
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        # Don't consume zigbee devices - zigbee2mqtt needs them
+        - key: zigbeeusb
+          operator: NotIn
+          values:
+          - "true"
 
 mariadb:
   architecture: standalone
