@@ -25,7 +25,8 @@ immich:
         subPath: redis-data
 
   image:
-    tag: v1.60.0
+#    tag: v1.60.0
+    tag: v1.71.0
 
   immich:
     persistence:
