@@ -31,9 +31,9 @@ spec:
               fieldRef:
                 fieldPath: status.podIP
           - name: MONGO_URL
-            value: mongodb://rocketchat-mongodb:27017/rocketchat
+            value: mongodb://rocketchat-mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true
           - name: MONGO_OPLOG_URL
-            value: mongodb://rocketchat-mongodb:27017/local
+            value: mongodb://rocketchat-mongodb:27017/local?replicaSet=rs0&directConnection=true
           - name: ROOT_URL
             value: {{ .Values.rocketchat.config.ROOT_URL }}
           - name: MAIL_URL
@@ -81,10 +81,10 @@ spec:
 #          volumeMounts:
 #          - name: data
 #            mountPath: /data
-#          command: 
+#          command:
 #            - mongo
 #            - mongodb://{{ include "rocketchat-wes.fullname" . }}-mongodb:27017/rocketchat
-#            - --eval 
+#            - --eval
 #            - "rs.initiate({ _id: 'rs0', members: [ { _id: 0, host: 'localhost:27017' } ]})"
 
       {{- with .Values.nodeSelector }}
