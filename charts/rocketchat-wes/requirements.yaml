@@ -1,4 +1,0 @@
-dependencies:
-  - name: mongodb
-    version: "10.28.7"
-    repository: "@bitnami"
