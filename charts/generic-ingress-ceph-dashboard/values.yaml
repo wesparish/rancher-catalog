@@ -1,0 +1,9 @@
+generic-ingress:
+  name: ceph
+  domainSuffix: elastiscale.net
+  auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+  backendProtocol: HTTPS
+  
+  endpoint:
+    targetIP: 172.16.1.107
+    targetPort: 8444
