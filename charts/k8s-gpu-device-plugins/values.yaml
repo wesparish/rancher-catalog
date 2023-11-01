@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  nvidia: nvidia/k8s-device-plugin:1.10
+#  nvidia: nvidia/k8s-device-plugin:1.10
   amd: rocm/k8s-device-plugin
   pullPolicy: IfNotPresent
 

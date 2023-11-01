@@ -1,3 +1,4 @@
+{{- if .Values.image.amd }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -55,3 +56,4 @@ spec:
             path: /sys
             type: ""
           name: sys
+{{- end }}
