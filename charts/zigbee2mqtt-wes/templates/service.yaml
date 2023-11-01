@@ -1,15 +1,21 @@
+
+{{- range .Values.zigbee2mqtt.instances }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "zigbee2mqtt-wes.fullname" . }}
+  name: {{ include "zigbee2mqtt-wes.fullname" $ }}-{{ .name }}
   labels:
-    {{- include "zigbee2mqtt-wes.labels" . | nindent 4 }}
+    {{- include "zigbee2mqtt-wes.labels" $ | nindent 4 }}
+    zigbeeLabel: {{ .name | quote }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ $.Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ $.Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    {{- include "zigbee2mqtt-wes.selectorLabels" . | nindent 4 }}
+    {{- include "zigbee2mqtt-wes.selectorLabels" $ | nindent 4 }}
+    zigbeeLabel: {{ .name | quote }}
+{{- end }}

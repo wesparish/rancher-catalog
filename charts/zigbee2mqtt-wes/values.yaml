@@ -19,10 +19,38 @@ replicaCount: 1
 # /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2676418-if00
 
 zigbee2mqtt:
-  usbSerialById: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2676418-if00
-  persistence:
-    existingClaim: zigbee2mqtt-data
   auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+  instances:
+  - name: conbeeii
+    usbSerialById: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2676418-if00
+    persistence:
+      existingClaim: zigbee2mqtt-data
+    nodeSelector:
+      zigbeeusb: "true"
+    hosts:
+      - host: zigbee2mqtt-conbeeii.elastiscale.net
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+     - secretName: zigbee2mqtt-conbeeii-elastiscale-net
+       hosts:
+         - zigbee2mqtt-conbeeii.elastiscale.net
+  - name: sonoff3
+    usbSerialById: /dev/serial/by-id/usb-Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0
+    persistence:
+      existingClaim: zigbee2mqtt-data
+    nodeSelector:
+      zigbeeusb: "sonoff"
+    hosts:
+      - host: zigbee2mqtt-sonoff3.elastiscale.net
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+     - secretName: zigbee2mqtt-sonoff3-elastiscale-net
+       hosts:
+         - zigbee2mqtt-sonoff3.elastiscale.net
 
 image:
   repository: koenkk/zigbee2mqtt
@@ -69,15 +97,6 @@ ingress:
     nginx.ingress.kubernetes.io/auth-realm: Authentication Required - zigbee2mqtt
     nginx.ingress.kubernetes.io/auth-secret: basic-auth
     nginx.ingress.kubernetes.io/auth-type: basic
-  hosts:
-    - host: zigbee2mqtt.elastiscale.net
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls:
-   - secretName: zigbee2mqtt-elastiscale-net
-     hosts:
-       - zigbee2mqtt.elastiscale.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -98,8 +117,6 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-nodeSelector:
-  zigbeeusb: "true"
 
 tolerations: []
 

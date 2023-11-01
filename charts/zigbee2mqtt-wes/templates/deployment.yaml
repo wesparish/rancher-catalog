@@ -1,40 +1,45 @@
+{{- range .Values.zigbee2mqtt.instances }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zigbee2mqtt-wes.fullname" . }}
+  name: {{ include "zigbee2mqtt-wes.fullname" $ }}-{{ .name }}
   labels:
-    {{- include "zigbee2mqtt-wes.labels" . | nindent 4 }}
+    {{- include "zigbee2mqtt-wes.labels" $ | nindent 4 }}
+    zigbeeLabel: {{ .name | quote }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not $.Values.autoscaling.enabled }}
+  replicas: {{ $.Values.replicaCount }}
   {{- end }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      {{- include "zigbee2mqtt-wes.selectorLabels" . | nindent 6 }}
+      {{- include "zigbee2mqtt-wes.selectorLabels" $ | nindent 6 }}
+      zigbeeLabel: {{ .name | quote }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with $.Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "zigbee2mqtt-wes.selectorLabels" . | nindent 8 }}
+        {{- include "zigbee2mqtt-wes.selectorLabels" $ | nindent 8 }}
+        zigbeeLabel: {{ .name | quote }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "zigbee2mqtt-wes.serviceAccountName" . }}
+      serviceAccountName: {{ include "zigbee2mqtt-wes.serviceAccountName" $ }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ $.Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8080
@@ -48,34 +53,36 @@ spec:
               path: /
               port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml $.Values.resources | nindent 12 }}
           volumeMounts:
           - name: zigbee2mqtt-data
             mountPath: /app/data
+            subPath: {{ .name | quote }}
           - name: run-udev
             mountPath: /run/udev
             readOnly: true
           - name: zigbee-usb-device
             mountPath: /dev/ttyACM0
-      {{- with .Values.nodeSelector }}
+      {{- with .nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with $.Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with $.Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
       - name: zigbee2mqtt-data
         persistentVolumeClaim:
-          claimName: {{ .Values.zigbee2mqtt.persistence.existingClaim }}
+          claimName: {{ .persistence.existingClaim }}
       - name: run-udev
         hostPath:
           path: /run/udev
       - name: zigbee-usb-device
         hostPath:
-          path: {{ .Values.zigbee2mqtt.usbSerialById }}
+          path: {{ .usbSerialById }}
+{{- end }}
