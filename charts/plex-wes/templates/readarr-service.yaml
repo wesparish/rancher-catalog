@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-readarr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: readarr
+spec:
+  type: {{ .Values.readarr.service.type }}
+  ports:
+    - port: {{ .Values.readarr.service.port }}
+      targetPort: {{ .Values.readarr.service.port }}
+      protocol: TCP
+      name: readarr
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: readarr

@@ -18,6 +18,9 @@ image:
   sonarr:
     repository: hotio/sonarr
     tag: release
+  readarr:
+    repository: ghcr.io/hotio/readarr
+    tag: latest
   prowlarr:
     repository: hotio/prowlarr
     tag: testing
@@ -117,6 +120,20 @@ sonarr:
   service:
     type: ClusterIP
     port: 8989
+
+readarr:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "nginx-wes"
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy.elastiscale.net/oauth2/start
+      nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy.elastiscale.net/oauth2/auth
+    fqdn: readarr.elastiscale.net
+    secretName: readarr-elastiscale.net
+  service:
+    type: ClusterIP
+    port: 8787
 
 prowlarr:
   ingress:

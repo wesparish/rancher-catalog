@@ -1,0 +1,26 @@
+{{- if .Values.readarr.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-readarr
+  {{- with .Values.readarr.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.readarr.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-readarr
+                port:
+                  number: {{ .Values.readarr.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.readarr.ingress.fqdn }}
+      secretName: {{ .Values.readarr.ingress.secretName }}
+{{- end }}
