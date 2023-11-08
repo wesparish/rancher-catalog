@@ -1,0 +1,80 @@
+gitea:
+  strategy:
+    type: "Recreate"
+
+  service:
+    ssh:
+      type: LoadBalancer
+      loadBalancerIP: 172.16.1.239
+      externalTrafficPolicy: Local
+
+  ingress:
+    enabled: true
+    className: nginx-wes
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: git.elastiscale.net
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: git.elastiscale.net-tls
+        hosts:
+          - git.elastiscale.net
+
+  nodeSelector:
+    ceph-client: "true"
+
+  persistence:
+    enabled: true
+    claimName: gitea-data
+    create: false
+    subPath: gitea-official-chart
+
+  gitea:
+    admin:
+      # kubectl -n gitea create secret generic gitea-admin-secret \
+      #   --from-literal=username=wes \
+      #   --from-literal=password=<pwd> \
+      #   --from-literal=email=wes@elastiscale.net
+      existingSecret: gitea-admin-secret
+    config:
+      database:
+        DB_TYPE: postgres
+      session:
+        PROVIDER: db
+      cache:
+        ADAPTER: memory
+      queue:
+        TYPE: level
+      indexer:
+        ISSUE_INDEXER_TYPE: bleve
+        REPO_INDEXER_ENABLED: true
+      service:
+        DISABLE_REGISTRATION: true
+      mailer:
+        ENABLED: true
+        PROTOCOL: smtp
+        SMTP_ADDR: mailu-postfix.mailu
+        SMTP_PORT: 25
+        FROM: git@elastiscale.net
+      metrics:
+        ENABLED: true
+        ENABLED_ISSUE_BY_LABEL: true
+        ENABLED_ISSUE_BY_REPOSITORY: true
+      actions:
+        ENABLED: true
+      server:
+        LFS_START_SERVER: true
+
+  redis-cluster:
+    enabled: false
+  postgresql:
+    enabled: true
+    primary:
+      persistence:
+        existingClaim: gitea-postgres
+        subPath: gitea-official-chart
+  postgresql-ha:
+    enabled: false
