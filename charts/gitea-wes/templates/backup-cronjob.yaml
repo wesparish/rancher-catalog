@@ -1,0 +1,124 @@
+---
+# Only backup if persistence is enabled and mounted
+{{- if .Values.gitea.persistence.enabled }}
+  {{- if .Values.gitea.persistence.mount }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitea-backup
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sd
+  namespace: {{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: gitea-backup
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "gitea-wes.fullname" . }}-backup
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: gitea-backup
+          {{- with .Values.gitea.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: gitea-backup
+            image: "{{ include "gitea.image" .Subcharts.gitea }}"
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              {{- if .Values.gitea.persistence.subPath }}
+              subPath: {{ .Values.gitea.persistence.subPath }}
+              {{- end }}
+            command: ["/bin/sh"]
+            args:
+            - "-c"
+            - |
+              #!/bin/sh
+              set -e
+
+              # Setup kubectl
+              curl -o kubectl -L "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod +x kubectl
+              curl -o jq -L https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux-amd64
+              chmod +x jq
+
+              export PATH=.:$PATH
+
+              # Always restart gitea server
+              function finish {
+                # Set gitea replicas to 1
+                kubectl -n gitea scale --replicas=1 deployment gitea
+                echo -n "Starting gitea again..."
+                while [[ \
+                  $(kubectl -n gitea \
+                  get pods -owide -l app.kubernetes.io/name=gitea -ojson | \
+                    jq '.items | length') -le "0" ]] ; do
+                  echo -n "."
+                  sleep 1
+                done
+                echo
+                echo "Gitea started successfully"
+              }
+              trap finish EXIT
+
+              # Set gitea replicas to 0
+              kubectl -n gitea scale --replicas=0 deployment gitea
+
+              # Wait for gitea pods to terminate
+              echo "Waiting for gitea to stop..."
+              while [[ \
+                $(kubectl -n gitea \
+                get pods -owide -l app.kubernetes.io/name=gitea -ojson | \
+                  jq '.items | length') -gt "0" ]] ; do
+                echo -n "."
+                sleep 1
+              done
+              echo
+              echo "Gitea stopped successfully"
+
+              # Run gitea dump -c /path/to/app.ini to dump gitea
+              gitea dump \
+                --config /data/gitea/conf/app.ini \
+                --file /data/backup/gitea-dump-$(date -I).tar.gz \
+                --verbose \
+                --type tar.gz \
+                --tempdir /data/backup/tmp
+              sync && sleep 5
+
+              # Sanity check tar.gz file
+              echo
+              echo "Sanity check tar.gz file"
+              echo
+              tar -tzvf /data/backup/gitea-dump-$(date -I).tar.gz
+
+              # Clean up old dump files, keep a week of the newest backups
+              find /data/backup/gitea-dump*tar.gz | sort -rn | tail -n+7
+          restartPolicy: Never
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: {{ .Values.gitea.persistence.claimName }}
+  {{- end }}
+{{- end }}
+
