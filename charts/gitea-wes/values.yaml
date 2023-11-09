@@ -1,3 +1,12 @@
+runner:
+  registrationToken:
+    # kubectl -n gitea create secret generic runner-secret \
+    #   --from-literal=token=<runner token>
+    existingSecret: runner-secret
+  persistence:
+    existingClaim: gitea-data
+    subPath: runner
+
 gitea:
   strategy:
     type: "Recreate"
@@ -13,6 +22,7 @@ gitea:
     className: nginx-wes
     annotations:
       kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 2000m
     hosts:
       - host: git.elastiscale.net
         paths:
@@ -67,6 +77,7 @@ gitea:
         ENABLED: true
       server:
         LFS_START_SERVER: true
+        SSH_PORT: 2222
 
   redis-cluster:
     enabled: false
