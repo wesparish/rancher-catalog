@@ -61,8 +61,10 @@ spec:
           - name: run-udev
             mountPath: /run/udev
             readOnly: true
+          {{- if .usbSerialById }}
           - name: zigbee-usb-device
             mountPath: /dev/ttyACM0
+          {{- end }}
       {{- with .nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -82,7 +84,9 @@ spec:
       - name: run-udev
         hostPath:
           path: /run/udev
+      {{- if .usbSerialById }}
       - name: zigbee-usb-device
         hostPath:
           path: {{ .usbSerialById }}
+      {{- end }}
 {{- end }}
