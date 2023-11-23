@@ -1,0 +1,93 @@
+# Deploys jellyfin
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-jellyfin
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: jellyfin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: jellyfin
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-jellyfin
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.jellyfin.repository }}:{{ .Values.image.jellyfin.tag | default .Chart.AppVersion }}"
+          env:
+            - name: PUID
+              value: "{{ .Values.allServarr.puid }}"
+            - name: PGID
+              value: "{{ .Values.allServarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.allServarr.tz }}"
+          imagePullPolicy: Always
+          ports:
+            - name: jellyfin-web
+              containerPort: {{ .Values.jellyfin.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: plex-data
+            mountPath: /plex-data
+            readOnly: true
+          - name: servarr-data
+            subPath: jellyfin-config
+            mountPath: /config
+          - name: servarr-data
+            subPath: jellyfin-data
+            mountPath: /data
+          startupProbe:
+            httpGet:
+              path: /
+              port: jellyfin-web
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: jellyfin-web
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: jellyfin-web
+            failureThreshold: 30
+          resources:
+            {{- toYaml .Values.jellyfin.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: plex-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.plexData }}
+      - name: servarr-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.servarrData }}

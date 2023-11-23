@@ -1,0 +1,26 @@
+{{- if .Values.jellyfin.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-jellyfin
+  {{- with .Values.jellyfin.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.jellyfin.ingress.fqdn }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "plex-wes.fullname" . }}-jellyfin
+                port:
+                  number: {{ .Values.jellyfin.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.jellyfin.ingress.fqdn }}
+      secretName: {{ .Values.jellyfin.ingress.secretName }}
+{{- end }}

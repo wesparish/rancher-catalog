@@ -1,0 +1,74 @@
+mastodon:
+  adminUser: wes
+  adminEmail: wes@elastiscale.net
+
+  forceHttpsS3Protocol: true
+  useSecureWebSocket: true
+
+  web:
+    extraEnvVars:
+      - name: LIMITED_FEDERATION_MODE
+        value: "true"
+  sidekiq:
+    extraEnvVars:
+      - name: LIMITED_FEDERATION_MODE
+        value: "true"
+  streaming:
+    extraEnvVars:
+      - name: LIMITED_FEDERATION_MODE
+        value: "true"
+  initJob:
+    extraEnvVars:
+      - name: LIMITED_FEDERATION_MODE
+        value: "true"
+
+
+  smtp:
+    server: mailu-postfix.mailu
+    port: 25
+    from_address: mastodon@elastiscale.net
+    domain: elastiscale.net
+    reply_to: mastodon@elastiscale.net
+
+  apache:
+    ingress:
+      enabled: true
+      hostname: mastodon.elastiscale.net
+      # Automatically enables ingress TLS
+      certManager: true
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+      ingressClassName: nginx-wes
+
+  minio:
+    persistence:
+      enabled: true
+      existingClaim: mastodon-data-minio
+    auth:
+      rootPassword: password
+
+  elasticsearch:
+    master:
+      persistence:
+        enabled: true
+        existingClaim: mastodon-data-elasticsearch-master
+    data:
+      persistence:
+        enabled: true
+        existingClaim: mastodon-data-elasticsearch-data
+
+  postgresql:
+    primary:
+      persistence:
+        enabled: true
+        existingClaim: mastodon-data-postgres
+    auth:
+      password: password
+
+  redis:
+    master:
+      persistence:
+        enabled: true
+        existingClaim: mastodon-data-redis
+    auth:
+      password: password

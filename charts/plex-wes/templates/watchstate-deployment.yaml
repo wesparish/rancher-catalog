@@ -1,0 +1,91 @@
+# Deploys watchstate
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-watchstate
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: watchstate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: watchstate
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: watchstate
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-watchstate
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.watchstate.repository }}:{{ .Values.image.watchstate.tag | default .Chart.AppVersion }}"
+          env:
+            - name: UID
+              value: "{{ .Values.allServarr.puid }}"
+            - name: GID
+              value: "{{ .Values.allServarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.allServarr.tz }}"
+            - name: WS_TZ
+              value: "{{ .Values.allServarr.tz }}"
+            - name: WS_CRON_IMPORT
+              value: "true"
+            - name: WS_CRON_EXPORT
+              value: "true"
+          imagePullPolicy: Always
+          ports:
+            - name: watchstate-web
+              containerPort: {{ .Values.watchstate.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: servarr-data
+            subPath: watchstate-config
+            mountPath: /config
+          startupProbe:
+            exec:
+              command:
+                - /opt/bin/php-fpm-healthcheck
+                - -v
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - /opt/bin/php-fpm-healthcheck
+                - -v
+          readinessProbe:
+            exec:
+              command:
+                - /opt/bin/php-fpm-healthcheck
+                - -v
+          resources:
+            {{- toYaml .Values.watchstate.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: servarr-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.servarrData }}

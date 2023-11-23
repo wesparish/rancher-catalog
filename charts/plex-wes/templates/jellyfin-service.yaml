@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-jellyfin
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: jellyfin
+spec:
+  type: {{ .Values.jellyfin.service.type }}
+  ports:
+    - port: {{ .Values.jellyfin.service.port }}
+      targetPort: {{ .Values.jellyfin.service.port }}
+      protocol: TCP
+      name: jellyfin
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: jellyfin
