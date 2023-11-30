@@ -8,7 +8,8 @@ image:
   pullPolicy: Always
   owncloud:
     repository: owncloud/server
-    tag: "10.2"
+    # tag: "10.2"
+    tag: "10.13.3"
   redis:
     repository: redis
     tag: "5.0"
@@ -38,7 +39,7 @@ ingress:
       hosts:
         - cloud.elastiscale.net
 
-resources: 
+resources:
   owncloud: {}
   redis: {}
   mariadb: {}

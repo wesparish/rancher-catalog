@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
+  strategy:
+    type: "Recreate"
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -115,8 +117,8 @@ spec:
               - name: Host
                 value: {{ index .Values.ingress.hosts 0 | quote }}
             initialDelaySeconds: 120
-            timeoutSeconds: 5
-            failureThreshold: 6
+            timeoutSeconds: 30
+            failureThreshold: 10
           readinessProbe:
             httpGet:
               path: /status.php
