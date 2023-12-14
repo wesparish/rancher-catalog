@@ -31,6 +31,8 @@ metadata:
   name: {{ include "gitea-wes.fullname" . }}-backup
 spec:
   concurrencyPolicy: Forbid
+  # Currently backing up old backups - disable until fixed
+  suspend: true
   schedule: "0 0 * * *"
   jobTemplate:
     spec:
