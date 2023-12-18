@@ -1,0 +1,149 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pixelfed-wes.fullname" . }}-worker
+  labels:
+    {{- include "pixelfed-wes.labels" . | nindent 4 }}
+    app-name: worker
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      {{- include "pixelfed-wes.selectorLabels" . | nindent 6 }}
+      app-name: worker
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pixelfed-wes.selectorLabels" . | nindent 8 }}
+        app-name: worker
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "pixelfed-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: setup-var-www-with-env-file
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.app.repository }}:{{ .Values.image.app.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.app.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              apt-get update
+              apt-get install -y rsync
+              rsync -av --delete /var/www/ /var/www-setup/
+              cp /mnt/.env /var/www-setup/.env
+              cp /mnt/.env /var/www-setup/.env.orig
+              chmod 777 /var/www-setup/.env
+          envFrom:
+            - configMapRef:
+                name: pixelfed-env
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: var-www
+            mountPath: /var/www-setup
+          - name: pixelfed-data
+            mountPath: /var/www/storage
+            subPath: {{ .Values.persistence.subPath | quote }}
+          - name: env-configmap
+            mountPath: /mnt
+        - name: wait-for-app
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.app.repository }}:{{ .Values.image.app.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.app.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              while ! curl http://app:80 ; do
+                echo "Waiting for app pod to respond on http://app:80..."
+              done
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.app.repository }}:{{ .Values.image.app.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.app.pullPolicy }}
+          command:
+            - /worker-entrypoint.sh
+          envFrom:
+            - configMapRef:
+                name: pixelfed-env
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          startupProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                php artisan horizon:status | grep running
+            failureThreshold: 60
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                php artisan horizon:status | grep running
+          readinessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                php artisan horizon:status | grep running
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: var-www
+            mountPath: /var/www
+          - name: pixelfed-data
+            mountPath: /var/www/storage
+            subPath: {{ .Values.persistence.subPath | quote }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: pixelfed-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | quote }}
+      - name: var-www
+        emptyDir:
+          medium: "Memory"
+      - name: env-configmap
+        configMap:
+          name: pixelfed-env-volume
+          items:
+            - key: env
+              path: .env
+

@@ -1,0 +1,77 @@
+---
+# Only backup if persistence is enabled and mounted
+{{- if .Values.persistence.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "pixelfed-wes.fullname" . }}-backup
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: pixelfed-backup
+            image: "{{ include "postgresql.v1.image" .Subcharts.postgresql }}"
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+            - name: data
+              mountPath: /backup
+              subPath: backup
+            command: ["/bin/sh"]
+            args:
+            - "-c"
+            - |
+              #!/bin/sh
+              set -e
+
+              backup_file="/backup/pixelfed_backup_$(date -I)"
+
+              # Backup database
+              echo "Dumping db with pg_dump..."
+              PGPASSWORD=postgres \
+                pg_dump \
+                -h pixelfed-postgresql \
+                -d pixelfed \
+                -U postgres \
+                -f $backup_file.sql
+              echo "  done!"
+              echo
+
+              # Backup entire pixelfed dir
+              echo "Backing up pixelfed data dir..."
+              tar -czf $backup_file.tar.gz /data
+              echo "  done!"
+              echo
+
+              # Sanity check tar.gz file
+              echo
+              echo "Sanity check tar.gz file"
+              echo
+              tar -tzvf $backup_file.tar.gz
+
+              # Clean up old dump files, keep a week of the newest backups
+              find /backup/*sql | sort -rn | tail -n+7 | xargs rm -f
+              find /backup/*tar.gz | sort -rn | tail -n+7 | xargs rm -f
+
+
+          restartPolicy: Never
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: {{ .Values.persistence.existingClaim }}
+{{- end }}
+

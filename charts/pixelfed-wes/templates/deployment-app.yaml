@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pixelfed-wes.fullname" . }}-app
+  labels:
+    {{- include "pixelfed-wes.labels" . | nindent 4 }}
+    app-name: app
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      {{- include "pixelfed-wes.selectorLabels" . | nindent 6 }}
+      app-name: app
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pixelfed-wes.selectorLabels" . | nindent 8 }}
+        app-name: app
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "pixelfed-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: setup-var-www-with-env-file
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.app.repository }}:{{ .Values.image.app.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.app.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              apt-get update
+              apt-get install -y rsync
+              rsync -av --delete /var/www/ /var/www-setup/
+              cp /mnt/.env /var/www-setup/.env
+              cp /mnt/.env /var/www-setup/.env.orig
+              chmod 777 /var/www-setup/.env
+          envFrom:
+            - configMapRef:
+                name: pixelfed-env
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: var-www
+            mountPath: /var/www-setup
+          - name: pixelfed-data
+            mountPath: /var/www/storage
+            subPath: {{ .Values.persistence.subPath | quote }}
+          - name: env-configmap
+            mountPath: /mnt
+      containers:
+        - name: {{ .Chart.Name }}-app
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.app.repository }}:{{ .Values.image.app.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.app.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: pixelfed-env
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /api/service/health-check
+              port: http
+            failureThreshold: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/service/health-check
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /api/service/health-check
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: var-www
+            mountPath: /var/www
+          - name: pixelfed-data
+            mountPath: /var/www/storage
+            subPath: {{ .Values.persistence.subPath | quote }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: pixelfed-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | quote }}
+      - name: var-www
+        emptyDir:
+          medium: "Memory"
+      - name: env-configmap
+        configMap:
+          name: pixelfed-env-volume
+          items:
+            - key: env
+              path: .env
+

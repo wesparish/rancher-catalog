@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    {{- include "pixelfed-wes.labels" . | nindent 4 }}
+    app-name: app
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "pixelfed-wes.selectorLabels" . | nindent 4 }}
+    app-name: app
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker
+  labels:
+    {{- include "pixelfed-wes.labels" . | nindent 4 }}
+    app-name: worker
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "pixelfed-wes.selectorLabels" . | nindent 4 }}
+    app-name: worker
+
