@@ -1,3 +1,27 @@
+
+auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+
+ingress:
+  enabled: true
+  className: "nginx-wes"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+    nginx.ingress.kubernetes.io/auth-realm: Authentication Required - Frigate
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-type: basic
+  hosts:
+    - host: frigate.elastiscale.net
+      paths:
+        - path: "/"
+          pathType: Prefix
+  tls:
+    - secretName: frigate-elastiscale.net
+      hosts:
+        - frigate.elastiscale.net
+      certificate:
+        enabled: false
+
 frigate:
   nodeSelector:
     kubernetes.io/hostname: w-dock9
