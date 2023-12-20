@@ -114,31 +114,31 @@ frigate:
           width: 1280
           height: 720
           fps: 5
-      back_patio_birdfeeder:
-        ffmpeg:
-          inputs:
-            - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.82:554//h264Preview_01_main
-              roles:
-                - detect
-                - rtmp
-        detect:
-          width: 1280
-          height: 720
-          fps: 5
-        objects:
-          track:
-            - bird
-          filters:
-            bird:
-              # Optional: minimum score for the object to initiate tracking
-              min_score: 0.1
-              # Optional: minimum decimal percentage for tracked object's computed score to be considered a true positive
-              threshold: 0.2
-              # mask:
-              #   - 0,720,949,720,955,459,1280,462,1280,378,1280,0,0,0
-        # motion:
-        #   mask:
-        #     - 0,720,949,720,955,459,1280,462,1280,378,1280,0,0,0
+      # back_patio_birdfeeder:
+      #   ffmpeg:
+      #     inputs:
+      #       - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.82:554//h264Preview_01_main
+      #         roles:
+      #           - detect
+      #           - rtmp
+      #   detect:
+      #     width: 1280
+      #     height: 720
+      #     fps: 5
+      #   objects:
+      #     track:
+      #       - bird
+      #     filters:
+      #       bird:
+      #         # Optional: minimum score for the object to initiate tracking
+      #         min_score: 0.1
+      #         # Optional: minimum decimal percentage for tracked object's computed score to be considered a true positive
+      #         threshold: 0.2
+      #         # mask:
+      #         #   - 0,720,949,720,955,459,1280,462,1280,378,1280,0,0,0
+      #   # motion:
+      #   #   mask:
+      #   #     - 0,720,949,720,955,459,1280,462,1280,378,1280,0,0,0
       driveway:
         ffmpeg:
           inputs:
