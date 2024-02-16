@@ -24,6 +24,9 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
+  # - name: immich
+  #   version: "0.1.1"
+  #   repository: "file://subcharts/immich-charts/charts/immich/"
   - name: immich
-    version: "0.1.1"
-    repository: "file://subcharts/immich-charts/charts/immich/"
+    version: 0.3.1
+    repository: https://immich-app.github.io/immich-charts

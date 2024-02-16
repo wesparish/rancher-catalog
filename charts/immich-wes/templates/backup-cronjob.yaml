@@ -35,7 +35,7 @@ spec:
               mkdir $backup_dir
               echo "Backing up immich postgresql to: $backup_dir"
               cd $backup_dir
-              pg_dump -v --host immich-postgresql -U postgres -d immich -p 5432 > immich.sql
+              pg_dump -v --host immich-postgresql -U immich -d immich -p 5432 > immich.sql
               find /immich-postgres-backup/ -mtime +10 -delete
           restartPolicy: OnFailure
           volumes:
