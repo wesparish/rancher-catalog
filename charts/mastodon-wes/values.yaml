@@ -34,11 +34,14 @@ mastodon:
     ingress:
       enabled: true
       hostname: mastodon.elastiscale.net
-      # Automatically enables ingress TLS
-      certManager: true
       annotations:
-        nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+        kubernetes.io/tls-acme: "true"
       ingressClassName: nginx-wes
+      tls:
+        - secretName: mastodon-elastiscale-net-tls
+          hosts:
+            - mastodon.elastiscale.net
 
   minio:
     persistence:
