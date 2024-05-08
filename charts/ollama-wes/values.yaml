@@ -1,0 +1,30 @@
+open-webui:
+  ollama:
+    persistence:
+      existingClaim: "ollama-data"
+    gpu:
+      enabled: true
+    nodeSelector:
+      kubernetes.io/hostname: "wes-desktop-ubuntu"
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    tolerations:
+    - key: host_type
+      operator: Equal
+      value: desktop
+      effect: NoSchedule
+  webui:
+    ingress:
+      enabled: true
+      class: "nginx-wes"
+      host: "open-webui.elastiscale.net"
+      tls: true
+      annotations:
+        kubernetes.io/tls-acme: "true"
+    persistence:
+      enabled: true
+      existingClaim: "ollama-webui-data"
+    service:
+      type: NodePort
+      nodePort: 32222
