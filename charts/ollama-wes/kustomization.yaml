@@ -1,0 +1,10 @@
+resources:
+- helm-output.yaml
+
+configMapGenerator:
+- name: env-vars
+  literals:
+  - OLLAMA_KEEP_ALIVE=-1
+
+patchesStrategicMerge:
+- add-env-vars.yaml

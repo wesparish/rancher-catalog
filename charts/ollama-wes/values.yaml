@@ -4,8 +4,8 @@ open-webui:
       existingClaim: "ollama-data"
     gpu:
       enabled: true
-    nodeSelector:
-      kubernetes.io/hostname: "wes-desktop-ubuntu"
+    nodeSelector: {}
+      #kubernetes.io/hostname: "wes-desktop-ubuntu"
     resources:
       limits:
         nvidia.com/gpu: 1
