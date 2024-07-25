@@ -147,8 +147,8 @@ frigate:
                 - detect
                 - rtmp
         detect:
-          width: 1280
-          height: 720
+          width: 2688
+          height: 1520
           fps: 5
         objects:
           track:
