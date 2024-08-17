@@ -2,6 +2,10 @@ apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-production
+  annotations:
+    # Make sure CRDs are installed first
+    # May have to run helm install twice?
+    "helm.sh/hook": post-install
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
