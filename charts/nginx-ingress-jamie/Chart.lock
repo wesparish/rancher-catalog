@@ -1,0 +1,6 @@
+dependencies:
+- name: nginx-ingress-wes
+  repository: file://../nginx-ingress-wes
+  version: 1.0.0
+digest: sha256:0522b4b35b2d48eef656a83d703a290d9deac4260752de4d4aff4ada288324af
+generated: "2024-08-18T14:40:10.28799041-05:00"
