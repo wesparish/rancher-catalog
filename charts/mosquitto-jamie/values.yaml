@@ -4,7 +4,8 @@ mosquitto-wes:
       loadBalancerIP: 192.168.4.11
 
     config: |
-      persistence false
+      persistence true
+      persistence_location /mosquitto/data/
       log_dest stdout
       listener 1883
       allow_anonymous true
@@ -13,6 +14,6 @@ mosquitto-wes:
       protocol websockets
 
     persistence:
-      enabled: false
+      enabled: true
 
     nodeSelector: null
