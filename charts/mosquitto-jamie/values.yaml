@@ -1,4 +1,18 @@
 mosquitto-wes:
   mosquitto:
     service:
-      loadBalancerIP: 10.2.2.239
+      loadBalancerIP: 192.168.4.11
+
+    config: |
+      persistence false
+      log_dest stdout
+      listener 1883
+      allow_anonymous true
+      listener 9090
+      allow_anonymous true
+      protocol websockets
+
+    persistence:
+      enabled: false
+
+    nodeSelector: null
