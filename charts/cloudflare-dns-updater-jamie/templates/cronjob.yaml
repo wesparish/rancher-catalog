@@ -1,0 +1,37 @@
+# K8s cronjob to run the cloudflare-dns-updater container every minute
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cloudflare-dns-updater
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cloudflare-dns-updater
+            image: wesparish/cloudflare-dns-updater
+            env:
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cloudflareDnsUpdater.apiTokenSecretName | quote }}
+                  key: token
+            - name: DNS_RECORD_TO_UPDATE
+              value: {{ .Values.cloudflareDnsUpdater.dnsRecordToUpdate | quote  }}
+            - name: DNS_ZONE_TO_UPDATE
+              value: {{ .Values.cloudflareDnsUpdater.dnsZoneToUpdate | quote  }}
+            - name: DNS_RECORD_TYPE
+              value: {{ .Values.cloudflareDnsUpdater.dnsRecordType | quote  }}
+            - name: DNS_RECORD_PROXIED
+              value: {{ .Values.cloudflareDnsUpdater.dnsRecordProxied | quote  }}
+            - name: DNS_RECORD_TTL
+              value: {{ .Values.cloudflareDnsUpdater.dnsRecordTTL | quote  }}
+            - name: IPIFY_API_URL
+              value: {{ .Values.cloudflareDnsUpdater.ipifyAPIURL | quote  }}
+            - name: CLOUDFLARE_RECORD_SOLO
+              value: {{ .Values.cloudflareDnsUpdater.cloudflareRecordSolo | quote  }}
+          restartPolicy: OnFailure

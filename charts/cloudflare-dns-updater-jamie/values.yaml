@@ -1,0 +1,16 @@
+# Default values for cloudflare-dns-updater.
+
+cloudflareDnsUpdater:
+  # Required to exist in K8s in the same namespace this is deployed in
+  # kubectl -n cloudflare-dns-updater create secret generic \
+  #   cloudflare-api-token \
+  #   --from-literal=token=<cloudflare api token>
+  apiTokenSecretName: "cloudflare-api-token"
+  # Everything below is optional
+  dnsRecordToUpdate: "jamiewan"
+  dnsZoneToUpdate: "elastiscale.net"
+  dnsRecordType: "A"
+  dnsRecordProxied: "false"
+  dnsRecordTTL: "300"
+  ipifyAPIURL: "https://api.ipify.org"
+  cloudflareRecordSolo: "true"
