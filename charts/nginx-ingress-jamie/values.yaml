@@ -2,6 +2,11 @@ nginx-ingress-wes:
   ingress-nginx:
     controller:
       ingressClass: nginx-wes
+      ingressClassResource:
+        name: nginx-wes  # default: nginx
+        enabled: true
+        default: false
+        controllerValue: "k8s.io/nginx-wes"  # default: k8s.io/ingress-nginx
       service:
         type: LoadBalancer
         loadBalancerIP: 192.168.4.10
@@ -10,3 +15,9 @@ nginx-ingress-wes:
       kind: DaemonSet
       nodeSelector:
         ingress: "true"
+      allowSnippetAnnotations: true
+      config:
+        # Disable
+        proxy-body-size: 0
+        # Increase for possible authn authz headers
+        proxy-buffer-size: 32k
