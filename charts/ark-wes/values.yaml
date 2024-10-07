@@ -2,172 +2,50 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+service:
+  type: LoadBalancer
+  loadBalancerIP: 172.16.1.233
+  ports:
+    - name: island1
+      queryudp: 27010
+      gameudp: 7770
+      gameudp2: 7771
+      rcon: 32330
+
 ark-cluster:
-#  nameOverride: ""
-#  fullnameOverride: ""
-#  commonLabels: {}
-#  commonAnnotations: {}
   nodeSelector:
     ceph-client: "true"
-    kubernetes.io/hostname: "w-dock5"
-#  affinity: {}
-#  tolerations: []
-#  securityContext: {}
-#  # need to adjust image...
-#  #  runAsUser: 1000
-#  #  fsGroup: 1000
-#  podLabels: {}
-#  podAnnotations: {}
-#  podSecurityContext:
-#    capabilities:
-#      drop:
-#        - ALL
-#      add:
-#        - CHOWN
-#        - NET_BIND_SERVICE
-#    readOnlyRootFilesystem: true
-#    runAsNonRoot: false
-#  topologySpreadConstraints: {}
-  
+    kubernetes.io/hostname: "w-dock8"
+
   image:
     registry: docker.io
     repository: drpsychick/arkserver
     tag: latest-v1.6.61a #bionic
     pullSecrets: []
     pullPolicy: Always
-#  
-#  updateStrategy:
-#    type: Recreate
-#  
-#  restartPolicy: Always
-#  
-#  # Time for the server to shutdown gracefully
-#  terminationGracePeriodSeconds: 60
-#  
-#  # Defaults to 1, we set this to 0 so servers don't start automatically after deploy
-#  #
+
   replicaCount: 1
-#  
-#  # Attach pod directly to host network
-#  # Implies: `service.enabled: false`
-#  # Mutually exclusive: `hostPort`
-#  hostNetwork: false
-#  
-#  # Attach specific ports to host node.
-#  # Implies: `service.enabled: false`
-#  # Mutually exclusive: `hostNetwork`
-#  hostPort: true
-#  
-#  # set to "ClusterFirstWithHostNet" when hostNetwork=true
-#  #
-#  # dnsPolicy: ClusterFirst
-#  
-  # Cluster name
+
   clusterName: wtopace
-#  
-#  # Mods available in the cluster and enabled by default on all servers.
-#  # Mods are updated with the game and can be overwritten per server.
-#  mods: []
-#  #  - "731604991"
-#  #  - "889745138"
-#  #  - "893904615"
-#  #  - "1404697612"
-#  #  - "621154190"
-#  #  - "564895376"
-#  #  - "931434275"
-#  
-#  # Set RCON password for the whole cluster
-#  rcon:
-#    password:
-#  
-#  # Global extraEnvVars for all servers
-#  extraEnvVars: []
-#  #  - name: am_arkwarnminutes
-#  #    value: "15"
-#  
-#  # Global custom game settings can be overwritten per server
-#  customConfigMap:
-#    GameIni:
-#    GameUserSettingsIni:
-#    EngineIni:
-#  
-  # Servers in the ARK cluster
-  servers: 
-    # one entry for each server in the cluster
-#    extinction1:
-#      # updateOnStart should be enabled only on the first server
-#      updateOnStart: true
-#      sessionName: "WTopAce Extinction"
-#      message: "Welcome to WTopAce Extinction"
-#      # map: TheIsland, Ragnarok, CrystalIsles, Aberration_P, ScorchedEarth_P, Extinction, ...
-#      map: Extinction
-#      password: ""
-#      maxPlayers: 10
-#      # xpMultiplier is added to default GameUserSettings.ini
-#      # if you use `customConfigMap.GameUserSettingsIni` make sure to include it there
-#      xpMultiplier: 6
-#      extraEnvVars:
-#        - name: am_arkwarnminutes
-#          value: "30"
-#      # ports must be the same on external and internal
-#      ## we don't need a service abtraction as every pod is a single server with dedicated ports
-#      # a service with nodePort would be "right" configuration, but for latency reasons I'd skip it.
-#      # with service: public:30200 -> [nodeport:30200] -> service:$gameudp -> pod:30200
-#      # hostnetwork (no service!): public:30200 -> node=pod:30200
-#      # pod hostPort (through service): public:30200 -> node=pod:30200
-#      # difference hostPort hostNetwork : Port only exposes a single port
-#      ports:
-#        queryudp: 27010
-#        gameudp: 7770
-#        rcon: 32330
-#      # override mods for a single server
-#      # mods: []
-#      rcon:
-#        password: "changeme"
-#      resources:
-#        requests:
-#          cpu: 1
-#          memory: 4Gi
-#        limits:
-#          cpu: 1.5
-#          memory: 6Gi
-#      customConfigMap:
-#        GameIni: |
-#          # Extinction Game.ini
-#        GameUserSettingsIni: |
-#          # Extinction GameUserSettings.ini
-#          [ServerSettings]
-#          XPMultiplier=6
-#        EngineIni: |
-#          # Extinction Engine.ini
+
+  servers:
     island1:
       # updateOnStart should be enabled only on the first server
       updateOnStart: true
       sessionName: "WTopAce Island"
       message: "Welcome to WTopAce Island"
-      # map: TheIsland, Ragnarok, CrystalIsles, Aberration_P, ScorchedEarth_P, Extinction, ...
       map: TheIsland
       password: ""
       maxPlayers: 10
-      # xpMultiplier is added to default GameUserSettings.ini
-      # if you use `customConfigMap.GameUserSettingsIni` make sure to include it there
-      xpMultiplier: 6
+      xpMultiplier: 4
       extraEnvVars:
         - name: am_arkwarnminutes
           value: "30"
-      # ports must be the same on external and internal
-      ## we don't need a service abtraction as every pod is a single server with dedicated ports
-      # a service with nodePort would be "right" configuration, but for latency reasons I'd skip it.
-      # with service: public:30200 -> [nodeport:30200] -> service:$gameudp -> pod:30200
-      # hostnetwork (no service!): public:30200 -> node=pod:30200
-      # pod hostPort (through service): public:30200 -> node=pod:30200
-      # difference hostPort hostNetwork : Port only exposes a single port
       ports:
         queryudp: 27010
+        # 2 ports: 7770 and 7771 (created automatically)
         gameudp: 7770
         rcon: 32330
-      # override mods for a single server
-      # mods: []
       rcon:
         password: "changeme"
       resources:
@@ -175,133 +53,285 @@ ark-cluster:
           cpu: 1
           memory: 4Gi
         limits:
-          cpu: 1.5
-          memory: 6Gi
+          cpu: 4
+          memory: 12Gi
+      mods:
+        - 924933745
+        - 1404697612
+        - 1315534671
+        - 889745138
       customConfigMap:
         GameIni: |
           # Extinction Game.ini
+          [/script/shootergame.shootergamemode]
+          bDisableGenesisMissions=false
+          bIgnoreStructuresPreventionVolumes=true
+          bGenesisUseStructuresPreventionVolumes=true
+          bShowCreativeMode=false
+          bAutoUnlockAllEngrams=false
+          MaxTribeLogs=1
+          bDisableFriendlyFire=true
+          bUseCorpseLocator=true
+          bDisableStructurePlacementCollision=false
+          bAllowUnlimitedRespecs=true
+          bPvEDisableFriendlyFire=true
+          bFlyerPlatformAllowUnalignedDinoBasing=false
+          bDisableLootCrates=false
+          bIncreasePvPRespawnInterval=false
+          IncreasePvPRespawnIntervalCheckPeriod=300
+          IncreasePvPRespawnIntervalMultiplier=2
+          IncreasePvPRespawnIntervalBaseAmount=60
+          bAutoPvETimer=false
+          bAutoPvEUseSystemTime=false
+          AutoPvEStartTimeSeconds=0
+          AutoPvEStopTimeSeconds=0
+          bPvEAllowTribeWar=true
+          bPvEAllowTribeWarCancel=false
+          MaxAlliancesPerTribe=10
+          FastDecayInterval=30
+          bAllowCustomRecipes=false
+          CustomRecipeEffectivenessMultiplier=1.00000
+          CustomRecipeSkillMultiplier=1.00000
+          bAllowPlatformSaddleMultiFloors=true
+          UseCorpseLifeSpanMultiplier=25.00000
+          GlobalPoweredBatteryDurabilityDecreasePerSecond=4
+          RandomSupplyCratePoints=false
+          # OverrideMaxExperiencePointsPlayer=1
+          # OverrideMaxExperiencePointsDino=1
+          PlayerHarvestingDamageMultiplier=1.00000
+          CraftingSkillBonusMultiplier=1.00000
+          DinoHarvestingDamageMultiplier=3.20000
+          DinoTurretDamageMultiplier=1.00000
+          WildDinoCharacterFoodDrainMultiplier=1.00000
+          WildDinoTorporDrainMultiplier=1.00000
+          TamedDinoCharacterFoodDrainMultiplier=1.00000
+          TamedDinoTorporDrainMultiplier=1.00000
+          PassiveTameIntervalMultiplier=1.00000
+          ResourceNoReplenishRadiusPlayers=1.00000
+          ResourceNoReplenishRadiusStructures=1.00000
+          BaseTemperatureMultiplier=0.47500
+          GlobalItemDecompositionTimeMultiplier=1.00000
+          GlobalCorpseDecompositionTimeMultiplier=1.00000
+          CraftXPMultiplier=2.00000
+          GenericXPMultiplier=2.00000
+          HarvestXPMultiplier=2.00000
+          KillXPMultiplier=4.00000
+          SpecialXPMultiplier=1.00000
+          StructureDamageRepairCooldown=180
+          PvPZoneStructureDamageMultiplier=6.00000
+          bPassiveDefensesDamageRiderlessDinos=false
+          bLimitTurretsInRange=true
+          LimitTurretsRange=10000
+          LimitTurretsNum=100
+          bHardLimitTurretsInRange=true
+          PreventOfflinePvPConnectionInvincibleInterval=5.00000
+          bDisableDinoRiding=false
+          bDisableDinoTaming=false
+          bUseTameLimitForStructuresOnly=false
+          FastDecayInterval=43200
+          GlobalSpoilingTimeMultiplier=1.00000
+          BabyImprintingStatScaleMultiplier=1.00000
+          BabyImprintAmountMultiplier=1.0
+          MatingIntervalMultiplier=1.00000
+          LayEggIntervalMultiplier=1.00000
+          EggHatchSpeedMultiplier=1.00000
+          BabyMatureSpeedMultiplier=1.00000
+          BabyCuddleIntervalMultiplier=1.00000
+          BabyCuddleGracePeriodMultiplier=1.00000
+          BabyCuddleLoseImprintQualitySpeedMultiplier=1.00000
+          BabyFoodConsumptionSpeedMultiplier=1.00000
+          SupplyCrateLootQualityMultiplier=1.0
+          FishingLootQualityMultiplier=1.00000
+          CropGrowthSpeedMultiplier=1.00000
+          PoopIntervalMultiplier=1.00000
+          CropDecaySpeedMultiplier=1.00000
+          HairGrowthSpeedMultiplier=1.00000
+          KickIdlePlayersPeriod=3600
+          PerLevelStatsMultiplier_Player[0]=1
+          PerLevelStatsMultiplier_Player[1]=1
+          PerLevelStatsMultiplier_Player[2]=1
+          PerLevelStatsMultiplier_Player[3]=1
+          PerLevelStatsMultiplier_Player[4]=1
+          PerLevelStatsMultiplier_Player[5]=1
+          PerLevelStatsMultiplier_Player[6]=1
+          PerLevelStatsMultiplier_Player[7]=1
+          PerLevelStatsMultiplier_Player[8]=1
+          PerLevelStatsMultiplier_Player[9]=1
+          PerLevelStatsMultiplier_Player[10]=1
+          PerLevelStatsMultiplier_Player[11]=1
+          PerLevelStatsMultiplier_DinoWild[0]=1
+          PerLevelStatsMultiplier_DinoWild[1]=1
+          PerLevelStatsMultiplier_DinoWild[2]=1
+          PerLevelStatsMultiplier_DinoWild[3]=1
+          PerLevelStatsMultiplier_DinoWild[4]=1
+          PerLevelStatsMultiplier_DinoWild[5]=1
+          PerLevelStatsMultiplier_DinoWild[6]=1
+          PerLevelStatsMultiplier_DinoWild[7]=1
+          PerLevelStatsMultiplier_DinoWild[8]=1
+          PerLevelStatsMultiplier_DinoWild[9]=1
+          PerLevelStatsMultiplier_DinoTamed[0]=0.2
+          PerLevelStatsMultiplier_DinoTamed[1]=1
+          PerLevelStatsMultiplier_DinoTamed[2]=1
+          PerLevelStatsMultiplier_DinoTamed[3]=1
+          PerLevelStatsMultiplier_DinoTamed[4]=1
+          PerLevelStatsMultiplier_DinoTamed[5]=1
+          PerLevelStatsMultiplier_DinoTamed[6]=1
+          PerLevelStatsMultiplier_DinoTamed[7]=1
+          PerLevelStatsMultiplier_DinoTamed[8]=0.17
+          PerLevelStatsMultiplier_DinoTamed[9]=1
+          PerLevelStatsMultiplier_Tamed_Add[0]=0.14
+          PerLevelStatsMultiplier_Tamed_Add[1]=1
+          PerLevelStatsMultiplier_Tamed_Add[2]=1
+          PerLevelStatsMultiplier_Tamed_Add[3]=1
+          PerLevelStatsMultiplier_Tamed_Add[4]=1
+          PerLevelStatsMultiplier_Tamed_Add[5]=1
+          PerLevelStatsMultiplier_Tamed_Add[6]=1
+          PerLevelStatsMultiplier_Tamed_Add[7]=1
+          PerLevelStatsMultiplier_Tamed_Add[8]=0.14
+          PerLevelStatsMultiplier_Tamed_Add[9]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[0]=0.44
+          PerLevelStatsMultiplier_DinoTamed_Affinity[1]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[2]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[3]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[4]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[5]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[6]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[7]=1
+          PerLevelStatsMultiplier_DinoTamed_Affinity[8]=0.44
+          PerLevelStatsMultiplier_DinoTamed_Affinity[9]=1
+          CnFfhWj=g8UuY.C7Fo
+          Z-dnaQveHxyzfSLm=j6JhiFm3Mbp4
         GameUserSettingsIni: |
-          # Extinction GameUserSettings.ini
           [ServerSettings]
-          XPMultiplier=6
-        EngineIni: |
-          # Extinction Engine.ini
-#  
-#  # Containers' resource requests and limits
-#  # ref: http://kubernetes.io/docs/user-guide/compute-resources/
-#  #
-#  resources:
-#    limits:
-#      cpu: 1.5
-#      memory: 8Gi
-#    requests:
-#      cpu: 1
-#      memory: 6Gi
-#  
-#  # Default ports used by the container. Can be set per server.
-#  # ARK communicates ports to the client, so make sure the container port matches the external port!
-#  # Using these default settings for a cluster only makes sense if you have an IP for each server.
-#  containerPorts:
-#    gameudp: 7777
-#    queryudp: 27015
-#    rcon: 32330
-#  
-#  # Enable persistence using Persistent Volume Claims
-#  # ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-#  #
+          allowThirdPersonPlayer=1
+          AllowCaveBuildingPvE=1
+          alwaysNotifyPlayerJoined=1
+          alwaysNotifyPlayerLeft=1
+          bAllowFlyerCarryPvE=1
+          bDisableStructureDecayPvE=0
+          DayCycleSpeedScale=1.00000
+          DayTimeSpeedScale=1.00000
+          NightTimeSpeedScale=50.00000
+          DinoCharacterFoodDrainMultiplier=1.00000
+          DinoCharacterHealthRecoveryMultiplier=1.00000
+          DinoCharacterStaminaDrainMultiplier=1.00000
+          DinoCountMultiplier=1.00000
+          DinoDamageMultiplier=1.00000
+          DinoResistanceMultiplier=1.00000
+          globalVoiceChat=0
+          HarvestAmountMultiplier=1.00000
+          HarvestHealthMultiplier=1.00000
+          MaxStructuresInRange=6700
+          noTributeDownloads=0
+          PreventDownloadSurvivors=0
+          PreventDownloadItems=0
+          PreventDownloadDinos=0
+          PlayerCharacterFoodDrainMultiplier=0.50000
+          PlayerCharacterHealthRecoveryMultiplier=1.00000
+          PlayerCharacterStaminaDrainMultiplier=1.00000
+          PlayerCharacterWaterDrainMultiplier=1.00000
+          PlayerDamageMultiplier=1.00000
+          PlayerResistanceMultiplier=1.00000
+          proximityChat=0
+          ResourceNoReplenishRadiusPlayers=1.00000
+          ResourceNoReplenishRadiusStructures=1.00000
+          ResourcesRespawnPeriodMultiplier=1.00000
+          ServerAdminPassword=
+          ServerCrosshair=0
+          serverForceNoHud=0
+          serverHardcore=0
+          ServerPassword=
+          serverPVE=1
+          ShowMapPlayerLocation=1
+          StructureDamageMultiplier=1.00000
+          StructureResistanceMultiplier=1.00000
+          TamedDinoDamageMultiplier=1.00000
+          TamedDinoResistanceMultiplier=1.00000
+          TamingSpeedMultiplier=20.00000
+          XPMultiplier=4.00000
+          EnablePVPGamma=0
+          EnablePVEGamma=0
+          SpectatorPassword=
+          DifficultyOffset=0.50000
+          PvEStructureDecayPeriodMultiplier=1.00000
+          PvEStructureDecayDestructionPeriod=1.00000
+          Banlist="http://arkdedicated.com/banlist.txt"
+          PvPStructureDecay=0
+          DisableDinoDecayPvE=0
+          PvEDinoDecayPeriodMultiplier=1.00000
+          AdminLogging=0
+          MaxTamedDinos=8000
+          MaxNumbersofPlayersInTribe=20
+          BattleNumOfTribestoStartGame=2
+          TimeToCollapseROD=100
+          BattleAutoStartGameInterval=100
+          BattleSuddenDeathInterval=300
+          KickIdlePlayersPeriod=1800
+          PerPlatformMaxStructuresMultiplier=1.00000
+          StructureDamageRepairCooldown=180
+          bForceAllStructureLocking=1
+          AutoDestroyOldStructuresMultiplier=0.00000
+          bUseVSync=0
+          MaxPlatformSaddleStructureLimit=100
+          bPassiveDefensesDamageRiderlessDinos=1
+          RCONPort=32330
+          AutoSavePeriodMinutes=20
+          RCONServerGameLogBuffer=600
+          OverrideStructurePlatformPrevention=0
+          PreventOfflinePvPInterval=60.0
+          bPvPDinoDecay=1
+          bPvPStructureDecay=1
+          DisableImprintDinoBuff=1
+          AllowAnyoneBabyImprintCuddle=1
+          EnableExtraStructurePreventionVolumes=1
+          ShowFloatingDamageText=1
+          DestroyUnconnectedWaterPipes=0
+          OverrideOfficialDifficulty=1.0
+          TheMaxStructuresInRange=10500
+          MinimumDinoReuploadInterval=0
+          PvEAllowStructuresAtSupplyDrops=1
+          NPCNetworkStasisRangeScalePlayerCountStart=70
+          NPCNetworkStasisRangeScalePlayerCountEnd=120
+          NPCNetworkStasisRangeScalePercentEnd=0.50
+          MaxPersonalTamedDinos=500
+          AutoDestroyDecayedDinos=1
+          ClampItemSpoilingTimes=0
+          UseOptimizedHarvestingHealth=1
+          AllowCrateSpawnsOnTopOfStructures=1
+          ForceFlyerExplosives=0
+          PreventOfflinePvP=1
+          AllowFlyingStaminaRecovery=1
+          AllowMultipleAttachedC4=1
+          OxygenSwimSpeedStatMultiplier=1.00
+          bPvEDisableFriendlyFire=1
+          ServerAutoForceRespawnWildDinosInterval=86400
+          DisableWeatherFog=1
+          RandomSupplyCratePoints=0
+          CrossARKAllowForeignDinoDownloads=0
+          PersonalTamedDinosSaddleStructureCost=19
+          # [/script/engine.gamesession]
+          # MaxPlayers=10
+          # [SessionSettings]
+          # SessionName=WTopAce Island
+          # [MessageOfTheDay]
+          # Duration=30
+          # Message=WTopAce Island
+
+
   persistence:
     enabled: true
-  
+
     # game files from steam, the largest volume, includes installed mods
     game:
-      accessModes:
-        - ReadOnlyMany
-        - ReadWriteMany
-        - ReadWriteOnce
-      size: 30Gi
-      annotations: {}
-  
-      # mountPath is used regardless if `persistence` is enabled
-      # this is the mount point in the pod image
-      mountPath: /arkserver
-
       existingClaim: ark-game
-  
-    # shared cluster files
     cluster:
-      accessModes:
-        - ReadWriteMany
-      size: 200Mi
-      annotations: {}
-      mountPath: /arkserver/ShooterGame/Saved/clusters
-
       existingClaim: ark-cluster
-  
-    # contains the world save game and configuration files
-    # keeping a backup of this is enough to get your server back up
     save:
-      # A named, existing Persistent Volume, if none given, the name
-      # will be generated: <cluster-name>-<server-name>
-      #
-      # existingVolume:
-  
-      # A manually managed Persistent Volume Claim, if none given, the PVC
-      # will be created with the name: <cluster-name>-<server-name>
-      #
       existingClaim: ark-save
-  
-      # volumeMode defines what type of volume is required by the claim.
-      # Value of Filesystem is implied when not included in claim spec.
-      #
-      # volumeMode: Filesystem
-  
-      # PV Storage Class
-      # If defined, storageClassName: <storageClass>
-      # If set to "-", storageClassName: "", which disables dynamic provisioning
-      # If undefined (the default) or set to null, no storageClassName spec is
-      # set, choosing the default provisioner.
-      #
-      # storageClass: "local-storage"
-  
-      # PVC Access Modes
-      accessModes:
-        - ReadWriteOnce
-  
-      # PVC size
-      size: 2Gi
-  
-      annotations: {}
-  
-      # The path the volume will be mounted at
-      mountPath: /arkserver/ShooterGame/Saved
-#  
-#  
-#  # Startup and Liveness probe values
-#  # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
-#  startupProbe:
-#    # 120s + 60*10s = 720s max
-#    initialDelaySeconds: 120
-#    failureThreshold: 60
-#    periodSeconds: 10
-#    successThreshold: 1
-#    timeoutSeconds: 1
-#  livenessProbe:
-#    # unhealthy after max 3*10s = 30s
-#    initialDelaySeconds: 10
-#    failureThreshold: 3
-#    periodSeconds: 10
-#    successThreshold: 1
-#    timeoutSeconds: 1
-#  
-#  serviceAccount:
-#    # Specifies whether a service account should be created
-#    create: true
-#    # Annotations to add to the service account
-#    annotations: {}
-#    # The name of the service account to use.
-#    # If not set and create is true, a name is generated using the fullname template
-#    name: ""
-#  
-#  extraInitContainers: []
-#  extraVolumeMounts: []
-#  extraVolumes: []
+
+  startupProbe:
+    # With 10s interval, gives us 1h to startup
+    failureThreshold: 348
+  livenessProbe:
+    # With 10s interval, gives us 5m before failing
+    failureThreshold: 30

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ark-wes.fullname" . }}
+  labels:
+    {{- include "ark-wes.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  externalTrafficPolicy: Local
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  publishNotReadyAddresses: true
+  ports:
+  {{- range .Values.service.ports }}
+    - port: {{ .queryudp }}
+      targetPort: {{ .queryudp }}
+      protocol: UDP
+      name: queryudp-{{ .name }}
+    - port: {{ .gameudp }}
+      targetPort: {{ .gameudp }}
+      protocol: UDP
+      name: gameudp-{{ .name }}
+    - port: {{ .gameudp2 }}
+      targetPort: {{ .gameudp2 }}
+      protocol: UDP
+      name: gameudp2-{{ .name }}
+    # - port: {{ .rcon }}
+    #   targetPort: {{ .rcon }}
+    #   protocol: TCP
+    #   name: rcon-{{ .name }}
+  selector:
+    app.kubernetes.io/component: {{ .name }}
+    app.kubernetes.io/instance: ark
+  {{- end }}
