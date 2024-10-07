@@ -56,10 +56,10 @@ ark-cluster:
           cpu: 4
           memory: 12Gi
       mods:
-        - 924933745
-        - 1404697612
-        - 1315534671
-        - 889745138
+        - "924933745"
+        - "1404697612"
+        - "1315534671"
+        - "889745138"
       customConfigMap:
         GameIni: |
           # Extinction Game.ini
