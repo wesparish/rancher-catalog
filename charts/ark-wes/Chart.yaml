@@ -24,6 +24,7 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 # helm repo add ark-server-charts https://drpsychick.github.io/ark-server-charts
+# Source: https://github.com/SickHub/ark-server-charts
 dependencies:
   - name: ark-cluster
     version: "0.1.3"

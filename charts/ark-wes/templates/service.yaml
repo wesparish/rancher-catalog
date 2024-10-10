@@ -1,9 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "ark-wes.fullname" . }}
+  name: {{ include "ark-wes.fullname" . }}-udp
   labels:
     {{- include "ark-wes.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "sharing-key"
 spec:
   type: {{ .Values.service.type }}
   externalTrafficPolicy: Local
@@ -23,10 +25,30 @@ spec:
       targetPort: {{ .gameudp2 }}
       protocol: UDP
       name: gameudp2-{{ .name }}
-    # - port: {{ .rcon }}
-    #   targetPort: {{ .rcon }}
-    #   protocol: TCP
-    #   name: rcon-{{ .name }}
+  selector:
+    app.kubernetes.io/component: {{ .name }}
+    app.kubernetes.io/instance: ark
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ark-wes.fullname" . }}-tcp
+  labels:
+    {{- include "ark-wes.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "sharing-key"
+spec:
+  type: {{ .Values.service.type }}
+  externalTrafficPolicy: Local
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  publishNotReadyAddresses: true
+  ports:
+  {{- range .Values.service.ports }}
+    - port: {{ .rcon }}
+      targetPort: {{ .rcon }}
+      protocol: TCP
+      name: rcon-{{ .name }}
   selector:
     app.kubernetes.io/component: {{ .name }}
     app.kubernetes.io/instance: ark

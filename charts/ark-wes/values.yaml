@@ -247,7 +247,7 @@ ark-cluster:
           StructureResistanceMultiplier=1.00000
           TamedDinoDamageMultiplier=1.00000
           TamedDinoResistanceMultiplier=1.00000
-          TamingSpeedMultiplier=20.00000
+          TamingSpeedMultiplier=40.00000
           XPMultiplier=4.00000
           EnablePVPGamma=0
           EnablePVEGamma=0
