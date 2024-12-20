@@ -32,7 +32,12 @@ image:
   repository: rocketchat/rocket.chat
   # tag: 6.3.9
   # tag: 6.4.8
-  tag: 6.5.3
+  #tag: 6.5.3
+  #tag: 6.5.8
+  #tag: 6.7.5
+  #tag: 6.8.2
+  #tag: 6.9.2
+  tag: 6.10.9
   pullPolicy: IfNotPresent
   gotify:
     repository: gotify/server
