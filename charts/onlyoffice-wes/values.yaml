@@ -47,8 +47,9 @@ service:
 
 ingress:
   enabled: true
+  className: "nginx-wes"
   annotations:
-    kubernetes.io/ingress.class: "nginx-wes"
+    # kubernetes.io/ingress.class: "nginx-wes"
     kubernetes.io/tls-acme: "true"
 #    nginx.ingress.kubernetes.io/auth-realm: Authentication Required - OnlyOffice
 #    nginx.ingress.kubernetes.io/auth-secret: basic-auth
@@ -57,6 +58,7 @@ ingress:
     - host: onlyoffice.elastiscale.net
       paths:
         - path: /
+          pathType: ImplementationSpecific
   tls:
     - secretName: onlyoffice-elastiscale.net
       hosts:
