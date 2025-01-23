@@ -30,3 +30,23 @@ Create chart name and version as used by the chart label.
 {{- define "owncloud-wes.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "owncloud-wes.labels" -}}
+helm.sh/chart: {{ include "owncloud-wes.chart" . }}
+{{ include "owncloud-wes.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "owncloud-wes.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "owncloud-wes.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

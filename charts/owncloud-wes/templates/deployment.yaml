@@ -85,7 +85,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: OWNCLOUD_DOMAIN
-              value: {{ index .Values.ingress.hosts 0 | quote }}
+              value: {{ (index .Values.ingress.hosts 0).host | quote }}
             - name: OWNCLOUD_DB_TYPE
               value: "mysql"
             - name: OWNCLOUD_DB_NAME
@@ -115,7 +115,7 @@ spec:
               port: http
               httpHeaders:
               - name: Host
-                value: {{ index .Values.ingress.hosts 0 | quote }}
+                value: {{ (index .Values.ingress.hosts 0).host | quote }}
             initialDelaySeconds: 120
             timeoutSeconds: 30
             failureThreshold: 10
@@ -125,7 +125,7 @@ spec:
               port: http
               httpHeaders:
               - name: Host
-                value: {{ index .Values.ingress.hosts 0 | quote }}
+                value: {{ (index .Values.ingress.hosts 0).host | quote }}
             initialDelaySeconds: 30
             timeoutSeconds: 3
             periodSeconds: 5
