@@ -1,0 +1,208 @@
+# Default values for borg-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: wesparish/borg
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+backups:
+  - name: cephfs-remote
+    suspend: false
+    persistence:
+      source:
+        claim: borg-backup-cephfs
+        # subPath:
+      borgBaseDir:
+        claim: borg-base-dir
+        # subPath:
+      secrets:
+        # Create a K8s secret for the borg passphrase:
+        # kubectl -n borg create secret generic borg-passphrase \
+        #   --from-literal=borg-passphrase=<secret password>
+        borg_passphrase: borg-passphrase
+        # Create a K8s secret for the SSH key:
+        # kubectl -n borg create secret generic ssh-key \
+        #   --from-literal=id_rsa='-----BEGIN OPENSSH PRIVATE KEY-----
+        # abcdef1234.....abcdef1234
+        # abcdef1234.....abcdef1234
+        # -----END OPENSSH PRIVATE KEY-----
+        #'
+        ssh_key: ssh-key
+    cron: '@daily'
+    repositories:
+      # - path: ssh://wes@jamiewan.elastiscale.net/data/borg
+      - path: ssh://wes@172.16.1.136/data/borg
+        label: jamiewan
+    command:
+      - borgmatic
+    args:
+      - -v2
+      - --files
+      - --stats
+      - create
+      - prune
+      - compact
+      # # check (should run as a separate job, weekly? very slow)
+    patterns:
+      # Example from docs
+      # # Define the recursion root
+      # R /
+      # # Exclude all iso files in any directory
+      # - **/*.iso
+      # # Explicitly include all inside etc and root
+      # + etc/**
+      # + root/**
+      # # Exclude a specific directory under each user's home directories
+      # - home/*/.cache
+      # # Explicitly include everything in /home
+      # + home/**
+      # # Explicitly exclude some directories without recursing into them
+      # ! re:^(dev|proc|run|sys|tmp)
+      # # Exclude all other files and directories
+      # # that are not specifically included earlier.
+      # - **
+      - R /source/backups
+      - R /source/backups-jamiehouse
+
+      - R /source/k8s-volumes/asterisk-pvc
+      - R /source/k8s-volumes/code-server
+      - R /source/k8s-volumes/deluge-config
+      - R /source/k8s-volumes/duplicacy-config
+      - R /source/k8s-volumes/friendica-data
+      - R /source/k8s-volumes/frigate-data
+      # Don't recurse into the recordings directory
+      - "! /source/k8s-volumes/frigate-data/frigate/recordings"
+      - "! /source/k8s-volumes/frigate-data/frigate/clips"
+      - R /source/k8s-volumes/gitea-data
+      - R /source/k8s-volumes/guacamole-data
+      - R /source/k8s-volumes/homeassistant-config
+      - R /source/k8s-volumes/homeassistant-db
+      - R /source/k8s-volumes/immich-data
+      - R /source/k8s-volumes/keycloak-data
+      - R /source/k8s-volumes/mailu
+      - R /source/k8s-volumes/mastodon-data
+      - R /source/k8s-volumes/minecraft-data
+      - R /source/k8s-volumes/mongodb-data
+      - R /source/k8s-volumes/mosquitto-data
+      - R /source/k8s-volumes/netmaker-data
+      - R /source/k8s-volumes/node-red-data
+      - R /source/k8s-volumes/old-backups
+      - R /source/k8s-volumes/ollama-data
+      - R /source/k8s-volumes/onlyoffice-data
+      - R /source/k8s-volumes/owncloud-data-pvc
+      - "! /source/k8s-volumes/owncloud-data-pvc/sessions"
+      - R /source/k8s-volumes/owncloud-mariadb-pvc
+      - R /source/k8s-volumes/owncloud-redis-pvc
+      - R /source/k8s-volumes/pihole-data
+      - R /source/k8s-volumes/pixelfed-data
+      - R /source/k8s-volumes/plexpy-data
+      - R /source/k8s-volumes/rocketchat-backup
+      - R /source/k8s-volumes/rocketchat-data
+      - R /source/k8s-volumes/sd-data
+      - R /source/k8s-volumes/servarr-data
+      - R /source/k8s-volumes/svn-data
+      - R /source/k8s-volumes/teamspeak3-data
+      - R /source/k8s-volumes/vaultwarden-data
+      - R /source/k8s-volumes/virt-manager-data
+      - R /source/k8s-volumes/zigbee2mqtt-data
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

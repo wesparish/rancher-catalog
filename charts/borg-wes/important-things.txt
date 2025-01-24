@@ -1,0 +1,61 @@
+# R mnt/ceph-fs/k8s-volumes
+
+# Backup entire backups dir
++ /mnt/ceph-fs/backups
+
+# TODO: Change these to +
++ mnt/ceph-fs/k8s-volumes/mongodb-data
++ mnt/ceph-fs/k8s-volumes/rocketchat-data
++ mnt/ceph-fs/k8s-volumes/rocketchat-backup
++ mnt/ceph-fs/k8s-volumes/plexpy-data
++ mnt/ceph-fs/k8s-volumes/deluge-config
++ mnt/ceph-fs/k8s-volumes/owncloud-mariadb-pvc
++ mnt/ceph-fs/k8s-volumes/owncloud-redis-pvc
++ mnt/ceph-fs/k8s-volumes/pihole-data
++ mnt/ceph-fs/k8s-volumes/owncloud-data-pvc
++ mnt/ceph-fs/k8s-volumes/homeassistant-config
++ mnt/ceph-fs/k8s-volumes/asterisk-pvc
++ mnt/ceph-fs/k8s-volumes/code-server
++ mnt/ceph-fs/k8s-volumes/virt-manager-data
++ mnt/ceph-fs/k8s-volumes/duplicacy-config
++ mnt/ceph-fs/k8s-volumes/mailu
++ mnt/ceph-fs/k8s-volumes/svn-data
++ mnt/ceph-fs/k8s-volumes/mosquitto-data
++ mnt/ceph-fs/k8s-volumes/homeassistant-db
++ mnt/ceph-fs/k8s-volumes/friendica-data
++ mnt/ceph-fs/k8s-volumes/frigate-data
++ mnt/ceph-fs/k8s-volumes/gitea-data
++ mnt/ceph-fs/k8s-volumes/guacamole-data
++ mnt/ceph-fs/k8s-volumes/immich-data
++ mnt/ceph-fs/k8s-volumes/keycloak-data
++ mnt/ceph-fs/k8s-volumes/mastodon-data
++ mnt/ceph-fs/k8s-volumes/minecraft-data
++ mnt/ceph-fs/k8s-volumes/netmaker-data
++ mnt/ceph-fs/k8s-volumes/node-red-data
++ mnt/ceph-fs/k8s-volumes/ollama-data
++ mnt/ceph-fs/k8s-volumes/onlyoffice-data
++ mnt/ceph-fs/k8s-volumes/pixelfed-data
++ mnt/ceph-fs/k8s-volumes/sd-data
++ mnt/ceph-fs/k8s-volumes/servarr-data
++ mnt/ceph-fs/k8s-volumes/teamspeak3-data
++ mnt/ceph-fs/k8s-volumes/vaultwarden-data
++ mnt/ceph-fs/k8s-volumes/zigbee2mqtt-data
++ mnt/ceph-fs/k8s-volumes/old-backups
+
+# We don't want these
+- mnt/ceph-fs/k8s-volumes/nexus-data
+- mnt/ceph-fs/k8s-volumes/tsd-app-pvc
+- mnt/ceph-fs/k8s-volumes/mongodb-data-OLD2
+- mnt/ceph-fs/k8s-volumes/shinobi
+- mnt/ceph-fs/k8s-volumes/owncloud-mariadb-pvc-OLD
+- mnt/ceph-fs/k8s-volumes/vms
+- mnt/ceph-fs/k8s-volumes/zoneminder-mariadb-data
+- mnt/ceph-fs/k8s-volumes/zoneminder
+- mnt/ceph-fs/k8s-volumes/duplicati-data
+- mnt/ceph-fs/k8s-volumes/duplicati-dest-data
+- mnt/ceph-fs/k8s-volumes/duplicacy-storage
+- mnt/ceph-fs/k8s-volumes/zoneminder-data
+- mnt/ceph-fs/k8s-volumes/influxdb-data
+- mnt/ceph-fs/k8s-volumes/timelapse-snapper-data
+- mnt/ceph-fs/k8s-volumes/minio-data
+- mnt/ceph-fs/k8s-volumes/ark
