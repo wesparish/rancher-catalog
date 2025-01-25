@@ -1,0 +1,6 @@
+dependencies:
+- name: mailu
+  repository: https://mailu.github.io/helm-charts/
+  version: 2.1.2
+digest: sha256:d721079cd31536e20185aba55a2effc6790db574f86cca7606a2aa2185d58193
+generated: "2025-01-24T16:44:05.082940353-06:00"

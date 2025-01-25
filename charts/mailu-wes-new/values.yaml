@@ -1,0 +1,87 @@
+mailu:
+  domain: mail.elastiscale.net
+  hostnames:
+  # Web UI
+  - mailu.elastiscale.net
+  # Mail domains
+  - mail.elastiscale.net
+#  - mail.cowtownt.org
+#  - mail.firstshotprecision.com
+#  Instead: exec to admin pod and create with:
+#    flask mailu admin root example.com password
+#  initialAccount:
+#    domain: mailu.elastiscale.net
+#    password: password
+#    username: admin
+  logLevel: INFO
+  limits:
+    authRatelimit:
+      ip: 100/minute;3600/hour
+    messageSizeLimitInMegabytes: 200
+  persistence:
+    existingClaim: mailu-new
+
+  front:
+    hostPort:
+      enabled: false
+    externalService:
+      enabled: true
+      type: LoadBalancer
+      externalTrafficPolicy: Local
+      loadBalancerIP: 172.16.1.227
+
+  ingress:
+    ingressClassName: nginx-wes
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+  externalRelay:
+    host: "smtp.postmarkapp.com:2525"
+    # kubectl -n mailu-new create secret generic \
+    #   mailu-external-relay-credentials \
+    #   --from-literal=relay-username=<user> \
+    #   --from-literal=relay-password=<pwd>
+    existingSecret: mailu-external-relay-credentials
+
+  dovecot:
+    overrides:
+      dovecot.conf: |
+        ###############
+        # IMAP & POP
+        ###############
+        protocol imap {
+          mail_max_userip_connections = 100
+        }
+    nodeSelector:
+      ceph-client: "true"
+
+  admin:
+    nodeSelector:
+      ceph-client: "true"
+
+  postfix:
+    nodeSelector:
+      ceph-client: "true"
+
+  rspamd:
+    nodeSelector:
+      ceph-client: "true"
+
+  clamav:
+    nodeSelector:
+      ceph-client: "true"
+    persistence:
+      existingClaim: mailu-new
+
+  webmail:
+    nodeSelector:
+      ceph-client: "true"
+
+  redis:
+    master:
+      persistence:
+        existingClaim: mailu-new
+        subPath: redis-master
+      nodeSelector:
+        ceph-client: "true"
