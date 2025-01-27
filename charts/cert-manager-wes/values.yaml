@@ -14,6 +14,11 @@ cert-manager:
   controller:
     nodeSelector:
       ingress: "true"
+    extraArgs:
+      # Allow kubernetes.io/tls-acme: "true" to keep working
+      - --default-issuer-name=letsencrypt-production
+      - --default-issuer-kind=ClusterIssuer
+      - --default-issuer-group=cert-manager.io
 
 service:
   type: ClusterIP
