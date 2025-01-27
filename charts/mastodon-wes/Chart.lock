@@ -1,6 +1,6 @@
 dependencies:
 - name: mastodon
   repository: https://charts.bitnami.com/bitnami
-  version: 4.2.5
-digest: sha256:1e95c472fe1a3eb01eb6bfce53e9755c214a8046995df3c0c919d731d3c2a5b9
-generated: "2024-02-03T07:34:20.452069787-06:00"
+  version: 5.0.0
+digest: sha256:c8742890a53cfd16d03173e0be0a282d1ecf5b47229a479fa337d5f2cbfd6808
+generated: "2024-04-04T14:37:02.799630346-05:00"
