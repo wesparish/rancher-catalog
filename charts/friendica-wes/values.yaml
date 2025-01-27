@@ -1,0 +1,127 @@
+# Default values for friendica-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+friendica:
+  url: "https://friendica.elastiscale.net"
+  adminEmail: "wes@elastiscale.net"
+  persistence:
+    existingClaim: friendica-data
+    subPath: friendica
+
+replicaCount: 1
+
+image:
+  repository: friendica
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "2023.05-apache"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx-wes"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 2000m
+  hosts:
+    - host: friendica.elastiscale.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: friendica.elastiscale.net-tls
+     hosts:
+       - friendica.elastiscale.net
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+mariadb:
+  architecture: standalone
+  auth:
+    # kubectl -n friendica create secret generic mariadb-password \
+    #   --from-literal=mariadb-root-password=<pwd> \
+    #   --from-literal=mariadb-replication-password=<pwd> \
+    #   --from-literal=mariadb-password=<pwd>
+    existingSecret: mariadb-password
+    database: friendica
+    username: friendica
+  primary:
+    nodeSelector:
+      ceph-client: "true"
+    persistence:
+      enabled: false
+      existingClaim: friendica-data
+      subPath: mariadb
+    startupProbe:
+      enabled: false
+      periodSeconds: 10
+      failureThreshold: 60
+    livenessProbe:
+      enabled: false
+      # periodSeconds: 10
+      # failureThreshold: 60
+  secondary:
+    replicaCount: 0
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      existingClaim: friendica-data
+      subPath: redis
