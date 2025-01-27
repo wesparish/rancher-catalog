@@ -37,7 +37,7 @@ mailu:
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
 
   externalRelay:
-    host: "smtp.postmarkapp.com:2525"
+    host: "smtp.mailgun.org:587"
     # kubectl -n mailu-new create secret generic \
     #   mailu-external-relay-credentials \
     #   --from-literal=relay-username=<user> \
@@ -63,6 +63,9 @@ mailu:
   postfix:
     nodeSelector:
       ceph-client: "true"
+    overrides:
+      postfix.cf: |
+        smtp_sasl_security_options = noanonymous
 
   rspamd:
     nodeSelector:
