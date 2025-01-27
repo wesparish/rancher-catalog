@@ -24,16 +24,17 @@ ingress:
 
 frigate:
   nodeSelector:
-    kubernetes.io/hostname: w-dock9
+    # 20250116 why did i do this?
+    # kubernetes.io/hostname: w-dock9
     ceph-client: "true"
 
-  image:
-    # -- Docker registry/repository to pull the image from
-    repository: blakeblackshear/frigate
-    # -- Overrides the default tag (appVersion) used in Chart.yaml ([Docker Hub](https://hub.docker.com/r/blakeblackshear/frigate/tags?page=1))
-    tag: 0.10.1-amd64 #nvidia
-    # -- Docker image pull policy
-    pullPolicy: IfNotPresent
+  # image:
+  #   # -- Docker registry/repository to pull the image from
+  #   repository: blakeblackshear/frigate
+  #   # -- Overrides the default tag (appVersion) used in Chart.yaml ([Docker Hub](https://hub.docker.com/r/blakeblackshear/frigate/tags?page=1))
+  #   tag: 0.10.1-amd64 #nvidia
+  #   # -- Docker image pull policy
+  #   pullPolicy: IfNotPresent
 
   env:
     TZ: "America/Chicago"

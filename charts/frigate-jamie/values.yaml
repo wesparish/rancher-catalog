@@ -1,10 +1,10 @@
 frigate-wes:
   frigate:
-    nodeSelector:
-      ceph-client: "true"
+    nodeSelector: null
+      # ceph-client: "true"
       # Broken for subcharts: https://github.com/helm/helm/issues/9027
       # --set frigate-wes.frigate.nodeSelector."kubernetes\.io/hostname"=null with helm CLI also didn't work
-      kubernetes.io/hostname: "j-dock2"
+      # kubernetes.io/hostname: "j-dock2"
 
     config: |
       birdseye:
@@ -48,32 +48,32 @@ frigate-wes:
           type: cpu
       cameras:
         # Name of your camera
-        barnoutside:
-          ffmpeg:
-            inputs:
-              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.191/Streaming/channels/101
-                roles:
-                  - detect
-                  - rtmp
-          detect:
-            width: 1280
-            height: 720
-            fps: 5
-        barninside:
-          ffmpeg:
-            inputs:
-              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.15
-                roles:
-                  - detect
-                  - rtmp
-          detect:
-            width: 1280
-            height: 720
-            fps: 5
+        #barnoutside:
+        #  ffmpeg:
+        #    inputs:
+        #      - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.191/Streaming/channels/101
+        #        roles:
+        #          - detect
+        #          - rtmp
+        #  detect:
+        #    width: 1280
+        #    height: 720
+        #    fps: 5
+        #barninside:
+        #  ffmpeg:
+        #    inputs:
+        #      - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.15
+        #        roles:
+        #          - detect
+        #          - rtmp
+        #  detect:
+        #    width: 1280
+        #    height: 720
+        #    fps: 5
         easemententrance:
           ffmpeg:
             inputs:
-              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.94
+              - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@10.2.1.174
                 roles:
                   - detect
                   - rtmp
@@ -135,4 +135,4 @@ frigate-wes:
           default: 10
 
     service:
-      loadBalancerIP: 10.2.2.238
+      loadBalancerIP: 192.168.4.12
