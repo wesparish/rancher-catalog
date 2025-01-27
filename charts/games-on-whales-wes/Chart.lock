@@ -1,0 +1,6 @@
+dependencies:
+- name: games-on-whales
+  repository: https://angelnu.github.io/helm-charts
+  version: 2.0.0
+digest: sha256:d33392b668749e272e92edc915a21098ef2c325eadc17251281cd97678ab39a2
+generated: "2024-12-12T07:32:12.507758867-06:00"
