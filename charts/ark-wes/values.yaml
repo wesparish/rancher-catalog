@@ -21,6 +21,8 @@ ark-cluster:
     registry: docker.io
     repository: drpsychick/arkserver
     tag: latest-v1.6.61a #bionic
+    # repository: wesparish/arkserver
+    # tag: latest-v1.6.61a-wes #bionic
     pullSecrets: []
     pullPolicy: Always
 
@@ -28,6 +30,27 @@ ark-cluster:
 
   clusterName: wtopace
 
+  # initContainers:
+  #   - name: init-arkmanager-TEST
+  #     image: drpsychick/arkserver:latest-v1.6.61a
+  #     imagePullPolicy: Always
+  #     command:
+  #       - /bin/sh
+  #       - -c
+  #       - |
+  #         set -e
+  #         arkmanager install --verbose
+  #     volumeMounts:
+  #       - name: ark-config
+  #         mountPath: /ark/config
+  #       - name: ark-data
+  #         mountPath: /ark/data
+  #       - name: ark-save
+  #         mountPath: /ark/save
+  #       - name: ark-game
+  #         mountPath: /ark/game
+  #       - name: ark-cluster
+  #         mountPath: /ark/cluster
   servers:
     island1:
       # updateOnStart should be enabled only on the first server
@@ -56,10 +79,25 @@ ark-cluster:
           cpu: 4
           memory: 12Gi
       mods:
+        # Dino Tracker
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=924933745
         - "924933745"
+        # Awesome SpyGlass!
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=1404697612
         - "1404697612"
+        # Automatic Death Recovery
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=1315534671
         - "1315534671"
+        # Awesome Teleporters!
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=889745138
         - "889745138"
+        # Revive my dino
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=1957185915
+        # https://steamcommunity.com/workshop/filedetails/discussion/1957185915/2666627242543202225/
+        - "1957185915"
+        # Dino Storage v2
+        # https://steamcommunity.com/sharedfiles/filedetails/?id=1609138312
+        - "1609138312"
       customConfigMap:
         GameIni: |
           # Extinction Game.ini
@@ -104,7 +142,7 @@ ark-cluster:
           DinoTurretDamageMultiplier=1.00000
           WildDinoCharacterFoodDrainMultiplier=1.00000
           WildDinoTorporDrainMultiplier=1.00000
-          TamedDinoCharacterFoodDrainMultiplier=1.00000
+          TamedDinoCharacterFoodDrainMultiplier=0.250000
           TamedDinoTorporDrainMultiplier=1.00000
           PassiveTameIntervalMultiplier=1.00000
           ResourceNoReplenishRadiusPlayers=1.00000
@@ -208,17 +246,17 @@ ark-cluster:
           alwaysNotifyPlayerJoined=1
           alwaysNotifyPlayerLeft=1
           bAllowFlyerCarryPvE=1
-          bDisableStructureDecayPvE=0
+          bDisableStructureDecayPvE=1
           DayCycleSpeedScale=1.00000
           DayTimeSpeedScale=1.00000
-          NightTimeSpeedScale=50.00000
+          NightTimeSpeedScale=100.00000
           DinoCharacterFoodDrainMultiplier=1.00000
           DinoCharacterHealthRecoveryMultiplier=1.00000
           DinoCharacterStaminaDrainMultiplier=1.00000
           DinoCountMultiplier=1.00000
           DinoDamageMultiplier=1.00000
           DinoResistanceMultiplier=1.00000
-          globalVoiceChat=0
+          globalVoiceChat=1
           HarvestAmountMultiplier=1.00000
           HarvestHealthMultiplier=1.00000
           MaxStructuresInRange=6700
@@ -226,7 +264,7 @@ ark-cluster:
           PreventDownloadSurvivors=0
           PreventDownloadItems=0
           PreventDownloadDinos=0
-          PlayerCharacterFoodDrainMultiplier=0.50000
+          PlayerCharacterFoodDrainMultiplier=0.250000
           PlayerCharacterHealthRecoveryMultiplier=1.00000
           PlayerCharacterStaminaDrainMultiplier=1.00000
           PlayerCharacterWaterDrainMultiplier=1.00000
@@ -236,7 +274,7 @@ ark-cluster:
           ResourceNoReplenishRadiusPlayers=1.00000
           ResourceNoReplenishRadiusStructures=1.00000
           ResourcesRespawnPeriodMultiplier=1.00000
-          ServerAdminPassword=
+          ServerAdminPassword=changeme
           ServerCrosshair=0
           serverForceNoHud=0
           serverHardcore=0
@@ -316,6 +354,24 @@ ark-cluster:
           # [MessageOfTheDay]
           # Duration=30
           # Message=WTopAce Island
+        # Doesn't work because the configmap creates /ark/config as root and
+        # the entrypoint.sh script can't write to it
+        # crontab: |
+        #   # Wes overrides
+        #   # Example of job definition:
+        #   # .---------------- minute (0 - 59)
+        #   # |  .------------- hour (0 - 23)
+        #   # |  |  .---------- day of month (1 - 31)
+        #   # |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+        #   # |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+        #   # |  |  |  |  |
+        #   # *  *  *  *  * user-name  command to be executed
+
+        #   */30 * * * * arkmanager update --update-mods --warn --saveworld
+        #   10 */8 * * * arkmanager saveworld && arkmanager backup
+        #   # Disabling the restart, don't see the point and causes issues
+        #   # with livenessProbes
+        #   #15 10 * * * arkmanager restart --warn --saveworld
 
 
   persistence:
@@ -332,6 +388,7 @@ ark-cluster:
   startupProbe:
     # With 10s interval, gives us 1h to startup
     failureThreshold: 348
+    initialDelaySeconds: 10
   livenessProbe:
-    # With 10s interval, gives us 5m before failing
-    failureThreshold: 30
+    # With 10s interval, gives us 15m before failing
+    failureThreshold: 90
