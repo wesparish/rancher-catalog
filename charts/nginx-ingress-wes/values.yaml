@@ -5,6 +5,9 @@
 ingress-nginx:
   controller:
     ingressClass: nginx-wes
+    ingressClassResource:
+      name: "nginx-wes"
+      default: true
     service:
       type: LoadBalancer
       loadBalancerIP: 172.16.1.223
@@ -13,3 +16,11 @@ ingress-nginx:
     kind: DaemonSet
     nodeSelector:
       ingress: "true"
+    allowSnippetAnnotations: true
+    admissionWebhooks:
+      certManager:
+        enabled: true
+        admissionCert:
+          issuerRef:
+            name: "letsencrypt-production"
+            kind: "ClusterIssuer"
