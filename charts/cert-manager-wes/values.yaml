@@ -13,10 +13,10 @@ cert-manager:
   # Still doesn't seem to work, installing manually:
   #   https://artifacthub.io/packages/helm/cert-manager/cert-manager#installing-the-chart
   #   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.crds.yaml
-  # crds:
+  crds:
   #   enabled: true
   #   # Don't delete all CRD resources when this chart is deleted
-  #   keep: true
+    keep: true
   # installCRDs: true
   controller:
     nodeSelector:
