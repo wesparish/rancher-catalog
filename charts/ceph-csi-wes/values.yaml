@@ -1,0 +1,12 @@
+# Pre-create secret for csi mounts
+# kubectl -n ceph-csi create secret generic csi-cephfs-secret \
+# --from-literal=userID= --from-literal=userKey= \
+# --from-literal=adminID= --from-literal=adminKey=
+
+ceph-csi-cephfs:
+  csiConfig:
+    - clusterID: "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      monitors:
+        - "172.16.1.109"
+        - "172.16.1.107"
+        - "172.16.1.197"
