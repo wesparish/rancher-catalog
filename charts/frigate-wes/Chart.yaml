@@ -25,9 +25,9 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: frigate
-    version: "6.3.1"
+    # version: "6.3.1"
     # Not compatible with K8s 1.19, svc has ipFamilyPolicy
-    # version: "7.6.0"
+    version: "7.6.0"
     # version: "7.1.0"
     repository: "https://blakeblackshear.github.io/blakeshome-charts/"
 

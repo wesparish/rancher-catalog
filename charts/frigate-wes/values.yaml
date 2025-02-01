@@ -215,14 +215,11 @@ frigate:
     ## Set the externalTrafficPolicy in the Service to either Cluster or Local
     externalTrafficPolicy: Local
 
-#  persistence:
-#    data:
-#      enabled: true
-#      existingClaim: frigate-data
-  extraVolumes:
-    - name: media
-      persistentVolumeClaim:
-        claimName: frigate-data
-  extraVolumeMounts:
-    - mountPath: /media
-      name: media
+  persistence:
+    media:
+      enabled: true
+      existingClaim: frigate-data
+    # Don't think data needs to be persisted?
+    # data:
+    #   enabled: true
+    #   existingClaim: frigate-data
