@@ -56,13 +56,30 @@ service:
   type: NodePort
   port: 3000
 
+ingressGotify:
+  enabled: true
+  className: "nginx-wes"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  hosts:
+    - host: push.elastiscale.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: push-elastiscale.net
+      hosts:
+        - push.elastiscale.net
+
 ingress:
   enabled: true
   className: "nginx-wes"
   annotations:
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-    nginx.ingress.kubernetes.io/proxy-body-size: "2000m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
   hosts:
     - host: chat.elastiscale.net
       paths:
