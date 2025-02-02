@@ -219,6 +219,9 @@ frigate:
     media:
       enabled: true
       existingClaim: frigate-data
+    config:
+      enabled: true
+      existingClaim: frigate-config
     # Don't think data needs to be persisted?
     # data:
     #   enabled: true
