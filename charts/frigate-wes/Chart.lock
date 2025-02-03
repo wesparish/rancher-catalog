@@ -1,6 +1,6 @@
 dependencies:
 - name: frigate
-  repository: https://blakeblackshear.github.io/blakeshome-charts/
-  version: 7.6.0
-digest: sha256:08ba39fcbaacbc9bd355a66475dafe2a51311b3626532c71749c74dfc6f0bf37
-generated: "2025-02-01T10:17:28.904021475-06:00"
+  repository: file://tmp-subcharts/blakeshome-charts/charts/frigate/
+  version: 7.7.0
+digest: sha256:3a17538ce76100296eb4e7b1dbd60d3c372ec7316a453a4c49360c0ff8f083b4
+generated: "2025-02-03T11:52:55.717785924-06:00"

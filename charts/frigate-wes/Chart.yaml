@@ -24,10 +24,12 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
+  # - name: frigate
+  #   version: "7.6.0"
+  #   repository: "https://blakeblackshear.github.io/blakeshome-charts/"
+  # Using fork until PR is merged:
+  #   https://github.com/blakeblackshear/blakeshome-charts/pull/79
   - name: frigate
-    # version: "6.3.1"
-    # Not compatible with K8s 1.19, svc has ipFamilyPolicy
-    version: "7.6.0"
-    # version: "7.1.0"
-    repository: "https://blakeblackshear.github.io/blakeshome-charts/"
+    version: "7.7.0"
+    repository: "file://tmp-subcharts/blakeshome-charts/charts/frigate/"
 

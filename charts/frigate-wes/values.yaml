@@ -42,14 +42,19 @@ frigate:
 
   config: |
     birdseye:
-      enabled: True
+      enabled: true
       mode: continuous
-    ffmpeg:
-      output_args:
-        # Optional: output args for record streams (default: shown below)
-        #record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an
-        # Record audio also: https://docs.frigate.video/faqs/
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
+    # Defaults seem to automatically use the nvidia GPU for hwaccel
+    # ffmpeg:
+    #   output_args:
+    #     # record: preset-record-generic-audio-copy
+    #     # Optional: output args for record streams (default: shown below)
+    #     #record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an
+    #     # Record audio also: https://docs.frigate.video/faqs/
+    #     record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
+    #       1 -c:v copy -c:a aac
+    #   # hwaccel_args: preset-nvidia-h264
+    #   hwaccel_args: "auto"
     mqtt:
       # Required: host name
       host: 172.16.1.229
@@ -70,7 +75,7 @@ frigate:
       # Optional: interval in seconds for publishing stats (default: shown below)
       stats_interval: 60
     detectors:
-      tensorrt:                                                                                                                                                               │
+      tensorrt:
         type: tensorrt
     model:
       path: /config/model_cache/tensorrt/yolov7-320.trt
@@ -83,10 +88,10 @@ frigate:
       front_patio:
         ffmpeg:
           inputs:
-            - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.83:554//h264Preview_01_main
+            - path:
+                rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.83:554//h264Preview_01_main
               roles:
                 - detect
-                - rtmp
         detect:
           width: 1280
           height: 720
@@ -94,46 +99,21 @@ frigate:
       back_patio:
         ffmpeg:
           inputs:
-            - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.82:554//h264Preview_01_main
+            - path:
+                rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.82:554//h264Preview_01_main
               roles:
                 - detect
-                - rtmp
         detect:
           width: 1280
           height: 720
           fps: 5
-      # back_patio_birdfeeder:
-      #   ffmpeg:
-      #     inputs:
-      #       - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.82:554//h264Preview_01_main
-      #         roles:
-      #           - detect
-      #           - rtmp
-      #   detect:
-      #     width: 1280
-      #     height: 720
-      #     fps: 5
-      #   objects:
-      #     track:
-      #       - bird
-      #     filters:
-      #       bird:
-      #         # Optional: minimum score for the object to initiate tracking
-      #         min_score: 0.1
-      #         # Optional: minimum decimal percentage for tracked object's computed score to be considered a true positive
-      #         threshold: 0.2
-      #         # mask:
-      #         #   - 0,720,949,720,955,459,1280,462,1280,378,1280,0,0,0
-      #   # motion:
-      #   #   mask:
-      #   #     - 0,720,949,720,955,459,1280,462,1280,378,1280,0,0,0
       driveway:
         ffmpeg:
           inputs:
-            - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.80:554/cam/realmonitor?channel=1&subtype=0
+            - path:
+                rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.80:554/cam/realmonitor?channel=1&subtype=0
               roles:
                 - detect
-                - rtmp
         detect:
           width: 2688
           height: 1520
@@ -149,16 +129,16 @@ frigate:
       hobby_patio:
         ffmpeg:
           inputs:
-            - path: rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.9:554/h264Preview_01_main
+            - path:
+                rtsp://{FRIGATE_CAMERA_USER}:{FRIGATE_CAMERA_PASSWORD}@172.16.1.9:554/h264Preview_01_main
               roles:
                 - detect
-                - rtmp
         detect:
           width: 1280
           height: 720
           fps: 5
     record:
-      enabled: True
+      enabled: true
       #retain:
       #  days: 10
       #  mode: motion
@@ -167,16 +147,16 @@ frigate:
           default: 10
       #    mode: motion
     snapshots:
-      enabled: True
+      enabled: true
       # Optional: draw bounding box on the snapshots (default: shown below)
-      bounding_box: True
+      bounding_box: true
       # Optional: crop the snapshot (default: shown below)
-      crop: False
+      crop: false
       # Optional: Camera override for retention settings (default: global values)
       retain:
         # Required: Default retention days (default: shown below)
         default: 10
-
+    version: 0.14
   service:
     # -- Type of Service to use
     type: LoadBalancer
