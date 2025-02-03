@@ -24,17 +24,12 @@ ingress:
 
 frigate:
   nodeSelector:
-    # 20250116 why did i do this?
-    # kubernetes.io/hostname: w-dock9
     ceph-client: "true"
 
-  # image:
-  #   # -- Docker registry/repository to pull the image from
-  #   repository: blakeblackshear/frigate
-  #   # -- Overrides the default tag (appVersion) used in Chart.yaml ([Docker Hub](https://hub.docker.com/r/blakeblackshear/frigate/tags?page=1))
-  #   tag: 0.10.1-amd64 #nvidia
-  #   # -- Docker image pull policy
-  #   pullPolicy: IfNotPresent
+  image:
+    repository: ghcr.io/blakeblackshear/frigate
+    tag: 0.14.1-tensorrt # nvidia gpu
+    pullPolicy: IfNotPresent
 
   env:
     TZ: "America/Chicago"
@@ -44,11 +39,6 @@ frigate:
     #   --from-literal=FRIGATE_CAMERA_USER=<user> \
     #   --from-literal=FRIGATE_CAMERA_PASSWORD=<pwd>
     - frigate-env-secrets
-
-#  gpu:
-#    nvidia:
-#      enabled: true
-#      runtimeClassName:
 
   config: |
     birdseye:
@@ -80,17 +70,14 @@ frigate:
       # Optional: interval in seconds for publishing stats (default: shown below)
       stats_interval: 60
     detectors:
-      # coral:
-      #   type: edgetpu
-      #   device: usb
-      cpu1:
-        type: cpu
-      cpu2:
-        type: cpu
-      cpu3:
-        type: cpu
-      cpu4:
-        type: cpu
+      tensorrt:                                                                                                                                                               │
+        type: tensorrt
+    model:
+      path: /config/model_cache/tensorrt/yolov7-320.trt
+      input_tensor: nchw
+      input_pixel_format: rgb
+      width: 320
+      height: 320
     cameras:
       # Name of your camera
       front_patio:
@@ -226,3 +213,13 @@ frigate:
     # data:
     #   enabled: true
     #   existingClaim: frigate-data
+
+  gpu:
+    nvidia:
+      enabled: true
+
+  probes:
+    startup:
+      enabled: true
+      failureThreshold: 60
+      periodSeconds: 10
