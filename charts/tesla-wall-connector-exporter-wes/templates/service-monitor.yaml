@@ -1,0 +1,44 @@
+{{- if eq .Values.serviceMonitor.enabled true }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "tesla-wall-connector-exporter-wes.fullname" . }}-servicemonitor
+  namespace: {{ .Values.serviceMonitor.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "tesla-wall-connector-exporter-wes.labels" . | nindent 4 }}
+    {{- if .Values.serviceMonitor.additionalLabels }}
+    {{- toYaml .Values.serviceMonitor.additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  namespaceSelector:
+    matchNames:
+    - {{ include "tesla-wall-connector-exporter-wes.namespace" . }}
+  selector:
+    matchLabels:
+      {{- include "tesla-wall-connector-exporter-wes.selectorLabels" . | nindent 6 }}
+  endpoints:
+  - honorLabels: {{ .Values.serviceMonitor.honorLabels | default true }}
+    path: {{ .Values.serviceMonitor.path | default "/metrics" }}
+    targetPort: {{ .Values.serviceMonitor.targetPort | default 9859 }}
+    {{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+    {{- end }}
+    {{- if ne .Values.serviceMonitor.scheme "http"}}
+    scheme: https
+    tlsConfig:
+      {{- if eq .Values.serviceMonitor.insecureSkipVerify true }}
+      insecureSkipVerify: true
+      {{- end }}
+      {{- if .Values.serviceMonitor.serverName }}
+      serverName: {{ .Values.serviceMonitor.serverName }}
+      {{- end}}
+    {{- end }}
+{{- if .Values.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+{{ tpl (toYaml .Values.serviceMonitor.metricRelabelings | indent 4) . }}
+{{- end }}
+{{- if .Values.serviceMonitor.relabelings }}
+    relabelings:
+{{ tpl (toYaml .Values.serviceMonitor.relabelings | indent 4) . }}
+{{- end }}
+{{- end }}
