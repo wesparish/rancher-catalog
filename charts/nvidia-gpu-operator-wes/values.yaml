@@ -1,0 +1,14 @@
+gpu-operator:
+  dcgmExporter:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+  driver:
+    # Driver install only works if all nodes run the same OS version
+    # Need to manually install driver with something ilke:
+    # apt-get install nvidia-driver-565-server
+    enabled: false
+  toolkit:
+    # Disabling toolkit, seems to revert /etc/docker/daemon.json runtime to "runc" after
+    # every reboot, causing all containers to fail to start
+    enabled: false
