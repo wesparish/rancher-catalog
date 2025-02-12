@@ -25,6 +25,6 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: descheduler
-    version: "0.19.2"
+    version: "0.31.0"
     # https://kubernetes-sigs.github.io/descheduler/
     repository: "https://kubernetes-sigs.github.io/descheduler"

@@ -1,5 +1,7 @@
-
 descheduler:
-  image:
-    # tag should match K8s version
-    tag: v0.19.0
+  kind: Deployment
+  deschedulingInterval: 12h
+  serviceMonitor:
+    enabled: true
+  service:
+    enabled: true
