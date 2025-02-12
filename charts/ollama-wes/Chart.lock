@@ -1,6 +1,0 @@
-dependencies:
-- name: open-webui
-  repository: file://deps/open-webui/kubernetes/helm/
-  version: 1.0.0
-digest: sha256:d37784fcfaa29ecc2d9db4edfbc2712c23012f1b34fb5e67aba0763873ebfd0a
-generated: "2024-04-29T04:44:38.933866-05:00"
