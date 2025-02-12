@@ -1,0 +1,35 @@
+open-webui:
+  ollama:
+    enabled: true
+    fullnameOverride: "open-webui-ollama"
+    ollama:
+      gpu:
+        enabled: true
+        type: 'nvidia'
+        number: 1
+      models:
+        pull:
+          - gemma2:9b
+        run:
+          - gemma2:9b
+    persistentVolume:
+      enabled: true
+      existingClaim: "ollama-data"
+    extraEnv:
+      - name: "OLLAMA_KEEP_ALIVE"
+        value: "-1"
+
+  pipelines:
+    enabled: false
+
+  ingress:
+    enabled: true
+    class: "nginx-wes"
+    host: "open-webui.elastiscale.net"
+    tls: true
+    annotations:
+      kubernetes.io/tls-acme: "true"
+
+  persistence:
+    enabled: true
+    existingClaim: "ollama-webui-data"
