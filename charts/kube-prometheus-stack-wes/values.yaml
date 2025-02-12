@@ -39,5 +39,9 @@ kube-prometheus-stack:
       serviceMonitorSelector: {}
       podMonitorSelectorNilUsesHelmValues: false
       podMonitorSelector: {}
+      # 20250204 https://github.com/prometheus-operator/kube-prometheus/issues/1392#issuecomment-1411719953
+      ruleSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+
       scrapeInterval: "30s"
       evaluationInterval: "30s"
