@@ -40,8 +40,8 @@ image:
     repository: shuaiscott/zap2xml
     tag: latest
   jellyfin:
-    repository: ghcr.io/hotio/jellyfin
-    tag: latest
+    repository: ghcr.io/jellyfin/jellyfin
+    tag: "10.10.5"
   watchstate:
     repository: ghcr.io/arabcoders/watchstate
     tag: latest
@@ -81,6 +81,9 @@ plex:
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
     fqdn: plex.elastiscale.net
     secretName: plex-elastiscale.net
+  resources:
+    limits:
+      nvidia.com/gpu: "1"
 
 deluge:
   ingress:
@@ -154,6 +157,9 @@ jellyfin:
   service:
     type: ClusterIP
     port: 8096
+  resources:
+    limits:
+      nvidia.com/gpu: "1"
 
 watchstate:
   # ingress:

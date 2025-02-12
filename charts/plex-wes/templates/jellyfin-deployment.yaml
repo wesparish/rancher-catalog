@@ -33,12 +33,17 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.jellyfin.repository }}:{{ .Values.image.jellyfin.tag | default .Chart.AppVersion }}"
           env:
-            - name: PUID
-              value: "{{ .Values.allServarr.puid }}"
-            - name: PGID
-              value: "{{ .Values.allServarr.pgid }}"
             - name: TZ
               value: "{{ .Values.allServarr.tz }}"
+            # Pulled from hotio container's init script
+            - name: JELLYFIN_CACHE_DIR
+              value: /config/cache
+            - name: JELLYFIN_LOG_DIR
+              value: /config/log
+            - name: JELLYFIN_DATA_DIR
+              value: /config/data
+            - name: JELLYFIN_CONFIG_DIR
+              value: /config
           imagePullPolicy: Always
           ports:
             - name: jellyfin-web
@@ -51,9 +56,6 @@ spec:
           - name: servarr-data
             subPath: jellyfin-config
             mountPath: /config
-          - name: servarr-data
-            subPath: jellyfin-data
-            mountPath: /data
           startupProbe:
             httpGet:
               path: /
