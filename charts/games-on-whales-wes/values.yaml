@@ -20,24 +20,24 @@ games-on-whales:
       annotations:
         metallb.universe.tf/allow-shared-ip: "sharing-key"
 
-  # persistence:
-  #   home:
-  #     enabled: true
-  #     # type: pvc
-  #     # existingClaim: "games-on-whales-data"
-  #     type: hostPath
-  #     hostPath: /var/data/games-on-whales
-  #     mountPath: /home/retro
+  persistence:
+    home:
+      enabled: true
+      # type: pvc
+      # existingClaim: "games-on-whales-data"
+      type: hostPath
+      hostPath: /var/data/games-on-whales
+      mountPath: /home/retro
 
   # Note: This requests a GPU for each pod, minimum 3
-  #graphic_resources:
-  #  nvidia.com/gpu: 1
+  graphic_resources:
+   nvidia.com/gpu: 1
 
   retroarch:
     enabled: false
   # firefox:
   #   enabled: false
 
-  nodeSelector:
-    kubernetes.io/hostname: "w-dock4"
+  # nodeSelector:
+  #   kubernetes.io/hostname: w-dock9
 
