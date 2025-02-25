@@ -45,3 +45,14 @@ kube-prometheus-stack:
 
       scrapeInterval: "30s"
       evaluationInterval: "30s"
+
+      additionalScrapeConfigs:
+      - job_name: ceph-exporter
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+            # All w-dock ceph hosts
+            - w-dock5.weshouse:9283
+            - w-dock7.weshouse:9283
+            - w-dock8.weshouse:9283
+            - w-dock9.weshouse:9283
