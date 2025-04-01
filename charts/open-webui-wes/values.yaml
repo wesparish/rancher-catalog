@@ -18,6 +18,8 @@ open-webui:
     extraEnv:
       - name: "OLLAMA_KEEP_ALIVE"
         value: "-1"
+    nodeSelector:
+      nvidia.com/gpu.product: NVIDIA-A30-SHARED
 
   pipelines:
     enabled: false
