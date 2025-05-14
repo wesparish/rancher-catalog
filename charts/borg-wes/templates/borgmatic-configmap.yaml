@@ -264,6 +264,7 @@ data:
     # rlist, info, or check, borgmatic automatically tries to match only
     # archives created with this name format.
     # archive_name_format: '{hostname}-documents-{now}'
+    archive_name_format: 'wes-backup-{now:%Y-%m-%dT%H:%M:%S.%f}'
 
     # A Borg pattern for filtering down the archives used by borgmatic
     # actions that operate on multiple archives. For Borg 1.x, use a shell
@@ -308,7 +309,7 @@ data:
 
     # Keep all archives within this time interval. See "skip_actions" for
     # disabling pruning altogether.
-    # keep_within: 3H
+    # keep_within: 60d
 
     # Number of secondly archives to keep.
     # keep_secondly: 60
@@ -323,13 +324,13 @@ data:
     keep_daily: 7
 
     # Number of weekly archives to keep.
-    # keep_weekly: 4
+    keep_weekly: 4
 
     # Number of monthly archives to keep.
-    keep_monthly: 1
+    keep_monthly: 6
 
     # Number of yearly archives to keep.
-    # keep_yearly: 1
+    keep_yearly: 1
 
     # Deprecated. When pruning or checking archives, only consider archive
     # names starting with this prefix. Borg placeholders can be used. See

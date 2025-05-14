@@ -110,6 +110,8 @@ backups:
       - R /source/k8s-volumes/vaultwarden-data
       - R /source/k8s-volumes/virt-manager-data
       - R /source/k8s-volumes/zigbee2mqtt-data
+      - R /source/k8s-volumes/kube-prometheus-stack-data/grafana
+      - R /source/k8s-volumes/omada-data
 
 imagePullSecrets: []
 nameOverride: ""
