@@ -1,0 +1,6 @@
+dependencies:
+- name: kuberhealthy
+  repository: https://kuberhealthy.github.io/kuberhealthy/helm-repos
+  version: "100"
+digest: sha256:01a51596fce118516dfe1c34ba7baf7158caa48ef1a083e7f4c7bc102ae80993
+generated: "2025-05-12T10:00:24.004307644-05:00"
