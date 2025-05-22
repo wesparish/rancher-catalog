@@ -25,6 +25,14 @@ kube-prometheus-stack:
         # https://grafana.com/docs/grafana/next/observability-as-code/provision-resources/git-sync-setup/
         provisioning: true
         kubernetesDashboards: true
+      database:
+        type: postgres
+        host: kube-prometheus-stack-postgresql:5432
+        name: grafana
+        user: grafana
+        password: grafana
+        ssl_mode: disable
+    assertNoLeakedSecrets: false
 
   prometheus:
     prometheusSpec:
@@ -64,3 +72,35 @@ kube-prometheus-stack:
             - w-dock7.weshouse:9283
             - w-dock8.weshouse:9283
             - w-dock9.weshouse:9283
+
+postgresql:
+  enabled: false
+  auth:
+    username: grafana
+    password: grafana
+    database: grafana
+  primary:
+    persistence:
+      existingClaim: kube-prometheus-stack-data
+      subPath: postgres-grafana
+  backup:
+    enabled: true
+    cronjob:
+      storage:
+        existingClaim: kube-prometheus-stack-data
+        subPath: postgres-grafana-backup
+      command:
+        - /bin/bash
+        - -c
+        - |
+          backup_dir="$PGDUMP_DIR/"
+          mkdir -p $backup_dir
+          echo "Backing up grafana postgresql to: $backup_dir"
+          cd $backup_dir
+          export PGPASSWORD=grafana
+          pg_dump -v --host kube-prometheus-stack-postgresql -U grafana -d grafana -p 5432 > grafana_$(date -I).sql
+          echo "Cleaning up old backups"
+          find $backup_dir -mtime +10 -delete
+          echo "Current backups:"
+          find $backup_dir
+          echo "Done"
