@@ -36,6 +36,36 @@ cliPod:
     # failureThreshold: 3
   resources: {}
 
+metricsPod:
+  enabled: true
+  image:
+    repository: ghcr.io/maxim-mityutko/borgmatic-exporter
+    tag: latest
+    pullPolicy: Always
+  # podAnnotations: {}
+  # podLabels: {}
+  # imagePullSecrets: {}
+  # podSecurityContext: {}
+  livenessProbe: {}
+    # enabled: true
+    # initialDelaySeconds: 30
+    # timeoutSeconds: 5
+    # periodSeconds: 10
+    # successThreshold: 1
+    # failureThreshold: 3
+  readinessProbe: {}
+    # enabled: true
+    # initialDelaySeconds: 30
+    # timeoutSeconds: 5
+    # periodSeconds: 10
+    # successThreshold: 1
+    # failureThreshold: 3
+  resources: {}
+  service:
+    # Port for the metrics service
+    port: 9996
+    externalName: borg-metrics
+
 backups:
   - name: cephfs-remote
     suspend: false

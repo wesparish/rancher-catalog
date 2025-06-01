@@ -1,0 +1,152 @@
+{{ if .Values.metricsPod.enabled }}
+{{- range .Values.backups }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "borg-wes.fullname" $ }}-metrics-pod-{{ .name }}
+  labels:
+    {{- include "borg-wes.labels" $ | nindent 4 }}
+    component: metrics-pod
+    backupName: {{ .name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "borg-wes.selectorLabels" $ | nindent 6 }}
+      component: metrics-pod
+      backupName: {{ .name }}
+  template:
+    metadata:
+      {{- with $.Values.metricsPod.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "borg-wes.labels" $ | nindent 8 }}
+        {{- with $.Values.metricsPod.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        component: metrics-pod
+        backupName: {{ .name }}
+    spec:
+      {{- with $.Values.metricsPod.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "borg-wes.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.metricsPod.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ $.Chart.Name }}-metrics-pod-{{ .name }}
+          securityContext:
+            {{- toYaml $.Values.metricsPod.securityContext | nindent 12 }}
+          image: "{{ $.Values.metricsPod.image.repository }}:{{ $.Values.metricsPod.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.metricsPod.image.pullPolicy | quote }}
+          env:
+            {{- if .persistence.secrets.borg_passphrase }}
+            - name: BORG_PASSPHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .persistence.secrets.borg_passphrase }}
+                  key: borg-passphrase
+            {{- end }}
+            {{- if .persistence.borgBaseDir }}
+              {{- if .persistence.borgBaseDir.claim }}
+            - name: BORG_BASE_DIR
+              value: "/borg-base-dir"
+              {{- end }}
+            {{- end }}
+            - name: BORG_RELOCATED_REPO_ACCESS_IS_OK
+              value: "yes"
+            - name: BORGMATIC_CONFIG
+              value: "/etc/borgmatic/config.yaml"
+          ports:
+            - name: http
+              containerPort: {{ $.Values.metricsPod.service.port }}
+              protocol: TCP
+          {{- with $.Values.metricsPod.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.metricsPod.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.metricsPod.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          - name: source
+            mountPath: "/source"
+            readOnly: true
+            {{- if .persistence.source.subPath }}
+            subPath: "{{ .persistence.source.subPath }}"
+            {{- end }}
+          - name: borgmatic-config
+            mountPath: "/borgmatic-config.yaml"
+            subPath: "borgmatic-config.yaml"
+          {{- if .persistence.secrets.ssh_key }}
+          - name: ssh-key
+            mountPath: "/root/.ssh/id_rsa"
+            subPath: "id_rsa"
+          {{- end }}
+          {{- if .persistence.borgBaseDir }}
+            {{- if .persistence.borgBaseDir.claim }}
+          - name: borg-base-dir
+            mountPath: "/borg-base-dir"
+            {{- if .persistence.borgBaseDir.subPath }}
+            subPath: "{{ .persistence.borgBaseDir.subPath }}"
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - /bin/sh
+                - -c
+                - |
+                  mkdir -p /root/.ssh
+                  chmod 0700 /root/.ssh
+                  cp /root/id_rsa /root/.ssh/id_rsa
+                  chmod 0400 /root/.ssh/id_rsa
+                  mkdir -p /etc/borgmatic/
+                  cp /borgmatic-config.yaml /etc/borgmatic/config.yaml
+      volumes:
+      - name: source
+        persistentVolumeClaim:
+          claimName: "{{ .persistence.source.claim }}"
+      - name: borgmatic-config
+        configMap:
+          name: "borgmatic-config-{{ .name }}"
+          items:
+            - key: borgmatic-config.yaml
+              path: borgmatic-config.yaml
+      {{- if .persistence.secrets.ssh_key }}
+      - name: ssh-key
+        secret:
+          secretName: "{{ .persistence.secrets.ssh_key }}"
+          defaultMode: 0400
+      {{- end }}
+      {{- if .persistence.borgBaseDir }}
+        {{- if .persistence.borgBaseDir.claim }}
+      - name: borg-base-dir
+        persistentVolumeClaim:
+          claimName: "{{ .persistence.borgBaseDir.claim }}"
+        {{- end }}
+      {{- end }}
+      {{- with $.Values.metricsPod.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.metricsPod.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.metricsPod.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{- end }}

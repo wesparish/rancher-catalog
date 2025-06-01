@@ -1,0 +1,22 @@
+{{- if .Values.metricsPod.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "borg-wes.fullname" . }}-metrics-pod
+  labels:
+    {{- include "borg-wes.labels" . | nindent 4 }}
+    component: metrics-pod
+spec:
+  selector:
+    matchLabels:
+      {{- include "borg-wes.selectorLabels" . | nindent 6 }}
+      component: metrics-pod
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 1h
+      scrapeTimeout: 60s
+{{- end }}
