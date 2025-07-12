@@ -8,13 +8,14 @@ image:
   repository: wesparish/borg
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  # tag: "latest" borg 1.2
+  tag: "1.4"
 
 cliPod:
   enabled: true
   image:
     repository: wesparish/borg
-    tag: latest
+    tag: "1.4"
     pullPolicy: Always
   # podAnnotations: {}
   # podLabels: {}
@@ -161,6 +162,7 @@ backups:
       - R /source/k8s-volumes/rocketchat-data
       - R /source/k8s-volumes/sd-data
       - R /source/k8s-volumes/servarr-data
+      - "! /source/k8s-volumes/servarr-data/jellyfin-config/cache/"
       - R /source/k8s-volumes/svn-data
       - R /source/k8s-volumes/teamspeak3-data
       - R /source/k8s-volumes/vaultwarden-data
