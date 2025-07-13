@@ -15,5 +15,6 @@ spec:
       targetPort: 39055
       protocol: TCP
       name: metrics
+  externalTrafficPolicy: Local
   selector:
     {{- include "cloudflare-dns-proxy.selectorLabels" . | nindent 4 }}
