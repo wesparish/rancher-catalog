@@ -40,7 +40,8 @@ image:
   # tag: 6.10.9
   # tag: 7.0.3
   # tag: 7.1.0
-  tag: 7.2.1
+  # tag: 7.2.1
+  tag: 7.8.1
   pullPolicy: IfNotPresent
   gotify:
     repository: gotify/server
