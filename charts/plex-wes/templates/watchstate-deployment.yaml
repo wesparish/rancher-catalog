@@ -7,7 +7,7 @@ metadata:
     {{- include "plex-wes.labels" . | nindent 4 }}
     app.kubernetes.io/extraService: watchstate
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       {{- include "plex-wes.selectorLabels" . | nindent 6 }}

@@ -28,7 +28,7 @@ image:
     repository: hotio/lidarr
     tag: release
   overseerr:
-    repository: hotio/overseerr
+    repository: ghcr.io/hotio/overseerr
     tag: release
   qbittorrent:
     repository: hotio/qbittorrent
