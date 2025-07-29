@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "satisfactory-server-wes.fullname" . }}-tcp
+  labels:
+    {{- include "satisfactory-server-wes.labels" . | nindent 4 }}
+    satisfactory-server-wes-service-type: tcp
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: default
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 7777
+      targetPort: 7777
+      protocol: TCP
+      name: tcp1
+      nodePort: 31111
+  selector:
+    {{- include "satisfactory-server-wes.selectorLabels" . | nindent 4 }}
+  # externalTrafficPolicy: Local
+  loadBalancerIP: 172.16.1.224
+  publishNotReadyAddresses: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "satisfactory-server-wes.fullname" . }}-tcp2
+  labels:
+    {{- include "satisfactory-server-wes.labels" . | nindent 4 }}
+    satisfactory-server-wes-service-type: tcp
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: default
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 8888
+      targetPort: 8888
+      protocol: TCP
+      name: tcp2
+      nodePort: 31112
+  selector:
+    {{- include "satisfactory-server-wes.selectorLabels" . | nindent 4 }}
+  # externalTrafficPolicy: Local
+  loadBalancerIP: 172.16.1.224
+  publishNotReadyAddresses: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "satisfactory-server-wes.fullname" . }}-udp
+  labels:
+    {{- include "satisfactory-server-wes.labels" . | nindent 4 }}
+    satisfactory-server-wes-service-type: udp
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: default
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 7777
+      targetPort: 7777
+      protocol: UDP
+      name: udp1
+      nodePort: 31113
+  selector:
+    {{- include "satisfactory-server-wes.selectorLabels" . | nindent 4 }}
+  # externalTrafficPolicy: Local
+  loadBalancerIP: 172.16.1.224
+  publishNotReadyAddresses: true
