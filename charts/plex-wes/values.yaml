@@ -13,25 +13,25 @@ image:
     repository: tautulli/tautulli
     tag: latest
   radarr:
-    repository: hotio/radarr
+    repository: ghcr.io/hotio/radarr
     tag: release
   sonarr:
-    repository: hotio/sonarr
+    repository: ghcr.io/hotio/sonarr
     tag: release
   readarr:
     repository: ghcr.io/hotio/readarr
     tag: latest
   prowlarr:
-    repository: hotio/prowlarr
+    repository: ghcr.io/hotio/prowlarr
     tag: testing
   lidarr:
-    repository: hotio/lidarr
+    repository: ghcr.io/hotio/lidarr
     tag: release
   overseerr:
     repository: ghcr.io/hotio/overseerr
-    tag: release
+    tag: latest
   qbittorrent:
-    repository: hotio/qbittorrent
+    repository: ghcr.io/hotio/qbittorrent
     tag: release
   ersatztv:
     repository: jasongdove/ersatztv
