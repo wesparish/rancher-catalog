@@ -11,8 +11,9 @@ jitsi-meet:
       - 47.186.87.135
       - 47.186.87.175
     service:
-      type: NodePort
+      type: LoadBalancer
       externalTrafficPolicy: Local
+      loadBalancerIP: 172.16.1.225
 
   web:
     httpsEnabled: true
