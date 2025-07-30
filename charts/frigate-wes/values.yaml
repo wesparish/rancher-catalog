@@ -1,15 +1,12 @@
 
-auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
-
 ingress:
   enabled: true
   className: "nginx-wes"
   annotations:
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 2000m
-    nginx.ingress.kubernetes.io/auth-realm: Authentication Required - Frigate
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
+    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
   hosts:
     - host: frigate.elastiscale.net
       paths:
