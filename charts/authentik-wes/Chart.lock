@@ -1,6 +1,9 @@
 dependencies:
 - name: authentik
   repository: https://charts.goauthentik.io/
-  version: 2024.8.2
-digest: sha256:2417165c201c7f00d63f9502fe77abc210dcb19369ec89f1c4eae4fccec3a663
-generated: "2024-09-21T15:51:02.550369263-05:00"
+  version: 2025.6.4
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.7.21
+digest: sha256:7970a37f8f628c41b59ad936364a12124e77b239fc3fd69f051a2dee55a7a85d
+generated: "2025-07-30T07:07:49.356016248-05:00"

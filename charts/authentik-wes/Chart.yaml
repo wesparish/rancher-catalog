@@ -25,5 +25,9 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: authentik
-    version: "2024.8.2"
+    # version: "2024.8.2"
+    version: "2025.6.4"
     repository: https://charts.goauthentik.io/
+  - name: "postgresql"
+    version: "16.7.21"
+    repository: https://charts.bitnami.com/bitnami

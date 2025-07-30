@@ -35,13 +35,22 @@ authentik:
           name: authentik-env-secrets
 
   postgresql:
-    enabled: true
-    auth:
-      password: "password"
-    primary:
-      persistence:
-        existingClaim: authentik-data
-        subPath: postgres-data
+    # Run our own postgres, Authentik upgrades major versions on a whim and
+    # breaks stuff
+    enabled: false
+    # auth:
+    #   password: "password"
+    # primary:
+    #   persistence:
+    #     existingClaim: authentik-data
+    #     subPath: postgres-data
+    # backup:
+    #   # Getting a password error 20250726
+    #   enabled: false
+    #   cronjob:
+    #     storage:
+    #       existingClaim: authentik-data
+    #     subPath: postgres-backup
 
   redis:
     enabled: true
@@ -52,6 +61,23 @@ authentik:
       persistence:
         existingClaim: authentik-data
         subPath: redis-data
+
+postgresql:
+  # Run our own postgres, Authentik upgrades major versions on a whim and
+  # breaks stuff
+  enabled: true
+  auth:
+    password: "password"
+  primary:
+    persistence:
+      existingClaim: authentik-data
+      subPath: postgres-data
+  backup:
+    enabled: true
+    cronjob:
+      storage:
+        existingClaim: authentik-data
+      subPath: postgres-backup
 
 
 # # Default values for authentik-wes.
