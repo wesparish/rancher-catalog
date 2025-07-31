@@ -75,9 +75,11 @@ postgresql:
   backup:
     enabled: true
     cronjob:
+      concurrencyPolicy: Forbid
       storage:
         existingClaim: authentik-data
-      subPath: postgres-backup
+        resourcePolicy: keep
+        subPath: postgres-backup
 
 
 # # Default values for authentik-wes.
