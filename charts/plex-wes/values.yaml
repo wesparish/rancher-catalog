@@ -51,8 +51,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
-
 plex:
   # Unused if blank
   claimToken:

@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # Used for basic auth
-auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+auth: wes:$apr1$ABC123ReplaceMe
 
 # global:
 #   postgresql:

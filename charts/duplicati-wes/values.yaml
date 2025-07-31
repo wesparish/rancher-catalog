@@ -17,7 +17,7 @@ service:
   port: 8200
 
 duplicati:
-  auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+  auth: wes:$apr1$ABC123ReplaceMe
   persistence:
     duplicatiDataClaim: duplicati-data
     sourceDataClaim: duplicati-source-data

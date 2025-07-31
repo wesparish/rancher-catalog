@@ -1,9 +1,0 @@
-{{- if .Values.auth }}
-apiVersion: v1
-kind: Secret
-metadata:
-  name: basic-auth
-type: Opaque
-data:
-  auth: {{ .Values.auth | b64enc }}
-{{- end }}

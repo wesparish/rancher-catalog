@@ -21,7 +21,7 @@ service:
   port: 3875
 
 duplicacy:
-  auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+  auth: wes:$apr1$ABC123ReplaceMe
   persistence:
     duplicacyConfigClaim: duplicacy-config
     duplicacyStorageClaim: duplicacy-storage

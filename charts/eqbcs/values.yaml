@@ -15,7 +15,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 eqbcs:
-  auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
+  auth: wes:$apr1$ABC123ReplaceMe
 
 serviceAccount:
   # Specifies whether a service account should be created
