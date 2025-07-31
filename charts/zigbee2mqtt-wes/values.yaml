@@ -19,7 +19,6 @@ replicaCount: 1
 # /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2676418-if00
 
 zigbee2mqtt:
-  auth: wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0
   instances:
   # - name: conbeeii
   #   usbSerialById: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2676418-if00
@@ -107,9 +106,8 @@ ingress:
   className: "nginx-wes"
   annotations:
     kubernetes.io/tls-acme: "true"
-    nginx.ingress.kubernetes.io/auth-realm: Authentication Required - zigbee2mqtt
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
+    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
