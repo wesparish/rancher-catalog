@@ -15,13 +15,6 @@ questions:
   required: true
   label: Domain Suffix
   group: "Generic Ingress"
-- variable: auth
-  default: "wes:$apr1$sLLQK9lR$NBDb6NtuzOC6sTHxZ1tuC0"
-  description: "htpasswd string for basic-auth"
-  type: string
-  required: false
-  label: htpasswd string for basic-auth
-  group: "Generic Ingress"
 - variable: backendProtocol
   default: ""
   description: "Backend protocol, e.g. HTTPS"
