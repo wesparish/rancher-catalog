@@ -1,7 +1,7 @@
 generic-ingress:
   name: opensprinkler
   domainSuffix: elastiscale.net
-  auth: wes:$apr1$ABC123ReplaceMe
+  auth: true
   backendProtocol: #HTTPS
 
   endpoint:
