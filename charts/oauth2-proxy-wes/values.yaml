@@ -11,7 +11,7 @@ oauth2-proxy:
       provider="oidc"
       # provider-display-name="Authentik"
       # redirect-url: not used?
-      oidc_issuer_url="https://authentik.elastiscale.net/application/o/k8s-test-1/"
+      oidc_issuer_url="https://authentik.elastiscale.net/application/o/k8s/"
       # allowed-group: k8s-users
       # set-authorization-header = true
       # set-x-auth-request-user = true
