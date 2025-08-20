@@ -1,0 +1,82 @@
+# Deploys maintainerr
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-maintainerr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: maintainerr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: maintainerr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: maintainerr
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-maintainerr
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.maintainerr.repository }}:{{ .Values.image.maintainerr.tag | default .Chart.AppVersion }}"
+          env:
+            - name: PUID
+              value: "{{ .Values.allServarr.puid }}"
+            - name: PGID
+              value: "{{ .Values.allServarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.allServarr.tz }}"
+          imagePullPolicy: Always
+          ports:
+            - name: maintainerr-web
+              containerPort: {{ .Values.maintainerr.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: servarr-data
+            subPath: maintainerr-config
+            mountPath: /opt/data
+          startupProbe:
+            httpGet:
+              path: /
+              port: maintainerr-web
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: maintainerr-web
+          readinessProbe:
+            httpGet:
+              path: /
+              port: maintainerr-web
+          resources:
+            {{- toYaml .Values.maintainerr.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: servarr-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.plex.persistence.servarrData }}

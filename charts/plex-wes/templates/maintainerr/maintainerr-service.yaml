@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-maintainerr
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: maintainerr
+spec:
+  type: {{ .Values.maintainerr.service.type }}
+  ports:
+    - port: {{ .Values.maintainerr.service.port }}
+      targetPort: {{ .Values.maintainerr.service.port }}
+      protocol: TCP
+      name: maintainerr
+  selector:
+    {{- include "plex-wes.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/extraService: maintainerr
