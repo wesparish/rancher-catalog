@@ -48,6 +48,9 @@ image:
   maintainerr:
     repository: ghcr.io/jorenn92/maintainerr
     tag: latest
+  qbittorrentExporter:
+    repository: caseyscarborough/qbittorrent-exporter
+    tag: latest
   pullPolicy: Always
 
 imagePullSecrets: []
@@ -144,6 +147,45 @@ maintainerr:
   service:
     type: ClusterIP
     port: 6246
+
+qbittorrentExporter:
+  ingress:
+    enabled: false
+  service:
+    type: ClusterIP
+    port: 17871
+  # kubectl -n plex create secret generic qbittorrent-exporter \
+  # --from-literal=QBITTORRENT_USERNAME=<user> \
+  # --from-literal=QBITTORRENT_PASSWORD=<pass> \
+  # --from-literal=QBITTORRENT_BASE_URL=<url>
+  secrets:
+    qbittorrentSecretKey: qbittorrent-exporter
+  serviceMonitor:
+    enabled: true
+    targetPort: 17871
+    path: /metrics
+    # The namespace where Prometheus expects to find service monitors.
+    # namespace: ""
+    # Add custom labels to the ServiceMonitor resource
+    additionalLabels: {}
+      # prometheus: kube-prometheus-stack
+    interval: ""
+    # Can also enable https
+    scheme: http
+    # honorLabels: true
+    insecureSkipVerify: true
+    serverName: null
+    metricRelabelings: []
+      # - action: keep
+      #   regex: 'descheduler_(build_info|pods_evicted)'
+      #   sourceLabels: [__name__]
+    relabelings: []
+      # - sourceLabels: [__meta_kubernetes_pod_node_name]
+      #   separator: ;
+      #   regex: ^(.*)$
+      #   targetLabel: nodename
+      #   replacement: $1
+      #   action: replace
 
 readarr:
   ingress:

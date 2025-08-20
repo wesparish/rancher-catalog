@@ -1,0 +1,41 @@
+{{- if eq .Values.qbittorrentExporter.serviceMonitor.enabled true }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "plex-wes.fullname" . }}-servicemonitor
+  namespace: {{ .Values.qbittorrentExporter.serviceMonitor.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+spec:
+  namespaceSelector:
+    matchNames:
+    - {{ .Values.qbittorrentExporter.serviceMonitor.namespace | default .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+  endpoints:
+  - honorLabels: {{ .Values.qbittorrentExporter.serviceMonitor.honorLabels | default true }}
+    path: {{ .Values.qbittorrentExporter.serviceMonitor.path | default "/metrics" }}
+    targetPort: {{ .Values.qbittorrentExporter.serviceMonitor.targetPort | default 9859 }}
+    {{- if .Values.qbittorrentExporter.serviceMonitor.interval }}
+    interval: {{ .Values.qbittorrentExporter.serviceMonitor.interval }}
+    {{- end }}
+    {{- if ne .Values.qbittorrentExporter.serviceMonitor.scheme "http"}}
+    scheme: https
+    tlsConfig:
+      {{- if eq .Values.qbittorrentExporter.serviceMonitor.insecureSkipVerify true }}
+      insecureSkipVerify: true
+      {{- end }}
+      {{- if .Values.qbittorrentExporter.serviceMonitor.serverName }}
+      serverName: {{ .Values.qbittorrentExporter.serviceMonitor.serverName }}
+      {{- end}}
+    {{- end }}
+{{- if .Values.qbittorrentExporter.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+{{ tpl (toYaml .Values.qbittorrentExporter.serviceMonitor.metricRelabelings | indent 4) . }}
+{{- end }}
+{{- if .Values.qbittorrentExporter.serviceMonitor.relabelings }}
+    relabelings:
+{{ tpl (toYaml .Values.qbittorrentExporter.serviceMonitor.relabelings | indent 4) . }}
+{{- end }}
+{{- end }}

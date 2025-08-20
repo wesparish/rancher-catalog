@@ -1,0 +1,77 @@
+# Deploys qbittorrent-exporter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex-wes.fullname" . }}-qbittorrent-exporter
+  labels:
+    {{- include "plex-wes.labels" . | nindent 4 }}
+    app.kubernetes.io/extraService: qbittorrent-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "plex-wes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/extraService: qbittorrent-exporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "plex-wes.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/extraService: qbittorrent-exporter
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "plex-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-qbittorrent-exporter
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.qbittorrentExporter.repository }}:{{ .Values.image.qbittorrentExporter.tag | default .Chart.AppVersion }}"
+          env:
+            - name: PUID
+              value: "{{ .Values.allServarr.puid }}"
+            - name: PGID
+              value: "{{ .Values.allServarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.allServarr.tz }}"
+          envFrom:
+            - secretRef:
+                name: {{ index .Values "qbittorrentExporter" "secrets" "qbittorrentSecretKey" }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.qbittorrentExporter.service.port }}
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /metrics
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+          resources:
+            {{- toYaml .Values.qbittorrentExporter.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
