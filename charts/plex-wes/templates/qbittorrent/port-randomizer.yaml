@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: qbt-port-randomizer
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: qbt-port-randomizer
+            image: docker.io/wesparish/qbittorrent-port-randomizer:latest
+            envFrom:
+              - secretRef:
+                  name: {{ index .Values "qbittorrentExporter" "secrets" "qbittorrentSecretKey" }}
+          restartPolicy: Never
