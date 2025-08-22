@@ -11,14 +11,14 @@ arg_parser = argparse.ArgumentParser(
 arg_parser.add_argument(
     "--port-min",
     type=int,
-    default=49152,
-    help="Minimum port number " "(default: 49152)",
+    default=26000,
+    help="Minimum port number " "(default: 26000)",
 )
 arg_parser.add_argument(
     "--port-max",
     type=int,
-    default=65535,
-    help="Maximum port number " "(default: 65535)",
+    default=26999,
+    help="Maximum port number " "(default: 26999)",
 )
 arg_parser.add_argument(
     "--username",
