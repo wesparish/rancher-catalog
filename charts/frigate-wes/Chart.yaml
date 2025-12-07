@@ -30,6 +30,7 @@ dependencies:
   # Using fork until PR is merged:
   #   https://github.com/blakeblackshear/blakeshome-charts/pull/79
   - name: frigate
-    version: "7.7.0"
-    repository: "file://tmp-subcharts/blakeshome-charts/charts/frigate/"
+    version: "7.8.0"
+    # repository: "file://tmp-subcharts/blakeshome-charts/charts/frigate/"
+    repository: "https://blakeblackshear.github.io/blakeshome-charts/"
 

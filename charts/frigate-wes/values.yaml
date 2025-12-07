@@ -39,6 +39,9 @@ frigate:
     #   --from-literal=FRIGATE_CAMERA_PASSWORD=<pwd>
     - frigate-env-secrets
 
+  #!!!!!!!!!!
+  #! NOTE: This config is not currently used, the current config is from a PVC
+  #!!!!!!!!!!
   config: |
     birdseye:
       enabled: true
@@ -83,6 +86,12 @@ frigate:
       width: 320
       height: 320
     cameras:
+      driveway_flood_light:
+        ffmpeg:
+          inputs:
+            - path: rtsp://admin:{FRIGATE_CAMERA_PASSWORD}@172.16.1.117:8554/Streaming/Channels/101
+              roles:
+                - detect
       # Name of your camera
       front_patio:
         ffmpeg:
