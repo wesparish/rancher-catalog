@@ -9,6 +9,8 @@ image:
   tag: stable
   pullPolicy: IfNotPresent
 
+# 20251211 - bitnami image finally stopepd working, found it on a host and pushed
+# to wesparish/acmesolver:1.15.3-debian-12-r0
 cert-manager:
   # Still doesn't seem to work, installing manually:
   #   https://artifacthub.io/packages/helm/cert-manager/cert-manager#installing-the-chart
@@ -26,7 +28,21 @@ cert-manager:
       - --default-issuer-name=letsencrypt-production
       - --default-issuer-kind=ClusterIssuer
       - --default-issuer-group=cert-manager.io
-
+    image:
+      repository: wesparish/cert-manager
+      tag: 1.15.3-debian-12-r0
+    acmesolver:
+      image:
+        repository: wesparish/acmesolver
+        tag: 1.15.3-debian-12-r0
+  webhook:
+    image:
+      repository: wesparish/cert-manager-webhook
+      tag: 1.15.3-debian-12-r0
+  cainjector:
+    image:
+      repository: wesparish/cainjector
+      tag: 1.15.3-debian-12-r0
 service:
   type: ClusterIP
   port: 80
