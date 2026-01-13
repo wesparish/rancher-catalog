@@ -66,6 +66,12 @@ postgresql:
   # Run our own postgres, Authentik upgrades major versions on a whim and
   # breaks stuff
   enabled: true
+  global:
+    security:
+      allowInsecureImages: true
+  image:
+    repository: wesparish/postgresql
+    tag: 17.5.0-debian-12-r20
   auth:
     password: "password"
   primary:
