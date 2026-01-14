@@ -1,0 +1,140 @@
+# Default values for tandoor-wes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: vabene1111/recipes
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  # Latest as of 20251009
+  tag: "2.3.1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+tandoor:
+  # kubectl -n tandoor create secret generic tandoor-secret-key \
+  #   --from-literal=SECRET_KEY="$(cat /dev/urandom | LC_ALL=C tr -dc 'A-Z' | head -c50)"
+  secretKeySecretName: tandoor-secret-key
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx-wes"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: tandoor.elastiscale.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: tandoor-elastiscale-net
+      hosts:
+        - tandoor.elastiscale.net
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /favicon.ico
+    port: http
+readinessProbe:
+  httpGet:
+    path: /favicon.ico
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: tandoor-data
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+- name: data
+  mountPath: "/opt/recipes/staticfiles"
+  subPath: "staticfiles"
+- name: data
+  mountPath: "/opt/recipes/mediafiles"
+  subPath: "mediafiles"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+postgresql:
+  enabled: true
+  auth:
+    username: "tandoor"
+    password: "password"
+    postgresPassword: "password"
+    database: "tandoor"
+  primary:
+    persistence:
+      existingClaim: tandoor-data
+      subPath: postgres-data
+  global:
+    security:
+      allowInsecureImages: true
+  image:
+    repository: wesparish/postgresql
+    tag: 17.5.0-debian-12-r20
+  backup:
+    enabled: true
+    cronjob:
+      concurrencyPolicy: Forbid
+      storage:
+        existingClaim: tandoor-data
+        resourcePolicy: keep
+        subPath: postgres-backup
