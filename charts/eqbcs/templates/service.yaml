@@ -21,4 +21,4 @@ spec:
   selector:
     {{- include "eqbcs.selectorLabels" . | nindent 4 }}
   externalTrafficPolicy: Local
-  loadBalancerIP: 172.16.1.233
+  loadBalancerIP: 172.16.1.232
