@@ -7,6 +7,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
       libzstd-dev \
       libxxhash-dev \
       build-essential \
+      curl \
       pkg-config \
       pipx \
       python3-dev \
@@ -19,6 +20,12 @@ RUN pipx install borgbackup
 
 RUN pipx install borgmatic
 
-ENV PATH="/root/.local/bin:${PATH}"
+# Install kubectl for initContainer
+RUN \
+  curl -L -o /usr/local/bin/kubectl \
+  "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+  && chmod +x /usr/local/bin/kubectl
+
+ENV PATH="/root/.local/bin:/usr/local/bin/:${PATH}"
 
 ENTRYPOINT [ "borg" ]

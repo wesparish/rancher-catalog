@@ -81,7 +81,9 @@ data:
     # local_path: borg1
 
     # Alternate Borg remote executable. Defaults to "borg".
-    # remote_path: borg1
+    # Binary downloaded from:
+    # https://github.com/borgbackup/borg/releases/download/1.4.1/borg-linux-glibc236
+    remote_path: /usr/local/bin/borg-wes
 
     # Any paths matching these patterns are included/excluded from
     # backups. Globs are expanded. (Tildes are not.) See the output of
@@ -342,6 +344,11 @@ data:
     # List of one or more consistency checks to run on a periodic basis
     # (if "frequency" is set) or every time borgmatic runs checks (if
     # "frequency" is omitted).
+    checks:
+      - name: repository
+        frequency: 2 weeks
+      - name: archives
+        frequency: 1 month
     # checks:
         # Name of the consistency check to run:
         #  * "repository" checks the consistency of the

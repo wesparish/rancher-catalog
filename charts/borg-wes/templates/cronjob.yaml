@@ -25,7 +25,7 @@ spec:
       # (sequentially) inside the pod
       completions: 1
       # # Maximum pod restarts in case of failure
-      backoffLimit: 1
+      backoffLimit: 0
       template:
         spec:
           {{- with $.Values.nodeSelector }}

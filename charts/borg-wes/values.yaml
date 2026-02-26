@@ -93,7 +93,7 @@ backups:
     cron: '@daily'
     repositories:
       # - path: ssh://wes@jamiewan.elastiscale.net/data/borg
-      - path: ssh://wes@172.16.1.136/data/borg
+      - path: ssh://root@j-dock1.weshouse/data/borg
         label: jamiewan
     command:
       - borgmatic
