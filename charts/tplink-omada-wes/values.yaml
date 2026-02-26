@@ -50,7 +50,8 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  # type: ClusterIP
+  type: LoadBalancer
   # Used by ingress  only to target backend service port
   port: 8043
 
@@ -59,8 +60,9 @@ ingress:
   className: "nginx-wes"
   annotations:
       kubernetes.io/tls-acme: "true"
-      nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
-      nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
+      # Disabling in favor of built-in SAML
+      # nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
+      # nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
       nginx.ingress.kubernetes.io/backend-protocol: HTTPS
   hosts:
     - host: omada.elastiscale.net

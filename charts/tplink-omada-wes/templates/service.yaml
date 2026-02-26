@@ -6,6 +6,7 @@ metadata:
     {{- include "tplink-omada-wes.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
+  loadBalancerIP: 172.16.1.240
   ports:
   - name: manage-http
     targetPort: manage-http
