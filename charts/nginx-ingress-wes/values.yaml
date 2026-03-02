@@ -20,7 +20,10 @@ ingress-nginx:
     admissionWebhooks:
       certManager:
         enabled: true
+        # Use chart's self-signed CA (no issuerRef). Let's Encrypt cannot issue for
+        # internal SANs (*.svc); cert-manager will issue and renew from the root-issuer.
         admissionCert:
-          issuerRef:
-            name: "letsencrypt-production"
-            kind: "ClusterIssuer"
+          duration: "87600h0m0s"  # 10 years
+          # issuerRef:  # leave unset so chart creates self-signed Issuer + root-issuer
+          #   name: "letsencrypt-production"
+          #   kind: "ClusterIssuer"
