@@ -1,0 +1,6 @@
+apiVersion: v2
+name: moonlight-web-stream
+description: Moonlight Web Stream - WebRTC game streaming (from mrcreativ3001/moonlight-web-stream)
+type: application
+version: 0.1.0
+appVersion: "latest"

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "moonlight-web-stream.fullname" . }}-test-connection"
+  labels:
+    {{- include "moonlight-web-stream.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "moonlight-web-stream.fullname" . }}-tcp:{{ .Values.tcpPort }}']
+  restartPolicy: Never

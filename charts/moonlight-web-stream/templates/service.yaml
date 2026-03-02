@@ -1,0 +1,44 @@
+# TCP service (port 8080) - LoadBalancer with reserved IP and MetalLB sharing
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "moonlight-web-stream.fullname" . }}-tcp
+  labels:
+    {{- include "moonlight-web-stream.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: {{ .Values.metallbAllowSharedIP | quote }}
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.loadBalancerIP | quote }}
+  selector:
+    {{- include "moonlight-web-stream.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.tcpPort }}
+      targetPort: http
+      protocol: TCP
+---
+# UDP service (ports 40000-40100) - LoadBalancer with same reserved IP and MetalLB sharing
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "moonlight-web-stream.fullname" . }}-udp
+  labels:
+    {{- include "moonlight-web-stream.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: {{ .Values.metallbAllowSharedIP | quote }}
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.loadBalancerIP | quote }}
+  selector:
+    {{- include "moonlight-web-stream.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- $start := int .Values.udpPortStart }}
+    {{- $count := int (add (sub .Values.udpPortEnd .Values.udpPortStart) 1) }}
+    {{- range $p := until $count }}
+    - name: webrtc-{{ add $start $p }}
+      port: {{ add $start $p }}
+      targetPort: webrtc-{{ add $start $p }}
+      protocol: UDP
+    {{- end }}

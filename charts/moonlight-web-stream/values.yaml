@@ -1,0 +1,56 @@
+# Image from docker run: mrcreativ3001/moonlight-web-stream:latest
+image:
+  repository: mrcreativ3001/moonlight-web-stream
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# WEBRTC NAT 1-to-1 host (your LAN IP for WebRTC). Override per environment (e.g. --set).
+webrtcNat1To1Host: "172.16.1.228"
+
+# LoadBalancer: reserved IP and MetalLB sharing key. Override per environment (e.g. --set).
+loadBalancerIP: "172.16.1.228"
+metallbAllowSharedIP: "moonlight-web-stream"
+
+# TCP port (HTTP/WebSocket)
+tcpPort: 8080
+
+# UDP port range for WebRTC (40000-40100)
+udpPortStart: 40000
+udpPortEnd: 40100
+
+replicaCount: 1
+
+# Persistent storage for server data (mounted at /moonlight-web/server/)
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+  existingClaim: "moonlight-web-stream-data"  # set to use an existing PVC instead of creating one
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  automount: true
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+ingress:
+  enabled: true
+  className: "nginx-wes"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: moonlight.elastiscale.net
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: moonlight-elastiscale.net
+      hosts:
+        - moonlight.elastiscale.net

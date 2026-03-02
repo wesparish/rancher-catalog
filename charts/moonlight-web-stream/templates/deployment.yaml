@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "moonlight-web-stream.fullname" . }}
+  labels:
+    {{- include "moonlight-web-stream.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "moonlight-web-stream.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "moonlight-web-stream.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: true
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: WEBRTC_NAT_1TO1_HOST
+              value: {{ .Values.webrtcNat1To1Host | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.tcpPort }}
+              protocol: TCP
+            {{- $start := int .Values.udpPortStart }}
+            {{- $count := int (add (sub .Values.udpPortEnd .Values.udpPortStart) 1) }}
+            {{- range $p := until $count }}
+            - name: webrtc-{{ add $start $p }}
+              containerPort: {{ add $start $p }}
+              protocol: UDP
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: server-data
+              mountPath: /moonlight-web/server/
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: server-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "moonlight-web-stream.fullname" .)) }}
+      {{- end }}
