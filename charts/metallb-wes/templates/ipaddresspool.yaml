@@ -1,0 +1,14 @@
+{{- if .Values.addressPools }}
+{{- range .Values.addressPools }}
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: {{ .name | default "default" }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+spec:
+  addresses:
+    {{- toYaml .addresses | nindent 4 }}
+{{- end }}
+{{- end }}

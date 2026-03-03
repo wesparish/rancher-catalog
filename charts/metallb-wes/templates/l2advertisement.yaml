@@ -1,0 +1,18 @@
+{{- $l2Names := list }}
+{{- range .Values.addressPools }}
+{{- if eq ( .protocol | default "layer2" ) "layer2" }}
+{{- $l2Names = append $l2Names ( .name | default "default" ) }}
+{{- end }}
+{{- end }}
+{{- if $l2Names }}
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  ipAddressPools:
+    {{- toYaml $l2Names | nindent 4 }}
+{{- end }}

@@ -1,5 +1,9 @@
-apiVersion: v1
+apiVersion: v2
 appVersion: "1.0"
-description: A Helm chart for Kubernetes
+description: Wrapper around the official MetalLB Helm chart (CRDs + IPAddressPool/L2Advertisement).
 name: metallb-wes
 version: 0.1.0
+dependencies:
+  - name: metallb
+    version: "0.15.3"
+    repository: https://metallb.github.io/metallb
