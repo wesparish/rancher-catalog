@@ -9,40 +9,19 @@ image:
   tag: stable
   pullPolicy: IfNotPresent
 
-# 20251211 - bitnami image finally stopepd working, found it on a host and pushed
-# to wesparish/acmesolver:1.15.3-debian-12-r0
+# Subchart (Jetstack cert-manager): values under cert-manager must match its schema.
 cert-manager:
-  # Still doesn't seem to work, installing manually:
-  #   https://artifacthub.io/packages/helm/cert-manager/cert-manager#installing-the-chart
-  #   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.crds.yaml
+  # Let Helm install and upgrade CRDs with the chart (idempotent on upgrade).
+  # keep: true so helm uninstall does not delete CRDs (avoids wiping Certificates/Issuers).
   crds:
-  #   enabled: true
-  #   # Don't delete all CRD resources when this chart is deleted
+    enabled: true
     keep: true
-  # installCRDs: true
-  controller:
-    nodeSelector:
-      ingress: "true"
-    extraArgs:
-      # Allow kubernetes.io/tls-acme: "true" to keep working
-      - --default-issuer-name=letsencrypt-production
-      - --default-issuer-kind=ClusterIssuer
-      - --default-issuer-group=cert-manager.io
-    image:
-      repository: wesparish/cert-manager
-      tag: 1.15.3-debian-12-r0
-    acmesolver:
-      image:
-        repository: wesparish/acmesolver
-        tag: 1.15.3-debian-12-r0
-  webhook:
-    image:
-      repository: wesparish/cert-manager-webhook
-      tag: 1.15.3-debian-12-r0
-  cainjector:
-    image:
-      repository: wesparish/cainjector
-      tag: 1.15.3-debian-12-r0
+  nodeSelector:
+    ingress: "true"
+  extraArgs:
+    - --default-issuer-name=letsencrypt-production
+    - --default-issuer-kind=ClusterIssuer
+    - --default-issuer-group=cert-manager.io
 service:
   type: ClusterIP
   port: 80
