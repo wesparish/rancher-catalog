@@ -17,6 +17,10 @@ ingress-nginx:
     nodeSelector:
       ingress: "true"
     allowSnippetAnnotations: true
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
     admissionWebhooks:
       certManager:
         enabled: true
