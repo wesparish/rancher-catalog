@@ -26,7 +26,8 @@ ark-cluster:
     pullSecrets: []
     pullPolicy: Always
 
-  replicaCount: 1
+  # 20260304 Disabled for now
+  replicaCount: 0
 
   clusterName: wtopace
 
