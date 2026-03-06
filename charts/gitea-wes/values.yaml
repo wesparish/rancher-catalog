@@ -83,6 +83,14 @@ gitea:
     enabled: false
   postgresql:
     enabled: true
+    # kubectl -n gitea create secret generic gitea-postgresql \
+    #   --from-literal=password=<runner token>
+    #   --from-literal=postgres-password=<postgres password>
+    auth:
+      existingSecret: gitea-postgresql
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/postgresql
     primary:
       persistence:
         existingClaim: gitea-postgres
