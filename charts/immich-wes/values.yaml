@@ -19,6 +19,9 @@ immich:
     architecture: standalone
     auth:
       enabled: false
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/redis
     master:
       persistence:
         existingClaim: immich-data
