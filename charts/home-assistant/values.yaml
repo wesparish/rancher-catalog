@@ -72,9 +72,18 @@ affinity:
           - "true"
 
 mariadb:
+  image:
+    registry: docker.io
+    repository: wesparish/mariadb
   architecture: standalone
   auth:
-    rootPassword: password
+    # kubectl -n home-assistant create secret generic home-assistant-mariadb \
+    #   --from-literal=mariadb-root-password=<root password> \
+    #   --from-literal=mariadb-password=<app user password>
+    existingSecret: home-assistant-mariadb
+    # Chart upgrade validation requires non-empty rootPassword; with existingSecret set the chart
+    # does not create/update the secret, so this placeholder is never written to the cluster.
+    rootPassword: "from-existing-secret"
     database: home-assistant
   primary:
     nodeSelector:
