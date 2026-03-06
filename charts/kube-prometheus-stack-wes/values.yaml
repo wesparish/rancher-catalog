@@ -1,3 +1,6 @@
+global:
+  security:
+    allowInsecureImages: true
 kube-prometheus-stack:
   grafana:
     ingress:
@@ -75,9 +78,15 @@ kube-prometheus-stack:
 
 postgresql:
   enabled: false
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
   auth:
+    # kubectl -n kube-prometheus-stack create secret generic kube-prometheus-stack-postgresql \
+    #   --from-literal=password=<grafana user password> \
+    #   --from-literal=postgres-password=<postgres admin password>
+    existingSecret: kube-prometheus-stack-postgresql
     username: grafana
-    password: grafana
     database: grafana
   primary:
     persistence:
