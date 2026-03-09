@@ -2,8 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Mongodb values
+global:
+  security:
+    allowInsecureImages: true
+
+# Mongodb values (Bitnami subchart -> bitnamilegacy)
 mongodb:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/mongodb
   persistence:
     enabled: true
     existingClaim: omada-data
