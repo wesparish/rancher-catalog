@@ -2,8 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Mongodb values
+# Mongodb values (Bitnami subchart -> bitnamilegacy)
 mongodb:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/mongodb
   nodeSelector:
     ceph-client: "true"
   persistence:
