@@ -1,4 +1,15 @@
+# Release-specific: use existing secrets (do not store passwords in values).
+# On upgrade, Mailu subchart requires roundcube password at render time; pass with:
+#   --set global.database.roundcube.password=$(kubectl get secret -n mailu-new mailu-roundcube -o jsonpath="{.data.roundcube-db-password}" | base64 -d)
 mailu:
+  # kubectl -n mailu-new create secret generic mailu-new-secret \
+  #   --from-literal=secret-key=<random secret key>
+  existingSecret: mailu-new-secret
+  initialAccount:
+    # kubectl -n mailu-new create secret generic mailu-new-initial-account \
+    #   --from-literal=initial-account-password=<admin password>
+    existingSecret: mailu-new-initial-account
+    existingSecretPasswordKey: initial-account-password
   domain: mail.elastiscale.net
   hostnames:
   # Web UI
@@ -82,9 +93,20 @@ mailu:
       ceph-client: "true"
 
   redis:
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/redis
     master:
       persistence:
         existingClaim: mailu-new
         subPath: redis-master
       nodeSelector:
         ceph-client: "true"
+
+global:
+  database:
+    roundcube:
+      # kubectl -n mailu-new create secret generic mailu-roundcube \
+      #   --from-literal=roundcube-db-password=<roundcube DB user password>
+      existingSecret: mailu-roundcube
+      existingSecretPasswordKey: roundcube-db-password
