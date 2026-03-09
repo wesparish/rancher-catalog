@@ -1,1 +1,4 @@
 tmp
+# One-time restore script and backup dumps (contain sensitive data; do not commit)
+restore-secrets.sh
+*-secrets-backup.yaml

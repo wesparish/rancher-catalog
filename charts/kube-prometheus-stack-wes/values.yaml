@@ -1,6 +1,16 @@
 global:
   security:
     allowInsecureImages: true
+  # Bitnami PostgreSQL subchart requires non-empty password on upgrade; use existing secret.
+  # kubectl -n kube-prometheus-stack create secret generic kube-prometheus-stack-postgresql \
+  #   --from-literal=password=<grafana user password> \
+  #   --from-literal=postgres-password=<postgres admin password>
+  postgresql:
+    auth:
+      existingSecret: kube-prometheus-stack-postgresql
+      # Placeholder for upgrade validation; actual password is in the secret above.
+      password: "from-existing-secret"
+
 kube-prometheus-stack:
   grafana:
     ingress:
