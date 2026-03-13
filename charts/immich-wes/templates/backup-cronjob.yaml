@@ -15,7 +15,7 @@ spec:
           {{- end }}
           containers:
           - name: immich-postgres-backup
-            image: docker.io/bitnami/postgresql:14.5.0-debian-11-r6
+            image: docker.io/bitnamilegacy/postgresql:14.5.0-debian-11-r6
             volumeMounts:
             - name: immich-postgres-backup
               mountPath: /immich-postgres-backup/
