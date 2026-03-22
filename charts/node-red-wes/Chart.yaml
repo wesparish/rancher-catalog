@@ -25,5 +25,6 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: node-red
-    version: "0.21.2"
+    #version: "0.21.2"
+    version: "0.40.1"
     repository: "https://schwarzit.github.io/node-red-chart/"
