@@ -17,6 +17,12 @@ ingress-nginx:
     nodeSelector:
       ingress: "true"
     allowSnippetAnnotations: true
+    config:
+      # cert-manager v1.12+ creates HTTP-01 solver ingresses with pathType: Exact.
+      # nginx-ingress v1.10+ introduced strict-validate-path-type (default true in
+      # v1.12) which rejects Exact paths for ACME challenge tokens. Disabling it
+      # allows cert-manager to complete HTTP-01 challenges.
+      strict-validate-path-type: "false"
     metrics:
       enabled: true
       serviceMonitor:
