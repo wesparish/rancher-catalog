@@ -1,0 +1,21 @@
+{{- range .Values.models }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vllm.fullname" $ }}-{{ include "vllm.modelName" .name }}
+  labels:
+    {{- include "vllm.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ include "vllm.modelName" .name }}
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: {{ .nodePort }}
+  selector:
+    {{- include "vllm.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ include "vllm.modelName" .name }}
+{{- end }}

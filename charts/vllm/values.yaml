@@ -1,0 +1,50 @@
+# Default values for vllm.
+# This is a YAML-formatted file.
+
+image:
+  repository: vllm/vllm-openai
+  tag: "v0.18.0"
+  pullPolicy: IfNotPresent
+
+# PVC mounted at /root/.cache/huggingface in every model pod
+pvc:
+  existingClaim: ai-models-storage-pvc
+
+# Each model gets its own Deployment and NodePort Service
+models:
+  - name: Qwen3.5-9B-AWQ
+    # Subdirectory within the PVC where the model files live
+    subPath: Qwen3.5-9B-AWQ
+    nodePort: 30800
+    nodeSelector:
+      nvidia.com/gpu.product: NVIDIA-A30-SHARED
+    vllm:
+      gpuMemoryUtilization: 0.85
+      maxModelLen: 131072
+      trustRemoteCode: false
+      enforceEager: true
+      enableAutoToolChoice: true
+      toolCallParser: qwen3_xml
+      kvCacheDtype: fp8
+      maxNumSeqs: 1
+      enableChunkedPrefill: true
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+resources:
+  limits:
+    nvidia.com/gpu: 1
+
+nameOverride: ""
+fullnameOverride: ""

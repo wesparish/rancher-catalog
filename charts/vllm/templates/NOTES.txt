@@ -1,0 +1,15 @@
+vLLM deployed with {{ len .Values.models }} model(s):
+
+{{- range .Values.models }}
+
+  {{ .name }}
+    PVC subPath: {{ .subPath }}
+    NodePort:    {{ .nodePort }}
+    URL:         http://<NODE_IP>:{{ .nodePort }}/v1
+{{- end }}
+
+Get a node IP:
+  kubectl get nodes -o wide
+
+Test a model (replace NODE_IP and PORT):
+  curl http://<NODE_IP>:<nodePort>/v1/models
