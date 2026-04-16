@@ -8,7 +8,7 @@ metadata:
     {{- include "vllm.labels" $ | nindent 4 }}
     app.kubernetes.io/component: {{ include "vllm.modelName" .name }}
 spec:
-  replicas: 1
+  replicas: {{ if kindIs "invalid" .replicas }}1{{ else }}{{ .replicas }}{{ end }}
   strategy:
     type: Recreate
   selector:
@@ -32,15 +32,25 @@ spec:
       serviceAccountName: {{ include "vllm.serviceAccountName" $ }}
       containers:
         - name: vllm
-          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          image: "{{ (.image).repository | default $.Values.image.repository }}:{{ (.image).tag | default $.Values.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           securityContext:
             privileged: true
+          {{- with .command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           args:
             - /model
             - --served-model-name={{ .name }}
             - --port=8000
             {{- with .vllm }}
+            {{- if .omni }}
+            - --omni
+            {{- end }}
+            {{- if .stageConfigsPath }}
+            - --stage-configs-path={{ .stageConfigsPath }}
+            {{- end }}
             {{- if .gpuMemoryUtilization }}
             - --gpu-memory-utilization={{ .gpuMemoryUtilization }}
             {{- end }}
@@ -67,6 +77,19 @@ spec:
             {{- end }}
             {{- if .enableChunkedPrefill }}
             - --enable-chunked-prefill
+            {{- end }}
+            {{- if .asyncScheduling }}
+            - --async-scheduling
+            {{- end }}
+            {{- if .enablePrefixCaching }}
+            - --enable-prefix-caching
+            {{- end }}
+            {{- if .chatTemplate }}
+            - --chat-template={{ .chatTemplate }}
+            {{- end }}
+            {{- if .limitMmPerPrompt }}
+            - --limit-mm-per-prompt
+            - {{ .limitMmPerPrompt | quote }}
             {{- end }}
             {{- end }}
           ports:

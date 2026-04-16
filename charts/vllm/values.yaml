@@ -3,7 +3,7 @@
 
 image:
   repository: vllm/vllm-openai
-  tag: "v0.18.0"
+  tag: "v0.19.0"
   pullPolicy: IfNotPresent
 
 # PVC mounted at /root/.cache/huggingface in every model pod
@@ -13,6 +13,7 @@ pvc:
 # Each model gets its own Deployment and NodePort Service
 models:
   - name: Qwen3.5-9B-AWQ
+    replicas: 1
     # Subdirectory within the PVC where the model files live
     subPath: Qwen3.5-9B-AWQ
     nodePort: 30800
@@ -28,6 +29,48 @@ models:
       kvCacheDtype: fp8
       maxNumSeqs: 1
       enableChunkedPrefill: true
+
+  - name: gemma-4-E4B-it
+    replicas: 0
+    image:
+      tag: "gemma4"
+    # Subdirectory within the PVC where the model files live
+    subPath: gemma-4-E4B-it
+    nodePort: 30801
+    nodeSelector:
+      nvidia.com/gpu.product: NVIDIA-A30-SHARED
+    vllm:
+      gpuMemoryUtilization: 0.80
+      maxModelLen: 65536
+      trustRemoteCode: false
+      maxNumSeqs: 1
+      enableChunkedPrefill: true
+      enablePrefixCaching: true
+      asyncScheduling: true
+      enableAutoToolChoice: true
+      toolCallParser: gemma4
+      chatTemplate: /model/chat_template.jinja
+      # Skip audio encoder; remove to enable audio input
+      limitMmPerPrompt: '{"audio": 0}'
+
+  - name: Qwen3-TTS-12Hz-1.7B-CustomVoice
+    replicas: 0
+    # Uses vllm-omni image for TTS support — needs explicit command since vllm-omni has no ENTRYPOINT
+    command: ["vllm", "serve"]
+    image:
+      repository: vllm/vllm-omni
+      tag: "v0.18.0"
+    subPath: Qwen3-TTS-12Hz-1.7B-CustomVoice
+    nodePort: 30802
+    nodeSelector:
+      nvidia.com/gpu.product: NVIDIA-A30-SHARED
+    vllm:
+      omni: true
+      stageConfigsPath: /usr/local/lib/python3.12/dist-packages/vllm_omni/model_executor/stage_configs/qwen3_tts.yaml
+      trustRemoteCode: true
+      enforceEager: true
+      maxNumSeqs: 1
+
 
 serviceAccount:
   create: true
