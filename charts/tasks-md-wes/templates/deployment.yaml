@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tasks-md-wes.fullname" . }}
+  labels:
+    {{- include "tasks-md-wes.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "tasks-md-wes.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tasks-md-wes.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tasks-md-wes.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.env.PUID }}
+            - name: PUID
+              value: {{ .Values.env.PUID | quote }}
+            {{- end }}
+            {{- if .Values.env.PGID }}
+            - name: PGID
+              value: {{ .Values.env.PGID | quote }}
+            {{- end }}
+            {{- if .Values.env.TITLE }}
+            - name: TITLE
+              value: {{ .Values.env.TITLE | quote }}
+            {{- end }}
+            {{- if .Values.env.BASE_PATH }}
+            - name: BASE_PATH
+              value: {{ .Values.env.BASE_PATH | quote }}
+            {{- end }}
+            {{- if .Values.env.LOCAL_IMAGES_CLEANUP_INTERVAL }}
+            - name: LOCAL_IMAGES_CLEANUP_INTERVAL
+              value: {{ .Values.env.LOCAL_IMAGES_CLEANUP_INTERVAL | quote }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.persistence.tasks.enabled }}
+            - name: tasks
+              mountPath: /tasks
+            {{- end }}
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: /config
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.tasks.enabled }}
+        - name: tasks
+          persistentVolumeClaim:
+            claimName: {{ include "tasks-md-wes.tasksPvcName" . }}
+        {{- end }}
+        {{- if .Values.persistence.config.enabled }}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "tasks-md-wes.configPvcName" . }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

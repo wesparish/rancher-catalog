@@ -1,0 +1,43 @@
+{{- if and .Values.persistence.tasks.enabled (not .Values.persistence.tasks.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "tasks-md-wes.fullname" . }}-tasks
+  labels:
+    {{- include "tasks-md-wes.labels" . | nindent 4 }}
+  {{- with .Values.persistence.tasks.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.tasks.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.tasks.size }}
+  {{- if .Values.persistence.tasks.storageClass }}
+  storageClassName: {{ .Values.persistence.tasks.storageClass }}
+  {{- end }}
+{{- end }}
+---
+{{- if and .Values.persistence.config.enabled (not .Values.persistence.config.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "tasks-md-wes.fullname" . }}-config
+  labels:
+    {{- include "tasks-md-wes.labels" . | nindent 4 }}
+  {{- with .Values.persistence.config.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.config.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.config.size }}
+  {{- if .Values.persistence.config.storageClass }}
+  storageClassName: {{ .Values.persistence.config.storageClass }}
+  {{- end }}
+{{- end }}
