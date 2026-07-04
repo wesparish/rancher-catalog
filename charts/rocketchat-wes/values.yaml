@@ -2,11 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Mongodb values (Bitnami subchart -> bitnamilegacy)
+# Mongodb values (Bitnami subchart -> bitnamilegacy) - scaled to 0, replaced by mongodbOfficial
 mongodb:
   image:
     registry: docker.io
     repository: bitnamilegacy/mongodb
+  replicaCount: 0
   nodeSelector:
     ceph-client: "true"
   persistence:
@@ -18,6 +19,16 @@ mongodb:
     - "--oplogSize=128"
     - "--replSet=rs0"
   architecture: standalone
+
+# MongoDB 8.0 (official image, fresh install - restore from backup)
+mongodbOfficial:
+  replicaCount: 1
+  image:
+    repository: mongo
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  persistence:
+    existingClaim: mongodb-official-data
 
 rocketchat:
   config:
@@ -45,7 +56,7 @@ image:
   # tag: 7.1.0
   # tag: 7.2.1
   # tag: 7.8.1
-  tag: 7.13.3
+  tag: 8.6.0
   pullPolicy: IfNotPresent
   gotify:
     repository: gotify/server

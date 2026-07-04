@@ -15,14 +15,14 @@ spec:
           {{- end }}
           containers:
           - name: rocketchat-backup
-            image: mongo
+            image: mongo:8.0
             volumeMounts:
             - name: rocketchat-backup
               mountPath: /rocketchat-backup/
             command: ["/bin/bash"]
             args:
             - -c
-            - echo Backing up rocketchat mongodb to /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) && mongodump -o /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) --gzip --host rocketchat-mongodb.rocketchat.svc.cluster.local && find /rocketchat-backup/ -mtime +30 -delete
+            - echo Backing up rocketchat mongodb to /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) && mongodump -o /rocketchat-backup/$(date +\%Y\%m\%d-\%H\%M\%S) --gzip --host rocketchat-mongodb-official.rocketchat.svc.cluster.local && find /rocketchat-backup/ -mtime +30 -delete
           restartPolicy: OnFailure
           volumes:
           - name: rocketchat-backup
