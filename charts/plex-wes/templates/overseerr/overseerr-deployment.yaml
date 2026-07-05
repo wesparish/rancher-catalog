@@ -1,24 +1,24 @@
-# Deploys overseerr
+# Deploys seerr (formerly overseerr)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "plex-wes.fullname" . }}-overseerr
+  name: {{ include "plex-wes.fullname" . }}-seerr
   labels:
     {{- include "plex-wes.labels" . | nindent 4 }}
-    app.kubernetes.io/extraService: overseerr
+    app.kubernetes.io/extraService: seerr
 spec:
   replicas: 1
   selector:
     matchLabels:
       {{- include "plex-wes.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/extraService: overseerr
+      app.kubernetes.io/extraService: seerr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         {{- include "plex-wes.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/extraService: overseerr
+        app.kubernetes.io/extraService: seerr
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -28,10 +28,10 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-overseerr
+        - name: {{ .Chart.Name }}-seerr
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.overseerr.repository }}:{{ .Values.image.overseerr.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.seerr.repository }}:{{ .Values.image.seerr.tag | default .Chart.AppVersion }}"
           env:
             - name: PUID
               value: "{{ .Values.allServarr.puid }}"
@@ -41,8 +41,8 @@ spec:
               value: "{{ .Values.allServarr.tz }}"
           imagePullPolicy: Always
           ports:
-            - name: overseerr-web
-              containerPort: {{ .Values.overseerr.service.port }}
+            - name: seerr-web
+              containerPort: {{ .Values.seerr.service.port }}
               protocol: TCP
           volumeMounts:
           - name: plex-data
@@ -53,19 +53,19 @@ spec:
           startupProbe:
             httpGet:
               path: /
-              port: overseerr-web
+              port: seerr-web
             failureThreshold: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: overseerr-web
+              port: seerr-web
           readinessProbe:
             httpGet:
               path: /
-              port: overseerr-web
+              port: seerr-web
           resources:
-            {{- toYaml .Values.overseerr.resources | nindent 12 }}
+            {{- toYaml .Values.seerr.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
