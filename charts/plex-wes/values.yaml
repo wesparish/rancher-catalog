@@ -18,9 +18,6 @@ image:
   sonarr:
     repository: ghcr.io/hotio/sonarr
     tag: release
-  readarr:
-    repository: ghcr.io/hotio/readarr
-    tag: latest
   prowlarr:
     repository: ghcr.io/hotio/prowlarr
     tag: testing
@@ -33,15 +30,12 @@ image:
   qbittorrent:
     repository: ghcr.io/hotio/qbittorrent
     tag: release
-  ersatztv:
-    repository: jasongdove/ersatztv
-    tag: v0.6.8
   zap2xml:
     repository: shuaiscott/zap2xml
     tag: latest
   jellyfin:
     repository: ghcr.io/jellyfin/jellyfin
-    tag: "10.11.6"
+    tag: "10.11.11"
   watchstate:
     repository: ghcr.io/arabcoders/watchstate
     tag: latest
@@ -187,20 +181,6 @@ qbittorrentExporter:
       #   replacement: $1
       #   action: replace
 
-readarr:
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: "nginx-wes"
-      kubernetes.io/tls-acme: "true"
-      nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
-      nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
-    fqdn: readarr.elastiscale.net
-    secretName: readarr-elastiscale.net
-  service:
-    type: ClusterIP
-    port: 8787
-
 jellyfin:
   ingress:
     enabled: true
@@ -301,21 +281,6 @@ plexpy:
   service:
     type: ClusterIP
     port: 8181
-
-ersatztv:
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: "nginx-wes"
-      kubernetes.io/tls-acme: "true"
-      nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
-      nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
-    fqdn: ersatztv.elastiscale.net
-    secretName: ersatztv-elastiscale.net
-  service:
-    type: ClusterIP
-    port: 8409
-    nodePort: 32222
 
 zap2xml:
   xmltvFilename: "xmltv.xml"
