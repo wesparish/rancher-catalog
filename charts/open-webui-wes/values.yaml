@@ -1,6 +1,6 @@
 open-webui:
   ollama:
-    enabled: true
+    enabled: false
     fullnameOverride: "open-webui-ollama"
     ollama:
       gpu:
@@ -20,6 +20,21 @@ open-webui:
         value: "-1"
     nodeSelector:
       nvidia.com/gpu.product: NVIDIA-A30-SHARED
+
+  openaiBaseApiUrl: "http://vllm-qwen3-5-9b-awq.vllm.svc.cluster.local:8000/v1"
+  openaiApiKey: "placeholder"
+
+  extraEnvVars:
+    - name: AUDIO_TTS_ENGINE
+      value: "openai"
+    - name: AUDIO_TTS_OPENAI_API_BASE_URL
+      value: "http://vllm-qwen3-tts-12hz-1-7b-customvoice.vllm.svc.cluster.local:8000/v1"
+    - name: AUDIO_TTS_OPENAI_API_KEY
+      value: "placeholder"
+    - name: AUDIO_TTS_MODEL
+      value: "Qwen3-TTS-12Hz-1.7B-CustomVoice"
+    - name: AUDIO_TTS_VOICE
+      value: "aiden"
 
   pipelines:
     enabled: false
