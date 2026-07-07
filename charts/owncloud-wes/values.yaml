@@ -10,7 +10,8 @@ image:
     repository: owncloud/server
     # tag: "10.2"
     # tag: "10.13.3"
-    tag: "10.15.3"
+    # tag: "10.15.3"
+    tag: "10.16.3"
   redis:
     repository: redis
     tag: "5.0"
