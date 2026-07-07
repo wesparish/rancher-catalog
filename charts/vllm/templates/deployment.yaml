@@ -33,7 +33,7 @@ spec:
       containers:
         - name: vllm
           image: "{{ (.image).repository | default $.Values.image.repository }}:{{ (.image).tag | default $.Values.image.tag | default $.Chart.AppVersion }}"
-          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          imagePullPolicy: {{ (.image).pullPolicy | default $.Values.image.pullPolicy }}
           securityContext:
             privileged: true
           {{- with .command }}
@@ -84,8 +84,14 @@ spec:
             {{- if .enablePrefixCaching }}
             - --enable-prefix-caching
             {{- end }}
+            {{- if .reasoningParser }}
+            - --reasoning-parser={{ .reasoningParser }}
+            {{- end }}
             {{- if .chatTemplate }}
             - --chat-template={{ .chatTemplate }}
+            {{- end }}
+            {{- if .defaultChatTemplateKwargs }}
+            - {{ printf "--default-chat-template-kwargs=%s" .defaultChatTemplateKwargs | quote }}
             {{- end }}
             {{- if .limitMmPerPrompt }}
             - --limit-mm-per-prompt
