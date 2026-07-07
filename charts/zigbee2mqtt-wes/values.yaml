@@ -68,7 +68,7 @@ image:
   repository: koenkk/zigbee2mqtt
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.33.2"
+  tag: "2.12.1"
 
 imagePullSecrets: []
 nameOverride: ""
