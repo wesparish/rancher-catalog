@@ -6,8 +6,8 @@
 |---|-------|---------|--------|-----|------------|---------------------|
 | 1 | **pihole** | 2024.07.0 | **2026.07.1** | ~2 years | 🔴 High | **Pi-hole v6 complete rewrite** — FTL now handles DNS+API+web server (replaces lighttpd+PHP). **6 dnsmasq CVEs patched** in 2026.05.0. All env vars changed to `FTLCONF_*` equivalents. Migration guide required. |
 | 2 | **frigate-wes** | 0.14.1-tensorrt | **0.17.2-tensorrt** | 3 minors | 🔴 High | Face recognition, LPR, CUDA Graphs for faster GPU inference, audio transcription, local model training. **CRITICAL:** `type: tensorrt` detector removed — must change to `type: onnx` and download new ONNX model. |
-| 3 | **vllm** | v0.19.0 | **v0.24.0** | 5 minors | 🟢 Low | Model Runner V2 default (better throughput), FlashAttention 4 MLA prefill, Streaming Parser Engine for tool calls, chunked prefill, FP8 KV cache compression. Drop-in tag bump. Note: chart's model config/VRAM settings were retuned 2026-07-07, but the base `vllm/vllm-openai` image itself is still v0.19.0. |
 | ✅ | **tandoor-wes** | 2.6.13 | 2.6.13 | — | — | Upgraded 2026-07-08 (was 2.3.1). Two real bugs surfaced and fixed: (1) 2.6.13 requires `ALLOWED_HOSTS` set explicitly — without it Django rejected every request, including via the real ingress domain, which was the actual cause of a "blank page after login" symptom; (2) first-boot `collectstatic` across this version range regenerates far more files and was getting killed by liveness/readiness probes before gunicorn could start — increased probe `initialDelaySeconds`/`failureThreshold`. Verified via a real end-to-end request through the production domain (login page renders, 200 OK). |
+| 🚫 | **vllm** | v0.19.0 | v0.24.0 — **won't upgrade (yet)** | — | — | **Attempted and rolled back 2026-07-08.** CLI flags/AWQ/API compatibility all confirmed clean beforehand — the real blocker only surfaced at runtime: v0.24.0's bundled PyTorch/CUDA build requires a newer NVIDIA driver than what's installed on the GPU node (`w-dock4`) — `RuntimeError: The NVIDIA driver on your system is too old (found version 12070)`. Not something release notes would flag; a host-level dependency, not an app config issue. Rolled back cleanly to v0.19.0, verified via a full open-webui → vllm chat completion round-trip. Upgrading requires bumping the node's NVIDIA driver first — separate infra work, could affect other GPU workloads sharing that node. |
 | ✅ | **tplink-omada-wes** | 6.2.10.17 | 6.2.10.17 | — | — | Upgraded 2026-07-08 (was 6.2.0.17). Only additive env vars in this range, no breaking changes. Verified via `/api/info`: `controllerVer` reports 6.2.10.17, config/device registration intact. |
 | ✅ | **owncloud-wes** | 10.16.3 | 10.16.3 | — | — | Upgraded 2026-07-07 (was 10.15.3). Patches CVE-2026-40194, user enumeration, storage info leak; subadmin group-admin now restricted. DB backed up before upgrade (238MB dump); `occ upgrade` ran automatically on container start with no errors. Verified via `/status.php`. |
 | 🚫 | **guacamole-wes** | 1.5.4 | 1.6.0 — **won't upgrade** | — | — | **Attempted and rolled back 2026-07-08.** Guacamole 1.6.0's Docker entrypoint switched to runtime env-var config (`enable-environment-properties: true`) instead of baking values into `guacamole.properties`. Kubernetes auto-injects a legacy `GUACAMOLE_POSTGRESQL_PORT=tcp://<ip>:<port>` var (from the `guacamole-postgresql` Service in-namespace) that collides with Guacamole's own property-name lookup, which expects a plain integer — the JDBC Postgres auth extension fails to load silently, causing **all** logins to fail with a generic invalid-credentials error. Root cause confirmed via container env/log inspection; DB data was verified untouched (not the cause). Requires `enableServiceLinks: false` on the pod spec to fix, which the upstream `guacamole` subchart (beryju.org, 1.4.1) doesn't expose — would need vendoring/patching the subchart. Rolled back cleanly to 1.5.4; the one applied DB migration (`ALTER TYPE ... ADD VALUE 'AUDIT'`) is additive and harmless on 1.5.4, left in place. |
@@ -26,13 +26,11 @@
 
 ## Suggested Upgrade Order
 
-### Do first — security-driven, low effort (tag bump only)
-- vllm → `v0.24.0`
-
-### Schedule as projects — significant migration work
+### Schedule as projects — significant migration/infra work
 - **frigate-wes** — TensorRT → ONNX detector migration required before any version bump
 - **pihole** — full Pi-hole v6 migration (env vars → `FTLCONF_*`, setupVars.conf → pihole.toml)
 - **guacamole-wes** — vendor/patch the `guacamole` subchart to set `enableServiceLinks: false` before retrying 1.6.0
+- **vllm** — upgrade the NVIDIA driver on node `w-dock4` before retrying v0.24.0 (currently at CUDA driver 12.7-equivalent, too old)
 
 ## Notes
 
