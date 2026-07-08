@@ -62,5 +62,10 @@ spec:
     targetPort: rtty
     port: 29816
     protocol: TCP
+
+  - name: manager-v3
+    targetPort: manager-v3
+    port: 29817
+    protocol: TCP
   selector:
     {{- include "tplink-omada-wes.selectorLabels" . | nindent 4 }}

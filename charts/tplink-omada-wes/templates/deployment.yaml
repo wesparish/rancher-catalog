@@ -121,6 +121,12 @@ spec:
             - name: rtty
               containerPort: 29816
               protocol: TCP
+
+            # Omada Controller and Omada Discovery Utility manage the Omada devices running firmware
+            # fully adapted to Omada Controller v6*.
+            - name: manager-v3
+              containerPort: 29817
+              protocol: TCP
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

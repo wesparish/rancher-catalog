@@ -25,7 +25,9 @@ image:
   repository: mbentley/omada-controller
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "5.15.8.2"
+  # tag: "5.15.8.2"
+  # tag: "6.2.0.17"
+  tag: "6.2.10.17"
 
 imagePullSecrets: []
 nameOverride: ""
