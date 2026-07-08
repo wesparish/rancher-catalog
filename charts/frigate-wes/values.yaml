@@ -25,7 +25,7 @@ frigate:
 
   image:
     repository: ghcr.io/blakeblackshear/frigate
-    tag: 0.14.1-tensorrt # nvidia gpu
+    tag: 0.17.2-tensorrt # nvidia gpu
     pullPolicy: IfNotPresent
 
   env:
@@ -40,23 +40,16 @@ frigate:
     - frigate-env-secrets
 
   #!!!!!!!!!!
-  #! NOTE: This config is not currently used, the current config is from a PVC
+  #! NOTE: This config is documentation only and is NOT applied to the running
+  #! deployment -- persistence.config.ephemeralWritableConfigYaml is set to
+  #! false below specifically so config.yml on the frigate-config PVC (the
+  #! real source of truth) is never overwritten by this block on pod restart.
+  #! Keep this in sync manually when the live config changes.
   #!!!!!!!!!!
   config: |
     birdseye:
       enabled: true
       mode: continuous
-    # Defaults seem to automatically use the nvidia GPU for hwaccel
-    # ffmpeg:
-    #   output_args:
-    #     # record: preset-record-generic-audio-copy
-    #     # Optional: output args for record streams (default: shown below)
-    #     #record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an
-    #     # Record audio also: https://docs.frigate.video/faqs/
-    #     record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
-    #       1 -c:v copy -c:a aac
-    #   # hwaccel_args: preset-nvidia-h264
-    #   hwaccel_args: "auto"
     mqtt:
       # Required: host name
       host: 172.16.1.229
@@ -68,23 +61,26 @@ frigate:
       # Optional: client id (default: shown below)
       # WARNING: must be unique if you are running multiple instances
       client_id: frigate
-      # Optional: user
-      # user: mqtt_user
-      # Optional: password
-      # NOTE: Environment variables that begin with 'FRIGATE_' may be referenced in {}.
-      #       eg. password: '{FRIGATE_MQTT_PASSWORD}'
-      # password: password
       # Optional: interval in seconds for publishing stats (default: shown below)
       stats_interval: 60
+    auth:
+      enabled: false
+    proxy:
+      # Real secret lives only in config.yml on the PVC, not in git.
+      # Generate via: python3 -c 'import secrets; print(secrets.token_hex(64))'
+      auth_secret: "<see PVC config.yml>"
+      default_role: admin
     detectors:
-      tensorrt:
-        type: tensorrt
+      onnx:
+        type: onnx
     model:
-      path: /config/model_cache/tensorrt/yolov7-320.trt
+      model_type: yolox
+      path: /config/model_cache/yolox_tiny.onnx
+      width: 416
+      height: 416
       input_tensor: nchw
-      input_pixel_format: rgb
-      width: 320
-      height: 320
+      input_dtype: float_denorm
+      labelmap_path: /labelmap/coco-80.txt
     cameras:
       driveway_flood_light:
         ffmpeg:
@@ -92,6 +88,10 @@ frigate:
             - path: rtsp://admin:{FRIGATE_CAMERA_PASSWORD}@172.16.1.117:8554/Streaming/Channels/101
               roles:
                 - detect
+        detect:
+          width: 1280
+          height: 720
+          fps: 5
       # Name of your camera
       front_patio:
         ffmpeg:
@@ -149,13 +149,18 @@ frigate:
             0.034,0.612,0.168,0.571,0.281,0.547,0.354,0.54,0.441,0.528,0.436,0.001,0,0,0,0.623
     record:
       enabled: true
-      #retain:
-      #  days: 10
-      #  mode: motion
-      events:
+      continuous:
+        days: 0
+      motion:
+        days: 0
+      alerts:
         retain:
-          default: 10
-      #    mode: motion
+          days: 10
+          mode: motion
+      detections:
+        retain:
+          days: 10
+          mode: all
     snapshots:
       enabled: true
       # Optional: draw bounding box on the snapshots (default: shown below)
@@ -166,7 +171,6 @@ frigate:
       retain:
         # Required: Default retention days (default: shown below)
         default: 10
-    version: 0.14
   service:
     # -- Type of Service to use
     type: LoadBalancer
@@ -199,6 +203,11 @@ frigate:
     config:
       enabled: true
       existingClaim: frigate-config
+      # IMPORTANT: subchart defaults this to true, which runs a copyconfig
+      # init container on every pod (re)start that overwrites config.yml on
+      # the PVC with the (stale) frigate.config block below. The PVC is the
+      # actual source of truth for this deployment -- keep this false.
+      ephemeralWritableConfigYaml: false
     # Don't think data needs to be persisted?
     # data:
     #   enabled: true
