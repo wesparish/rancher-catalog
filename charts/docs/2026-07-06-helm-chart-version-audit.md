@@ -8,7 +8,7 @@
 | 2 | **frigate-wes** | 0.14.1-tensorrt | **0.17.2-tensorrt** | 3 minors | 🔴 High | Face recognition, LPR, CUDA Graphs for faster GPU inference, audio transcription, local model training. **CRITICAL:** `type: tensorrt` detector removed — must change to `type: onnx` and download new ONNX model. |
 | 3 | **vllm** | v0.19.0 | **v0.24.0** | 5 minors | 🟢 Low | Model Runner V2 default (better throughput), FlashAttention 4 MLA prefill, Streaming Parser Engine for tool calls, chunked prefill, FP8 KV cache compression. Drop-in tag bump. Note: chart's model config/VRAM settings were retuned 2026-07-07, but the base `vllm/vllm-openai` image itself is still v0.19.0. |
 | 4 | **tandoor-wes** | 2.3.1 | **2.6.13** | 3 minors | 🟢 Low | Multiple shopping lists, iCal meal plan subscriptions, Cooklang importer, non-root container support. Standard Django migrations run on startup. |
-| 5 | **tplink-omada-wes** | 6.2.0.17 | **6.2.10.17** | 10 patches | 🟢 Low | New `MONGOD_EXTRA_ARGS` and `JAVA_MAX_HEAP_SIZE`/`JAVA_MIN_HEAP_SIZE` env vars. Same major version, drop-in tag bump. |
+| ✅ | **tplink-omada-wes** | 6.2.10.17 | 6.2.10.17 | — | — | Upgraded 2026-07-08 (was 6.2.0.17). Only additive env vars in this range, no breaking changes. Verified via `/api/info`: `controllerVer` reports 6.2.10.17, config/device registration intact. |
 | ✅ | **owncloud-wes** | 10.16.3 | 10.16.3 | — | — | Upgraded 2026-07-07 (was 10.15.3). Patches CVE-2026-40194, user enumeration, storage info leak; subadmin group-admin now restricted. DB backed up before upgrade (238MB dump); `occ upgrade` ran automatically on container start with no errors. Verified via `/status.php`. |
 | 🚫 | **guacamole-wes** | 1.5.4 | 1.6.0 — **won't upgrade** | — | — | **Attempted and rolled back 2026-07-08.** Guacamole 1.6.0's Docker entrypoint switched to runtime env-var config (`enable-environment-properties: true`) instead of baking values into `guacamole.properties`. Kubernetes auto-injects a legacy `GUACAMOLE_POSTGRESQL_PORT=tcp://<ip>:<port>` var (from the `guacamole-postgresql` Service in-namespace) that collides with Guacamole's own property-name lookup, which expects a plain integer — the JDBC Postgres auth extension fails to load silently, causing **all** logins to fail with a generic invalid-credentials error. Root cause confirmed via container env/log inspection; DB data was verified untouched (not the cause). Requires `enableServiceLinks: false` on the pod spec to fix, which the upstream `guacamole` subchart (beryju.org, 1.4.1) doesn't expose — would need vendoring/patching the subchart. Rolled back cleanly to 1.5.4; the one applied DB migration (`ALTER TYPE ... ADD VALUE 'AUDIT'`) is additive and harmless on 1.5.4, left in place. |
 | ✅ | **open-webui-wes** | 15.2.0 | 15.2.0 | — | — | Upgraded 2026-07-07 (was 12.10.0, app 0.8.10→0.10.2). No values.yaml breaking changes. DB backed up before migration (irreversible per upstream); Alembic migration ran clean. Post-upgrade required a Redis + pod restart to clear stale pre-upgrade session/lock state that was causing hung replies. |
@@ -28,7 +28,6 @@
 
 ### Do first — security-driven, low effort (tag bump only)
 - vllm → `v0.24.0`
-- tplink-omada-wes → `6.2.10.17`
 - tandoor-wes → `2.6.13`
 
 ### Schedule as projects — significant migration work
