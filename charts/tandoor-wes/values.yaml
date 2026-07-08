@@ -8,8 +8,8 @@ image:
   repository: vabene1111/recipes
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  # Latest as of 20251009
-  tag: "2.3.1"
+  # Latest as of 20260708
+  tag: "2.6.13"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -19,6 +19,9 @@ tandoor:
   # kubectl -n tandoor create secret generic tandoor-secret-key \
   #   --from-literal=SECRET_KEY="$(cat /dev/urandom | LC_ALL=C tr -dc 'A-Z' | head -c50)"
   secretKeySecretName: tandoor-secret-key
+  # 2.6.13 requires ALLOWED_HOSTS to be set explicitly (unlike 2.3.1); without
+  # it, Django rejects every request, including via the real ingress hostname.
+  allowedHosts: "tandoor.elastiscale.net"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -80,10 +83,25 @@ livenessProbe:
   httpGet:
     path: /favicon.ico
     port: http
+    # 2.6.13 tightened Django's ALLOWED_HOSTS handling; probes hit the pod IP
+    # directly (bypassing ingress), so the Host header must match a value
+    # Django will accept.
+    httpHeaders:
+      - name: Host
+        value: tandoor.elastiscale.net
+  initialDelaySeconds: 90
+  periodSeconds: 10
+  failureThreshold: 40
 readinessProbe:
   httpGet:
     path: /favicon.ico
     port: http
+    httpHeaders:
+      - name: Host
+        value: tandoor.elastiscale.net
+  initialDelaySeconds: 90
+  periodSeconds: 10
+  failureThreshold: 40
 
 autoscaling:
   enabled: false

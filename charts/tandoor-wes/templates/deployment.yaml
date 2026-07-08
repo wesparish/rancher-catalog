@@ -54,6 +54,8 @@ spec:
               value: "password"
             - name: POSTGRES_DB
               value: "tandoor"
+            - name: ALLOWED_HOSTS
+              value: {{ .Values.tandoor.allowedHosts | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
