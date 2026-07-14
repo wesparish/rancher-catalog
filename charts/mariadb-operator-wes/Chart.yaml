@@ -1,0 +1,10 @@
+apiVersion: v2
+name: mariadb-operator-wes
+description: Wrapper for the MariaDB Operator Helm chart (mmontes11/mariadb-operator).
+type: application
+version: 0.1.0
+appVersion: "25.10.4"
+dependencies:
+  - name: mariadb-operator
+    version: "25.10.4"
+    repository: https://helm.mariadb.com/mariadb-operator

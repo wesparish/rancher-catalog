@@ -1,0 +1,18 @@
+# Default values for mariadb-operator-wes.
+# Wrapper around https://artifacthub.io/packages/helm/mariadb-operator/mariadb-operator
+# Values under "mariadb-operator:" are passed to the subchart.
+#
+# Install CRDs first (one-time): helm install mariadb-operator-crds mariadb-operator/mariadb-operator-crds -n <namespace>
+# Then install this chart.
+
+mariadb-operator:
+  # crds.enabled: false by default - use the mariadb-operator-crds chart for CRDs
+  metrics:
+    enabled: true
+  # Optional overrides (see subchart values):
+  # logLevel: "INFO"
+  # currentNamespaceOnly: false
+
+  # **Warning** All DBs will be deleted if this chart is uninstalled
+  crds:
+    enabled: true

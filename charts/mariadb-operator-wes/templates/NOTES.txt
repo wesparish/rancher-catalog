@@ -1,0 +1,3 @@
+MariaDB Operator is deployed via the mariadb-operator subchart.
+Install CRDs first (one-time): helm repo add mariadb-operator https://helm.mariadb.com/mariadb-operator && helm install mariadb-operator-crds mariadb-operator/mariadb-operator-crds -n {{ .Release.Namespace }}
+See https://github.com/mariadb-operator/mariadb-operator/blob/main/docs/helm.md for usage.
