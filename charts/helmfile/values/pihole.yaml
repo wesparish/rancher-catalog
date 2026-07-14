@@ -1,0 +1,2 @@
+# Override values for pihole. Backfill from cluster: helm get values pihole -n pihole
+{}

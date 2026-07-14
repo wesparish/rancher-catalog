@@ -1,0 +1,2 @@
+# Override values for keycloak. Backfill from cluster: helm get values keycloak -n keycloak
+{}

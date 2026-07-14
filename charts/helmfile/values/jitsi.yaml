@@ -1,0 +1,2 @@
+# Override values for jitsi. Backfill from cluster: helm get values jitsi -n jitsi
+{}

@@ -1,0 +1,2 @@
+# Override values for ark. Backfill from cluster: helm get values ark -n ark
+{}

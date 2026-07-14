@@ -1,0 +1,310 @@
+# Helmfile for current K8s Helm deployments.
+# Goal: version-controlled list of releases, deployment order, idempotent apply.
+# We do NOT use helmfile to manage chart dependencies or fetch repos on every run.
+#
+# Normal workflow: helmfile diff --skip-deps  and  helmfile apply --skip-deps
+# (--skip-deps = do not run "helm dependency build"; use each chart as-is with its
+#  committed charts/ and Chart.lock. When you change a chart's Chart.yaml deps,
+#  run "helm dep up" in that chart dir and commit, or run "helmfile deps" once.)
+#
+# Order: Layer 0 (infra) -> Layer 1 (networking) -> Layer 2 (observability) -> Layer 3 (applications).
+# Excluded (auto-managed): fleet-agent-c-5wxxn, rancher-monitoring-crd, rancher-webhook.
+# Excluded (no chart in catalog): docker-fs-search, quarm-charm-calculator, sd.
+#
+# Repos below are only needed when you run "helmfile deps" (no --skip-deps) to build
+# chart dependencies; they are not used when you run diff/apply with --skip-deps.
+repositories:
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: goauthentik
+    url: https://charts.goauthentik.io/
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: blakeshome-charts
+    url: https://blakeblackshear.github.io/blakeshome-charts/
+  - name: jitsi-contrib
+    url: https://jitsi-contrib.github.io/jitsi-helm/
+  - name: openwebui
+    url: https://helm.openwebui.com/
+  - name: beryju
+    url: https://charts.beryju.org
+  - name: immich-app
+    url: https://immich-app.github.io/immich-charts
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
+  # --- repos for all local chart dependencies (so helmfile diff doesn't fail per-chart) ---
+  - name: gitea
+    url: https://dl.gitea.com/charts/
+  - name: gissilabs
+    url: https://gissilabs.github.io/charts/
+  - name: node-red-chart
+    url: https://schwarzit.github.io/node-red-chart/
+  - name: t3n-helm-charts
+    url: https://storage.googleapis.com/t3n-helm-charts
+  - name: mailu
+    url: https://mailu.github.io/helm-charts/
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: ceph-csi
+    url: https://ceph.github.io/csi-charts
+  - name: descheduler
+    url: https://kubernetes-sigs.github.io/descheduler
+  - name: nvidia
+    url: https://helm.ngc.nvidia.com/nvidia
+  - name: metallb
+    url: https://metallb.github.io/metallb
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: kuberhealthy
+    url: https://kuberhealthy.github.io/kuberhealthy/helm-repos
+
+releases:
+  # --- Layer 0: Infrastructure ---
+  - name: cert-manager
+    namespace: cert-manager
+    chart: ../cert-manager-wes
+    values:
+      - values/cert-manager.yaml
+
+  - name: ceph-csi
+    namespace: ceph-csi
+    chart: ../ceph-csi-wes
+    values:
+      - values/ceph-csi.yaml
+
+  - name: descheduler
+    namespace: descheduler
+    chart: ../k8s-descheduler-wes
+    values:
+      - values/descheduler.yaml
+
+  - name: gpu-operator
+    namespace: nvidia-gpu-operator
+    chart: ../nvidia-gpu-operator-wes
+    values:
+      - values/gpu-operator.yaml
+
+  - name: metallb
+    namespace: metallb
+    chart: ../metallb-wes
+    values:
+      - values/metallb.yaml
+
+  # --- Layer 1: Networking ---
+  - name: nginx-ingress-wes
+    namespace: nginx-ingress-wes
+    chart: ../nginx-ingress-wes
+    needs:
+      - cert-manager/cert-manager
+    values:
+      - values/nginx-ingress-wes.yaml
+
+  - name: cloudflare-dns-proxy
+    namespace: pihole
+    chart: ../cloudflare-dns-proxy
+    values:
+      - values/cloudflare-dns-proxy.yaml
+
+  - name: generic-ingress-ceph-dashboard
+    namespace: ceph-dashboard-generic-ingress
+    chart: ../generic-ingress-ceph-dashboard
+    needs:
+      - cert-manager/cert-manager
+    values:
+      - values/generic-ingress-ceph-dashboard.yaml
+
+  - name: generic-ingress-rancherserver
+    namespace: generic-ingress-rancherserver
+    chart: ../generic-ingress
+    needs:
+      - cert-manager/cert-manager
+    values:
+      - values/generic-ingress-rancherserver.yaml
+
+  - name: opensprinkler
+    namespace: opensprinkler
+    chart: ../generic-ingress-opensprinkler
+    needs:
+      - cert-manager/cert-manager
+    values:
+      - values/opensprinkler.yaml
+
+  # --- Layer 2: Observability ---
+  - name: kube-prometheus-stack
+    namespace: kube-prometheus-stack
+    chart: ../kube-prometheus-stack-wes
+    needs:
+      - nginx-ingress-wes/nginx-ingress-wes
+    values:
+      - values/kube-prometheus-stack.yaml
+
+  - name: kuberhealthy
+    namespace: kuberhealthy
+    chart: ../kuberhealthy-wes
+    values:
+      - values/kuberhealthy.yaml
+
+  - name: tesla-wall-connector
+    namespace: tesla-wall-connector
+    chart: ../tesla-wall-connector-exporter-wes
+    values:
+      - values/tesla-wall-connector.yaml
+
+  # --- Layer 3: Applications ---
+  - name: ark
+    namespace: ark
+    chart: ../ark-wes
+    values:
+      - values/ark.yaml
+
+  - name: authentik
+    namespace: authentik
+    chart: ../authentik-wes
+    values:
+      - values/authentik.yaml
+
+  - name: borg-wes
+    namespace: borg
+    chart: ../borg-wes
+    values:
+      - values/borg-wes.yaml
+
+  - name: frigate
+    namespace: frigate
+    chart: ../frigate-wes
+    values:
+      - values/frigate.yaml
+
+  - name: gitea
+    namespace: gitea
+    chart: ../gitea-wes
+    values:
+      - values/gitea.yaml
+
+  - name: guacamole
+    namespace: guacamole
+    chart: ../guacamole-wes
+    values:
+      - values/guacamole.yaml
+
+  - name: home-assistant
+    namespace: home-assistant
+    chart: ../home-assistant
+    values:
+      - values/home-assistant.yaml
+
+  - name: immich
+    namespace: immich
+    chart: ../immich-wes
+    values:
+      - values/immich.yaml
+
+  - name: jitsi
+    namespace: jitsi
+    chart: ../jitsi-wes
+    values:
+      - values/jitsi.yaml
+
+  - name: mailu-new
+    namespace: mailu-new
+    chart: ../mailu-wes-new
+    values:
+      - values/mailu-new.yaml
+
+  - name: moonlight-web-stream
+    namespace: moonlight-web-stream
+    chart: ../moonlight-web-stream
+    values:
+      - values/moonlight-web-stream.yaml
+
+  - name: mosquitto
+    namespace: mosquitto
+    chart: ../mosquitto-wes
+    values:
+      - values/mosquitto.yaml
+
+  - name: node-red
+    namespace: node-red
+    chart: ../node-red-wes
+    values:
+      - values/node-red.yaml
+
+  - name: oauth2-proxy
+    namespace: oauth2-proxy
+    chart: ../oauth2-proxy-wes
+    needs:
+      - authentik/authentik
+    values:
+      - values/oauth2-proxy.yaml
+
+  - name: omada
+    namespace: omada
+    chart: ../tplink-omada-wes
+    values:
+      - values/omada.yaml
+
+  - name: onlyoffice
+    namespace: onlyoffice
+    chart: ../onlyoffice-wes
+    values:
+      - values/onlyoffice.yaml
+
+  - name: open-webui
+    namespace: ollama
+    chart: ../open-webui-wes
+    values:
+      - values/open-webui.yaml
+
+  - name: owncloud
+    namespace: owncloud
+    chart: ../owncloud-wes
+    values:
+      - values/owncloud.yaml
+
+  - name: pihole
+    namespace: pihole
+    chart: ../pihole
+    values:
+      - values/pihole.yaml
+
+  - name: plex
+    namespace: plex
+    chart: ../plex-wes
+    values:
+      - values/plex.yaml
+
+  - name: rocketchat
+    namespace: rocketchat
+    chart: ../rocketchat-wes
+    values:
+      - values/rocketchat.yaml
+
+  - name: satisfactory
+    namespace: satisfactory
+    chart: ../satisfactory-server-wes
+    values:
+      - values/satisfactory.yaml
+
+  - name: tandoor
+    namespace: tandoor
+    chart: ../tandoor-wes
+    values:
+      - values/tandoor.yaml
+
+  - name: vaultwarden-wes
+    namespace: vaultwarden
+    chart: ../vaultwarden-wes
+    values:
+      - values/vaultwarden-wes.yaml
+
+  - name: virt-manager
+    namespace: virt-manager
+    chart: ../virt-manager-wes
+    values:
+      - values/virt-manager.yaml
+
+  - name: zigbee2mqtt
+    namespace: zigbee2mqtt
+    chart: ../zigbee2mqtt-wes
+    values:
+      - values/zigbee2mqtt.yaml

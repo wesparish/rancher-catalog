@@ -1,0 +1,2 @@
+# Override values for node-red. Backfill from cluster: helm get values node-red -n node-red
+{}

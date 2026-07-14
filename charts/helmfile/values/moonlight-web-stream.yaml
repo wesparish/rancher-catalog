@@ -1,0 +1,2 @@
+# Override values for moonlight-web-stream. Backfill from cluster: helm get values moonlight-web-stream -n moonlight-web-stream
+{}

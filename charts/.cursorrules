@@ -1,0 +1,32 @@
+# Helmfile and chart values
+
+## Where values live
+
+- **Default and release-specific configuration belongs in each chart’s `values.yaml`** (e.g. `mailu-wes-new/values.yaml`, `moonlight-web-stream/values.yaml`). Do not put that configuration in the helmfile’s `values/*.yaml` files.
+- **Helmfile `values/` is for overrides only.** Each release may reference a file like `values/<release-name>.yaml`. Those files should stay **minimal or empty** so that:
+  - Day-to-day config is in the chart and versioned with the chart.
+  - Values are not “overridden by helmfile”; the chart is the source of truth.
+- **Keep a minimal `values/<release>.yaml` per release** for emergency or one-off overrides (e.g. temporary `--set`-style overrides without editing the chart). These files can be empty except for a short comment, e.g.:
+  ```yaml
+  # Override values for <release> (optional). Defaults live in the chart. Add overrides below when needed.
+  ```
+- Do **not** add `set:` blocks in `helmfile.yaml` for routine configuration; put those values in the chart’s `values.yaml` instead. Use helmfile `set:` or values-file overrides only when you must override at deploy time (e.g. from CI or env) and cannot change the chart.
+
+## Documenting existingSecret in values.yaml
+
+When a chart’s `values.yaml` references an existing Kubernetes secret (e.g. `existingSecret: my-app-secret`), add a commented `kubectl create secret` example immediately above it so operators know how to create the secret. Use the same namespace as the release. Example:
+
+```yaml
+# kubectl -n <namespace> create secret generic <secret-name> \
+#   --from-literal=<key>=<value> \
+#   --from-literal=<other-key>=<value>
+existingSecret: <secret-name>
+```
+
+If the chart uses `existingSecretPasswordKey`, the comment should show the literal key name(s) the secret must contain (e.g. `--from-literal=roundcube-db-password=...`).
+
+## Summary
+
+- Chart `values.yaml` = source of truth and normal config.
+- Helmfile `values/<release>.yaml` = optional, minimal, for emergency overrides only.
+- Every `existingSecret` in a chart’s values = document with a commented `kubectl create secret` example above it.

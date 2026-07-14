@@ -1,0 +1,2 @@
+# Override values for minio (chart ordering only; chart defaults in ../minio-wes/values.yaml)
+{}

@@ -1,0 +1,2 @@
+# Override values for opensprinkler. Backfill from cluster: helm get values opensprinkler -n opensprinkler
+{}

@@ -1,0 +1,2 @@
+# Override values for frigate. Backfill from cluster: helm get values frigate -n frigate
+{}

@@ -1,0 +1,2 @@
+# Override values for generic-ingress-rancherserver. Backfill from cluster: helm get values generic-ingress-rancherserver -n generic-ingress-rancherserver
+{}

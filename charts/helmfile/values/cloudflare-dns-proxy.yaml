@@ -1,0 +1,2 @@
+# Override values for cloudflare-dns-proxy. Backfill from cluster: helm get values cloudflare-dns-proxy -n pihole
+{}

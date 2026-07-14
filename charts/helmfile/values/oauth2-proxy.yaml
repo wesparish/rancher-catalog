@@ -1,0 +1,2 @@
+# Override values for oauth2-proxy. Backfill from cluster: helm get values oauth2-proxy -n oauth2-proxy
+{}

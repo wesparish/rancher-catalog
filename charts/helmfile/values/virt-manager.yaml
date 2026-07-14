@@ -1,0 +1,2 @@
+# Override values for virt-manager. Backfill from cluster: helm get values virt-manager -n virt-manager
+{}

@@ -1,0 +1,2 @@
+# Override values for generic-ingress-ceph-dashboard. Backfill from cluster: helm get values generic-ingress-ceph-dashboard -n ceph-dashboard-generic-ingress
+{}

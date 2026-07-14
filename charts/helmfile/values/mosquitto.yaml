@@ -1,0 +1,2 @@
+# Override values for mosquitto. Backfill from cluster: helm get values mosquitto -n mosquitto
+{}

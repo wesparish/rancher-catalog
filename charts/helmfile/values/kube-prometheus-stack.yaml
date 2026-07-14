@@ -1,0 +1,2 @@
+# Override values for kube-prometheus-stack (chart ordering only; chart defaults in ../kube-prometheus-stack-wes/values.yaml)
+{}

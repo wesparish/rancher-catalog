@@ -1,0 +1,2 @@
+# Override values for open-webui. Backfill from cluster: helm get values open-webui -n ollama
+{}

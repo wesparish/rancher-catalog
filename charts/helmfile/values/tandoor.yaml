@@ -1,0 +1,2 @@
+# Override values for tandoor. Backfill from cluster: helm get values tandoor -n tandoor
+{}

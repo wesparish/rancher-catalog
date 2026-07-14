@@ -1,0 +1,2 @@
+# Override values for authentik. Backfill from cluster: helm get values authentik -n authentik
+{}
