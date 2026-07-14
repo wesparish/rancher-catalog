@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: baldissaramatheus/tasks.md
-  tag: "3.3.0"
-  pullPolicy: IfNotPresent
+  repository: wesparish/tasks.md
+  tag: "3.3.1-points"
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
