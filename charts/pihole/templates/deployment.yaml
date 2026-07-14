@@ -30,10 +30,12 @@ spec:
           env:
             - name: TZ
               value: America/Chicago
-            - name: DNS1
-              value: "172.16.1.230#5053"
-            - name: DNS2
-              value: "no"
+            # v6: DNS1/DNS2 dropped intentionally. The existing upstream
+            # (172.16.1.230#5053), reverse DNS/conditional forwarding, and
+            # admin password are already configured in setupVars.conf on the
+            # PVC and will auto-migrate into pihole.toml on first v6 boot.
+            # Setting these as FTLCONF_* env vars instead would make them
+            # permanently read-only (unchangeable via web UI/API afterward).
           ports:
             - name: http
               containerPort: 80
@@ -49,17 +51,20 @@ spec:
               protocol: UDP
           startupProbe:
             httpGet:
-              path: /admin/login.php
+              # v6: bare "/" returns 403 by design (DNS-rebinding host-header
+              # protection, confirmed against a live v6 pod). /admin/login is
+              # the unauthenticated route that reliably returns 200.
+              path: /admin/login
               port: http
             failureThreshold: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /admin/login.php
+              path: /admin/login
               port: http
           readinessProbe:
             httpGet:
-              path: /admin/login.php
+              path: /admin/login
               port: http
           volumeMounts:
           - name: pihole-data
