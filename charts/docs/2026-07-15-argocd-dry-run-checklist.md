@@ -39,7 +39,7 @@ independent of anything ArgoCD-specific:
 
 | Release | Status |
 |---|---|
-| **keycloak** | No longer used (2026-07-15). Excluded from the ArgoCD migration going forward — not worth fixing its secret-rotation bug for a chart being retired. Confirmed safe to deprecate: the cluster's real SSO (`oauth2-proxy-wes`) uses Authentik, not Keycloak; Keycloak's own bundled `oauth2-proxy` only protects its own admin UI; `borg-wes`/`duplicacy-wes` only reference `keycloak-data` as a backup path entry, not a functional dependency. Live teardown (helm uninstall / PV cleanup) not yet done — pending a decision on timing. |
+| **keycloak** | No longer used (2026-07-15). Excluded from the ArgoCD migration going forward — not worth fixing its secret-rotation bug for a chart being retired. Confirmed safe to deprecate: the cluster's real SSO (`oauth2-proxy-wes`) uses Authentik, not Keycloak; Keycloak's own bundled `oauth2-proxy` only protects its own admin UI; `borg-wes`/`duplicacy-wes` only reference `keycloak-data` as a backup path entry, not a functional dependency. **`helm uninstall`'d 2026-07-15.** `keycloak-data` PVC was statically provisioned via `existingClaim` (not chart-owned), so it was untouched by the uninstall — still `Bound` to the same PV, data fully intact if ever needed again. `keycloak-wes` chart directory left in the catalog for now (not deleted) in case it's needed for reference. |
 
 ## Two unrelated chart bugs surfaced
 
