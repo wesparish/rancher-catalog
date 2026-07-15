@@ -25,15 +25,14 @@ independent of anything ArgoCD-specific:
 
 | Release | What would happen | Why |
 |---|---|---|
-| **jitsi** | Rotates `JICOFO_AUTH_PASSWORD`, `JICOFO_COMPONENT_SECRET`, `JVB_AUTH_PASSWORD` | Chart generates these with `randAlphaNum`-style functions with no `lookup` against the existing Secret — confirmed by rendering twice and diffing: values differ between the two renders, not just against live. **Not yet fixed.** |
+| **jitsi** | ~~Rotates `JICOFO_AUTH_PASSWORD`, `JICOFO_COMPONENT_SECRET`, `JVB_AUTH_PASSWORD`~~ **Fixed 2026-07-15.** | These secrets live in the vendored `jitsi-meet` subchart (`charts/jitsi-meet/templates/{jicofo,jvb}/xmpp-secret.yaml`), not jitsi-wes's own templates — patched the same `lookup`-based fix in directly. One extra wrinkle found here: this chart had **both** an unpacked `charts/jitsi-meet/` directory and `charts/jitsi-meet-1.5.1.tgz` — Helm uses the unpacked directory when both exist, so the tgz alone isn't enough; both were patched and verified in sync. Verified via `helm template --dry-run=server`: both secrets now match live exactly and are stable across repeated renders. See `jitsi-wes/README.md` — this patch will be silently lost if the `jitsi-meet` dependency is ever regenerated (`helm dependency update`/`build`), so it documents how to reapply it. |
 | ~~keycloak~~ | ~~Rotates the Redis sidecar's `redis-password`~~ | **Update (2026-07-15): no longer applicable.** Keycloak is being deprecated (no longer used) — excluded from the ArgoCD migration rather than fixed. See "Deprecated releases" below. |
 | **onlyoffice** | ~~Rotates `jwt-secret`~~ **Fixed 2026-07-15.** | This is the shared secret OnlyOffice's document server and its client integration (ownCloud) both need — rotating it broke document editing until both sides were reconfigured, which matches a JWT issue seen in the past. `templates/jwt-secret.yaml` now uses `lookup` to reuse the existing Secret's value, only generating fresh randomness on first install. Verified via `helm template --dry-run=server`: the rendered value now matches the live secret exactly and is stable across repeated renders. Note: `helm template` alone (without `--dry-run=server`) can't exercise `lookup` — it always renders empty, so use `--dry-run=server` (or a real `helm upgrade`/ArgoCD sync, which does connect live) to verify this class of fix. |
 | **borg-wes** | Would resume the `borg-backup-cephfs-remote` CronJob | Live is `suspend: true`, chart renders `suspend: false`. **Update (2026-07-15): confirmed intentional, not drift** — the remote backup target (`j-dock1.weshouse`) has been unreachable for ~100 days (backups failed 3x in a row ~100-102 days ago, then got suspended; host currently gives "No route to host"). Don't sync/unsuspend until the backup server is back online, or `values.yaml` should be updated to `suspend: true` to match reality |
 
-**Still needs a fix before it's ever synced by ArgoCD:** jitsi's secret templates need the same
-`lookup`-based fix applied to onlyoffice's. borg-wes just needs `values.yaml` updated to reflect
-`suspend: true` to match reality, once confirmed the backup target is genuinely down long-term
-(see update above) rather than a transient outage.
+**Still needs a fix before it's ever synced by ArgoCD:** borg-wes needs `values.yaml` updated to
+reflect `suspend: true` to match reality, once confirmed the backup target is genuinely down
+long-term (see update above) rather than a transient outage.
 
 ## Deprecated releases
 
@@ -56,14 +55,14 @@ this migration:
 | Status | Count |
 |---|---|
 | Clean (chart matches live exactly) | 30 |
-| Fixed 2026-07-15 (onlyoffice) | 1 |
+| Fixed 2026-07-15 (jitsi, onlyoffice) | 2 |
 | Deprecated 2026-07-15 (keycloak) | 1 |
-| Drift remaining (needs a decision) | 9 |
+| Drift remaining (needs a decision) | 8 |
 | Chart bug (blocks render/apply) | 2 |
 | No chart in catalog | 1 (`wes-chat`) |
 | Excluded (Rancher-managed / already known not-in-catalog) | 7 |
 
-Total: 30 + 1 + 1 + 9 + 2 + 1 + 7 = 51, matching all live releases in the cluster.
+Total: 30 + 2 + 1 + 8 + 2 + 1 + 7 = 51, matching all live releases in the cluster.
 
 ### Clean — 30
 
@@ -77,11 +76,10 @@ Total: 30 + 1 + 1 + 9 + 2 + 1 + 7 = 51, matching all live releases in the cluste
 `rancher-volumes` pass and the pihole v6 migration earlier this week; this list reflects current
 state, not day-one state.)*
 
-### Drift — 9 remaining (needs a decision, not necessarily a fix)
+### Drift — 8 remaining (needs a decision, not necessarily a fix)
 
 | Release | Diff | Recommended action |
 |---|---|---|
-| **jitsi** | Non-deterministic secrets (see above) | Fix chart before syncing — see "Do not sync" |
 | **borg-wes** | `suspend: false` (chart) vs. `true` (live) | Fix `values.yaml` before syncing — see "Do not sync" |
 | **authentik** | Redis image `bitnamilegacy/redis` (chart) vs. `bitnami/redis` (live) | Real drift — decide which is correct and update the losing side. Bitnami moved free-tier images to `bitnamilegacy/*` in 2025; likely the chart is right and live predates the switch, but confirm before assuming |
 | **gpu-operator** | `time-slicing-config` replicas: `4` (chart) vs. `2` (live) | Someone tuned this live. Decide which is the real intended setting and update `values.yaml` to match |
@@ -104,11 +102,12 @@ state, not day-one state.)*
    externalName casing) — independent of ArgoCD, these block any future `helm upgrade` too.
 2. ~~Fix onlyoffice's jwt-secret regeneration~~ — done 2026-07-15.
 3. ~~Decide keycloak's fate~~ — deprecated 2026-07-15, excluded from migration.
-4. Apply the same `lookup`-based fix to jitsi's secrets, and fix borg-wes's `values.yaml`
-   `suspend` value (pending confirmation the backup target outage is long-term).
-5. Work through the remaining 7 drift items (`authentik`, `gpu-operator`, `kube-prometheus-stack`,
+4. ~~Fix jitsi's secret regeneration~~ — done 2026-07-15.
+5. Fix borg-wes's `values.yaml` `suspend` value (pending confirmation the backup target outage
+   is long-term, not transient).
+6. Work through the remaining 7 drift items (`authentik`, `gpu-operator`, `kube-prometheus-stack`,
    `mariadb-operator`, `node-red`, `open-webui`, `rocketchat`) — each is a real, small decision
    (which value should win), not a bug.
-6. Once everything above is either fixed or an explicit "chart is correct, ignore this" call has
+7. Once everything above is either fixed or an explicit "chart is correct, ignore this" call has
    been made, re-run this same sweep — it should come back all-clean (or with intentional,
    understood diffs only) before building any ArgoCD `Application`/`ApplicationSet` resources.
