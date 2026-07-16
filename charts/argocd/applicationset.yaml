@@ -1,0 +1,84 @@
+# One Application per release, generated from the inline list below. No separate data file --
+# this list is the single source of truth for what's deployed, its namespace, and its sync-wave
+# layer (0=infra, 1=networking, 2=observability, 3=applications), replacing helmfile.yaml's
+# releases: list. Same order/grouping as that file for easy comparison.
+#
+# syncPolicy is deliberately NOT automated -- every Application starts out manual-sync-only.
+# Flip individual apps to automated (add `syncPolicy.automated: {prune: true, selfHeal: true}`
+# via an override, or edit the template once confidence is established) one at a time, not as a
+# blanket change.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: homelab
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          # --- Layer 0: Infrastructure ---
+          - {name: cert-manager, namespace: cert-manager, path: charts/cert-manager-wes, wave: "0"}
+          - {name: ceph-csi, namespace: ceph-csi, path: charts/ceph-csi-wes, wave: "0"}
+          - {name: descheduler, namespace: descheduler, path: charts/k8s-descheduler-wes, wave: "0"}
+          - {name: gpu-operator, namespace: nvidia-gpu-operator, path: charts/nvidia-gpu-operator-wes, wave: "0"}
+          - {name: mariadb-operator, namespace: mariadb-operator, path: charts/mariadb-operator-wes, wave: "0"}
+          - {name: metallb, namespace: metallb, path: charts/metallb-wes, wave: "0"}
+
+          # --- Layer 1: Networking ---
+          - {name: nginx-ingress-wes, namespace: nginx-ingress-wes, path: charts/nginx-ingress-wes, wave: "1"}
+          - {name: cloudflare-dns-proxy, namespace: pihole, path: charts/cloudflare-dns-proxy, wave: "1"}
+          - {name: generic-ingress-ceph-dashboard, namespace: ceph-dashboard-generic-ingress, path: charts/generic-ingress-ceph-dashboard, wave: "1"}
+          - {name: generic-ingress-rancherserver, namespace: generic-ingress-rancherserver, path: charts/generic-ingress-rancherserver, wave: "1"}
+          - {name: opensprinkler, namespace: opensprinkler, path: charts/generic-ingress-opensprinkler, wave: "1"}
+
+          # --- Layer 2: Observability ---
+          - {name: kube-prometheus-stack, namespace: kube-prometheus-stack, path: charts/kube-prometheus-stack-wes, wave: "2"}
+          - {name: kuberhealthy, namespace: kuberhealthy, path: charts/kuberhealthy-wes, wave: "2"}
+          - {name: tesla-wall-connector, namespace: tesla-wall-connector, path: charts/tesla-wall-connector-exporter-wes, wave: "2"}
+
+          # --- Layer 3: Applications ---
+          - {name: ark, namespace: ark, path: charts/ark-wes, wave: "3"}
+          - {name: authentik, namespace: authentik, path: charts/authentik-wes, wave: "3"}
+          - {name: borg-wes, namespace: borg, path: charts/borg-wes, wave: "3"}
+          - {name: frigate, namespace: frigate, path: charts/frigate-wes, wave: "3"}
+          - {name: gitea, namespace: gitea, path: charts/gitea-wes, wave: "3"}
+          - {name: guacamole, namespace: guacamole, path: charts/guacamole-wes, wave: "3"}
+          - {name: home-assistant, namespace: home-assistant, path: charts/home-assistant, wave: "3"}
+          - {name: immich, namespace: immich, path: charts/immich-wes, wave: "3"}
+          - {name: jitsi, namespace: jitsi, path: charts/jitsi-wes, wave: "3"}
+          - {name: mailu-new, namespace: mailu-new, path: charts/mailu-wes-new, wave: "3"}
+          - {name: moonlight-web-stream, namespace: moonlight-web-stream, path: charts/moonlight-web-stream, wave: "3"}
+          - {name: mosquitto, namespace: mosquitto, path: charts/mosquitto-wes, wave: "3"}
+          - {name: node-red, namespace: node-red, path: charts/node-red-wes, wave: "3"}
+          - {name: oauth2-proxy, namespace: oauth2-proxy, path: charts/oauth2-proxy-wes, wave: "3"}
+          - {name: omada, namespace: omada, path: charts/tplink-omada-wes, wave: "3"}
+          - {name: onlyoffice, namespace: onlyoffice, path: charts/onlyoffice-wes, wave: "3"}
+          - {name: open-webui, namespace: ollama, path: charts/open-webui-wes, wave: "3"}
+          - {name: owncloud, namespace: owncloud, path: charts/owncloud-wes, wave: "3"}
+          - {name: pihole, namespace: pihole, path: charts/pihole, wave: "3"}
+          - {name: plex, namespace: plex, path: charts/plex-wes, wave: "3"}
+          - {name: rocketchat, namespace: rocketchat, path: charts/rocketchat-wes, wave: "3"}
+          - {name: satisfactory, namespace: satisfactory, path: charts/satisfactory-server-wes, wave: "3"}
+          - {name: tandoor, namespace: tandoor, path: charts/tandoor-wes, wave: "3"}
+          - {name: tasks-md, namespace: tasks-md, path: charts/tasks-md-wes, wave: "3"}
+          - {name: vaultwarden-wes, namespace: vaultwarden, path: charts/vaultwarden-wes, wave: "3"}
+          - {name: virt-manager, namespace: virt-manager, path: charts/virt-manager-wes, wave: "3"}
+          - {name: vllm, namespace: vllm, path: charts/vllm, wave: "3"}
+          - {name: zigbee2mqtt, namespace: zigbee2mqtt, path: charts/zigbee2mqtt-wes, wave: "3"}
+  template:
+    metadata:
+      name: '{{name}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{wave}}'
+    spec:
+      project: homelab
+      source:
+        repoURL: git@github.com:wesparish/rancher-catalog.git
+        targetRevision: master
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
