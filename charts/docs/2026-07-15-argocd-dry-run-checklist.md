@@ -6,13 +6,30 @@ applied. This is the "does everything already match" check before any ArgoCD inf
 gets built.
 
 **Method:** `helm template <release> <chart> -n <namespace> -f <chart>/values.yaml --no-hooks
---api-versions networking.k8s.io/v1/Ingress` piped into `kubectl diff -f - -n <namespace>`.
-`--no-hooks` excludes `helm test` pods (they never exist live, so including them makes every
-chart look "different"). `--api-versions` resolves a couple of charts' old
-`.Capabilities`-based Ingress-version conditionals correctly — without it they render the
-removed `extensions/v1beta1` API purely as an artifact of offline rendering, not a real bug.
-`-n` is required per-release except `cert-manager` and `kube-prometheus-stack`, which
-legitimately create resources in `kube-system` by upstream chart design.
+--api-versions networking.k8s.io/v1/Ingress --api-versions discovery.k8s.io/v1/EndpointSlice`
+piped into `kubectl diff -f - -n <namespace>`. `--no-hooks` excludes `helm test` pods (they never
+exist live, so including them makes every chart look "different"). Both `--api-versions` entries
+resolve `.Capabilities.APIVersions.Has "..."` conditionals correctly — without them, charts that
+branch on cluster capabilities render their old/fallback path purely as an artifact of offline
+rendering, not a real bug (this cost a full false-positive pass each on the Ingress API and the
+`discovery.k8s.io/v1/EndpointSlice` check — cheaper to just always pass both). `-n` is required
+per-release except `cert-manager` and `kube-prometheus-stack`, which legitimately create resources
+in `kube-system` by upstream chart design.
+
+**Read `kubectl diff` output carefully — `---`/`+++` direction is easy to invert.** `---` is
+always LIVE (current cluster state), `+++` is always MERGED (what the chart would change it to);
+a `-` line is being removed (i.e. it's the live value), a `+` line is being added (i.e. it's the
+chart's value). Got this backwards three separate times during the 2026-07-15 follow-up pass
+(borg-wes, gpu-operator, rocketchat) before catching each one via a direct `kubectl get`
+cross-check. **Don't trust the diff text alone for anything you're about to act on — verify the
+live value with a plain `kubectl get -o jsonpath` first.**
+
+**`helm upgrade` does not self-heal drift.** It diffs the *previous recorded release's* rendered
+manifest against the *new* one — not live state. If a value hasn't changed in the chart since the
+last release, Helm treats it as "nothing to do" even if live has drifted from both (found this
+with rocketchat's `managed-by` label — `helm upgrade` reported success but silently left the
+label untouched; had to `kubectl label --overwrite` directly). This is exactly the class of gap
+ArgoCD's continuous live-state reconciliation is meant to close.
 
 44 live releases checked (of 51 total — excluded `fleet-agent` ×2, `rancher-monitoring-crd`,
 `rancher-webhook` as Rancher-auto-managed, and `docker-fs-search`/`quarm-charm-calculator`/`sd`
@@ -54,40 +71,65 @@ this migration:
 
 | Status | Count |
 |---|---|
-| Clean (chart matches live exactly) | 30 |
-| Fixed 2026-07-15 (jitsi, onlyoffice) | 2 |
+| Clean (chart matches live exactly) | 33 |
+| Fixed 2026-07-15 (jitsi, onlyoffice, authentik, gpu-operator, rocketchat) | 5 |
 | Deprecated 2026-07-15 (keycloak) | 1 |
-| Drift remaining (needs a decision) | 8 |
+| Held (mariadb-operator) / needs live sync only, no repo change (node-red) | 2 |
 | Chart bug (blocks render/apply) | 2 |
 | No chart in catalog | 1 (`wes-chat`) |
 | Excluded (Rancher-managed / already known not-in-catalog) | 7 |
 
-Total: 30 + 2 + 1 + 8 + 2 + 1 + 7 = 51, matching all live releases in the cluster.
+Total: 33 + 5 + 1 + 2 + 2 + 1 + 7 = 51, matching all live releases in the cluster.
 
-### Clean — 30
+### Clean — 33
 
-`ark`, `ceph-csi`, `cert-manager`, `cloudflare-dns-proxy`, `descheduler`, `frigate`,
-`generic-ingress-ceph-dashboard`, `gitea`, `guacamole`, `home-assistant`, `immich`, `kuberhealthy`,
-`mailu-new`, `metallb`, `moonlight-web-stream`, `mosquitto`, `nginx-ingress-wes`, `oauth2-proxy`,
-`omada`, `opensprinkler`, `owncloud`, `pihole`, `plex`, `satisfactory`, `tandoor`, `tasks-md`,
-`vaultwarden-wes`, `virt-manager`, `vllm`, `zigbee2mqtt`
+`ark`, `authentik`, `borg-wes`, `ceph-csi`, `cert-manager`, `cloudflare-dns-proxy`, `descheduler`,
+`frigate`, `generic-ingress-ceph-dashboard`, `gitea`, `gpu-operator`, `guacamole`,
+`home-assistant`, `immich`, `jitsi`, `kube-prometheus-stack`, `kuberhealthy`, `mailu-new`,
+`metallb`, `moonlight-web-stream`, `mosquitto`, `nginx-ingress-wes`, `oauth2-proxy`, `omada`,
+`onlyoffice`, `opensprinkler`, `owncloud`, `pihole`, `plex`, `rocketchat`, `satisfactory`,
+`tandoor`, `tasks-md`, `vaultwarden-wes`, `virt-manager`, `vllm`, `zigbee2mqtt`
 
-*(A few of these, like `ark` and `pihole`, only became clean after fixes made in the
-`rancher-volumes` pass and the pihole v6 migration earlier this week; this list reflects current
-state, not day-one state.)*
+*(Several of these — `ark`/`pihole` from the `rancher-volumes`/pihole-v6 passes, and
+`authentik`/`borg-wes`/`gpu-operator`/`jitsi`/`kube-prometheus-stack`/`onlyoffice`/`rocketchat`
+from this pass — only became clean today; this list reflects current state, not day-one.)*
 
-### Drift — 8 remaining (needs a decision, not necessarily a fix)
+### Resolved 2026-07-15
 
-| Release | Diff | Recommended action |
+- **kube-prometheus-stack** — was a false alarm, not real drift. Same root cause as the Ingress
+  issue: another `.Capabilities.APIVersions.Has` conditional (gated on
+  `discovery.k8s.io/v1/EndpointSlice`), which the original sweep hadn't passed via
+  `--api-versions`. Re-verified with the correct flag: actually clean.
+- **authentik** — real bug, not a preference. `bitnami/redis:8.0.1-debian-12-r2` (what was live)
+  returned a **404 on Docker Hub — the tag no longer exists**; `bitnamilegacy/redis:8.0.1-debian-12-r2`
+  (what the chart already specified) is the one that's actually pullable. The running pod was fine
+  on its cached image but would have failed to pull on any future reschedule — a real threat to
+  the wipe-and-redeploy goal. Restarted `authentik-redis-master` to pick up the correct image;
+  verified healthy afterward (a brief worker reconnect blip resolved itself).
+- **gpu-operator** — **initial diff direction was backwards.** Live was actually `replicas: 4`
+  (matching all 3 GPU nodes' advertised capacity) the whole time; it was the chart's own
+  `time-slicing-configmap.yaml` template that had a stale hardcoded `2`. Caught via direct
+  `kubectl get` before applying anything — fixed the chart, never touched live.
+- **node-red** — no repo change needed. The chart's `static-config-files/settings.js` already
+  says `level: "info"`; it's live that's still running the older `"debug"` value. A normal
+  restart/sync will pick up `"info"` automatically whenever convenient.
+- **rocketchat** — confirmed intentional: `templates/gotify/` and `templates/push-gateway/`
+  deliberately set `managed-by: {{ .Release.Service }}-gotify` / `-pushgateway` to distinguish
+  those sub-components; live was on an older revision that predated this. Confirmed nothing
+  (ServiceMonitors, NetworkPolicies) selects on the label value. **Worth noting:** `helm upgrade`
+  alone did *not* fix this — it diffs the previous chart-rendered manifest against the new one,
+  not live state, so it silently skipped these 4 resources since the chart's own desired value
+  hadn't changed since the last recorded release. Had to `kubectl label --overwrite` directly.
+  This is a concrete example of the exact gap ArgoCD's continuous live-state reconciliation
+  would close that plain `helm upgrade` can't.
+- **borg-wes** — fixed (see "Do not sync" above).
+
+### Still open — 2
+
+| Release | Status | Recommended action |
 |---|---|---|
-| **borg-wes** | `suspend: false` (chart) vs. `true` (live) | Fix `values.yaml` before syncing — see "Do not sync" |
-| **authentik** | Redis image `bitnamilegacy/redis` (chart) vs. `bitnami/redis` (live) | Real drift — decide which is correct and update the losing side. Bitnami moved free-tier images to `bitnamilegacy/*` in 2025; likely the chart is right and live predates the switch, but confirm before assuming |
-| **gpu-operator** | `time-slicing-config` replicas: `4` (chart) vs. `2` (live) | Someone tuned this live. Decide which is the real intended setting and update `values.yaml` to match |
-| **kube-prometheus-stack** | Live `ClusterRole` has extra `endpointslices` RBAC permissions the chart doesn't grant | Check whether a newer chart/operator version needs this permission — may indicate the deployed chart version is behind what's actually running |
-| **mariadb-operator** | Chart would create a new `mariadb-test` MariaDB CR (`database: homeassistant-db`) that doesn't exist live yet | Not a bug — this is the not-yet-applied example resource from the chart's own README. Decide whether to apply it or hold |
-| **node-red** | Log level `debug` (chart) vs. `info` (live) | Low-risk. Update `values.yaml` to match live, or decide `debug` should ship |
-| **open-webui** | Live has `kubectl.kubernetes.io/restartedAt` annotation, chart doesn't | Benign — this is just a marker left by a manual `kubectl rollout restart`. Safe to sync away |
-| **rocketchat** | Live labels 2 Deployments + 2 Services `app.kubernetes.io/managed-by: Helm-gotify` / `Helm-pushgateway`; chart renders plain `Helm` | Cosmetic. Confirm nothing depends on the custom label value before letting a sync overwrite it |
+| **mariadb-operator** | Held, per instruction | `mariadb-test` CR not applied — chart left as documentation for a future homeassistant-db migration |
+| **node-red** | No repo change needed | Live will pick up the chart's already-correct `"info"` log level on next restart/sync |
 
 ## Not checked
 
@@ -103,11 +145,12 @@ state, not day-one state.)*
 2. ~~Fix onlyoffice's jwt-secret regeneration~~ — done 2026-07-15.
 3. ~~Decide keycloak's fate~~ — deprecated 2026-07-15, excluded from migration.
 4. ~~Fix jitsi's secret regeneration~~ — done 2026-07-15.
-5. Fix borg-wes's `values.yaml` `suspend` value (pending confirmation the backup target outage
-   is long-term, not transient).
-6. Work through the remaining 7 drift items (`authentik`, `gpu-operator`, `kube-prometheus-stack`,
-   `mariadb-operator`, `node-red`, `open-webui`, `rocketchat`) — each is a real, small decision
-   (which value should win), not a bug.
-7. Once everything above is either fixed or an explicit "chart is correct, ignore this" call has
-   been made, re-run this same sweep — it should come back all-clean (or with intentional,
-   understood diffs only) before building any ArgoCD `Application`/`ApplicationSet` resources.
+5. ~~Fix borg-wes's `values.yaml` `suspend` value~~ — done 2026-07-15, backup target confirmed
+   long-term down.
+6. ~~Work through the remaining 7 drift items~~ — done 2026-07-15: `authentik`, `gpu-operator`,
+   `kube-prometheus-stack`, and `rocketchat` fixed (see "Resolved 2026-07-15" above);
+   `mariadb-operator` held per instruction; `node-red` needs no repo change, just a live sync;
+   `open-webui` was already benign, no action needed.
+7. Once `wes-chat` has a chart (or is explicitly excluded) and `mariadb-operator`/`node-red` are
+   settled, re-run this same sweep to confirm it comes back all-clean before building any ArgoCD
+   `Application`/`ApplicationSet` resources.
