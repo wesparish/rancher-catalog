@@ -76,7 +76,7 @@ this migration:
 | Deprecated 2026-07-15 (keycloak) | 1 |
 | Held (mariadb-operator) / needs live sync only, no repo change (node-red) | 2 |
 | Chart bug (blocks render/apply) | 2 |
-| No chart in catalog | 1 (`wes-chat`) |
+| Excluded, test app (`wes-chat`) | 1 |
 | Excluded (Rancher-managed / already known not-in-catalog) | 7 |
 
 Total: 33 + 5 + 1 + 2 + 2 + 1 + 7 = 51, matching all live releases in the cluster.
@@ -131,10 +131,14 @@ from this pass — only became clean today; this list reflects current state, no
 | **mariadb-operator** | Held, per instruction | `mariadb-test` CR not applied — chart left as documentation for a future homeassistant-db migration |
 | **node-red** | No repo change needed | Live will pick up the chart's already-correct `"info"` log level on next restart/sync |
 
-## Not checked
+## Excluded
 
-- **wes-chat** (namespace `wchat`) — live and active, but has no chart anywhere in this catalog.
-  Needs a chart written before it can be part of the ArgoCD (or even Helmfile) setup at all.
+- **wes-chat** (namespace `wchat`) — its chart lives in a separate standalone repo
+  (`~/workspace/wes-chat`, no `origin` remote configured, single commit) rather than this catalog.
+  **Update 2026-07-16: confirmed a throwaway AI-generated test, not something to maintain.**
+  Excluded from the ArgoCD migration entirely — no chart needed here. Still live in the cluster
+  (left running, per instruction) but untracked; `wchat-data`'s PVC stays as-is in
+  `rancher-volumes`.
 - **immich-typesense-data** PV — flagged in the `rancher-volumes` pass as tracked-but-not-live,
   still an open decision, unrelated to this chart-diff pass.
 
@@ -151,6 +155,7 @@ from this pass — only became clean today; this list reflects current state, no
    `kube-prometheus-stack`, and `rocketchat` fixed (see "Resolved 2026-07-15" above);
    `mariadb-operator` held per instruction; `node-red` needs no repo change, just a live sync;
    `open-webui` was already benign, no action needed.
-7. Once `wes-chat` has a chart (or is explicitly excluded) and `mariadb-operator`/`node-red` are
-   settled, re-run this same sweep to confirm it comes back all-clean before building any ArgoCD
-   `Application`/`ApplicationSet` resources.
+7. ~~Resolve wes-chat's missing chart~~ — resolved 2026-07-16: it's a throwaway test app in its
+   own repo, excluded from the migration entirely, not a real gap.
+8. Once `mariadb-operator`/`node-red` are settled, re-run this same sweep to confirm it comes back
+   all-clean before building any ArgoCD `Application`/`ApplicationSet` resources.
