@@ -69,7 +69,9 @@ metricsPod:
 
 backups:
   - name: cephfs-remote
-    suspend: false
+    # Remote backup target (j-dock1.weshouse) has been offline long-term (confirmed
+    # unreachable 2026-07-15, "No route to host"). Re-enable once it's back online.
+    suspend: true
     persistence:
       source:
         claim: borg-backup-cephfs
