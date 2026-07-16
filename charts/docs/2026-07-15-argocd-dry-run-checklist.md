@@ -45,11 +45,9 @@ independent of anything ArgoCD-specific:
 | **jitsi** | ~~Rotates `JICOFO_AUTH_PASSWORD`, `JICOFO_COMPONENT_SECRET`, `JVB_AUTH_PASSWORD`~~ **Fixed 2026-07-15.** | These secrets live in the vendored `jitsi-meet` subchart (`charts/jitsi-meet/templates/{jicofo,jvb}/xmpp-secret.yaml`), not jitsi-wes's own templates — patched the same `lookup`-based fix in directly. One extra wrinkle found here: this chart had **both** an unpacked `charts/jitsi-meet/` directory and `charts/jitsi-meet-1.5.1.tgz` — Helm uses the unpacked directory when both exist, so the tgz alone isn't enough; both were patched and verified in sync. Verified via `helm template --dry-run=server`: both secrets now match live exactly and are stable across repeated renders. See `jitsi-wes/README.md` — this patch will be silently lost if the `jitsi-meet` dependency is ever regenerated (`helm dependency update`/`build`), so it documents how to reapply it. |
 | ~~keycloak~~ | ~~Rotates the Redis sidecar's `redis-password`~~ | **Update (2026-07-15): no longer applicable.** Keycloak is being deprecated (no longer used) — excluded from the ArgoCD migration rather than fixed. See "Deprecated releases" below. |
 | **onlyoffice** | ~~Rotates `jwt-secret`~~ **Fixed 2026-07-15.** | This is the shared secret OnlyOffice's document server and its client integration (ownCloud) both need — rotating it broke document editing until both sides were reconfigured, which matches a JWT issue seen in the past. `templates/jwt-secret.yaml` now uses `lookup` to reuse the existing Secret's value, only generating fresh randomness on first install. Verified via `helm template --dry-run=server`: the rendered value now matches the live secret exactly and is stable across repeated renders. Note: `helm template` alone (without `--dry-run=server`) can't exercise `lookup` — it always renders empty, so use `--dry-run=server` (or a real `helm upgrade`/ArgoCD sync, which does connect live) to verify this class of fix. |
-| **borg-wes** | Would resume the `borg-backup-cephfs-remote` CronJob | Live is `suspend: true`, chart renders `suspend: false`. **Update (2026-07-15): confirmed intentional, not drift** — the remote backup target (`j-dock1.weshouse`) has been unreachable for ~100 days (backups failed 3x in a row ~100-102 days ago, then got suspended; host currently gives "No route to host"). Don't sync/unsuspend until the backup server is back online, or `values.yaml` should be updated to `suspend: true` to match reality |
+| **borg-wes** | ~~Would resume the `borg-backup-cephfs-remote` CronJob~~ **Fixed 2026-07-15.** | Live was `suspend: true`, chart rendered `suspend: false` — the remote backup target (`j-dock1.weshouse`) has been unreachable for ~100 days (backups failed 3x in a row ~100-102 days ago, then got suspended; host gave "No route to host"). `values.yaml` updated to `suspend: true` to match reality; re-enable once the backup server is back online. |
 
-**Still needs a fix before it's ever synced by ArgoCD:** borg-wes needs `values.yaml` updated to
-reflect `suspend: true` to match reality, once confirmed the backup target is genuinely down
-long-term (see update above) rather than a transient outage.
+All four items in this section are now resolved.
 
 ## Deprecated releases
 
@@ -57,44 +55,43 @@ long-term (see update above) rather than a transient outage.
 |---|---|
 | **keycloak** | No longer used (2026-07-15). Excluded from the ArgoCD migration going forward — not worth fixing its secret-rotation bug for a chart being retired. Confirmed safe to deprecate: the cluster's real SSO (`oauth2-proxy-wes`) uses Authentik, not Keycloak; Keycloak's own bundled `oauth2-proxy` only protects its own admin UI; `borg-wes`/`duplicacy-wes` only reference `keycloak-data` as a backup path entry, not a functional dependency. **`helm uninstall`'d 2026-07-15.** `keycloak-data` PVC was statically provisioned via `existingClaim` (not chart-owned), so it was untouched by the uninstall — still `Bound` to the same PV, data fully intact if ever needed again. `keycloak-wes` chart directory left in the catalog for now (not deleted) in case it's needed for reference. |
 
-## Two unrelated chart bugs surfaced
+## Two unrelated chart bugs — fixed 2026-07-16
 
-Not an ArgoCD issue — these would fail on a plain `helm upgrade` today, right now, regardless of
-this migration:
+Not an ArgoCD issue — these would have failed on a plain `helm upgrade`, regardless of this
+migration:
 
-| Chart | Bug | Where |
+| Chart | Bug | Fix |
 |---|---|---|
-| **generic-ingress** (used by `generic-ingress-rancherserver`) | `values.yaml` sets `name: HeaterMeter` — capital letters aren't valid in a Kubernetes object name (DNS-1035) | `generic-ingress/values.yaml:1` |
-| **tesla-wall-connector-exporter-wes** | Service `type: externalName` — Kubernetes requires `ExternalName` (capital N) | `tesla-wall-connector-exporter-wes/templates/service.yaml:9` |
+| **generic-ingress** | `values.yaml`/`questions.yml` set `name: HeaterMeter`/`GenericIngress` — capital letters aren't valid in a Kubernetes object name (DNS-1035). Deeper issue: this shared/base chart's checked-in values didn't match either live app that could plausibly use it — the only release deployed directly from it (`generic-ingress-rancherserver`, 2021, never upgraded since) actually fronts a service called `rancher2`, and there's a separate, unrelated live `heatermeter` service this chart was never wired up to at all. | Reset to generic, validly-cased placeholders (`generic-ingress`) with a comment noting it's meant to be wrapped by an umbrella chart, not deployed with its own baked-in config — matching the existing `generic-ingress-ceph-dashboard`/`generic-ingress-opensprinkler` pattern. Added the missing `generic-ingress-rancherserver/` umbrella chart, values reverse-engineered from the live Ingress/Service/Endpoints (`rancher2`, `172.16.1.107:8443`, HTTPS). Verified via `kubectl diff`: renders identical to live. |
+| **tesla-wall-connector-exporter-wes** | Service `type: externalName` (invalid casing) with `.Values.service.externalName` left unset — an abandoned mid-experiment to point the Service directly at hardware, never finished or successfully applied (live has always been plain `ClusterIP`, matching `values.yaml`'s `service.type: ClusterIP`). | Reverted to the values-driven `type: {{ .Values.service.type }}` line that was already commented out just above the broken lines. Verified via `kubectl diff`: renders identical to live. |
 
 ## Summary
 
 | Status | Count |
 |---|---|
-| Clean (chart matches live exactly) | 33 |
-| Fixed 2026-07-15 (jitsi, onlyoffice, authentik, gpu-operator, rocketchat) | 5 |
+| Clean (chart matches live exactly) | 41 |
 | Deprecated 2026-07-15 (keycloak) | 1 |
-| Held (mariadb-operator) / needs live sync only, no repo change (node-red) | 2 |
-| Chart bug (blocks render/apply) | 2 |
+| Include in ArgoCD, not actively used yet (mariadb-operator) | 1 |
 | Excluded, test app (`wes-chat`) | 1 |
 | Excluded (Rancher-managed / already known not-in-catalog) | 7 |
 
-Total: 33 + 5 + 1 + 2 + 2 + 1 + 7 = 51, matching all live releases in the cluster.
+Total: 41 + 1 + 1 + 1 + 7 = 51, matching all live releases in the cluster.
 
-### Clean — 33
+### Clean — 41
 
 `ark`, `authentik`, `borg-wes`, `ceph-csi`, `cert-manager`, `cloudflare-dns-proxy`, `descheduler`,
-`frigate`, `generic-ingress-ceph-dashboard`, `gitea`, `gpu-operator`, `guacamole`,
-`home-assistant`, `immich`, `jitsi`, `kube-prometheus-stack`, `kuberhealthy`, `mailu-new`,
-`metallb`, `moonlight-web-stream`, `mosquitto`, `nginx-ingress-wes`, `oauth2-proxy`, `omada`,
-`onlyoffice`, `opensprinkler`, `owncloud`, `pihole`, `plex`, `rocketchat`, `satisfactory`,
-`tandoor`, `tasks-md`, `vaultwarden-wes`, `virt-manager`, `vllm`, `zigbee2mqtt`
+`frigate`, `generic-ingress-ceph-dashboard`, `generic-ingress-rancherserver`, `gitea`,
+`gpu-operator`, `guacamole`, `home-assistant`, `immich`, `jitsi`, `kube-prometheus-stack`,
+`kuberhealthy`, `mailu-new`, `metallb`, `moonlight-web-stream`, `mosquitto`, `nginx-ingress-wes`,
+`node-red`, `oauth2-proxy`, `omada`, `onlyoffice`, `opensprinkler`, `open-webui`, `owncloud`,
+`pihole`, `plex`, `rocketchat`, `satisfactory`, `tandoor`, `tasks-md`, `tesla-wall-connector`,
+`vaultwarden-wes`, `virt-manager`, `vllm`, `zigbee2mqtt`
 
-*(Several of these — `ark`/`pihole` from the `rancher-volumes`/pihole-v6 passes, and
-`authentik`/`borg-wes`/`gpu-operator`/`jitsi`/`kube-prometheus-stack`/`onlyoffice`/`rocketchat`
-from this pass — only became clean today; this list reflects current state, not day-one.)*
+*(Many of these only became clean over 2026-07-14 through 2026-07-16 — pihole/ark from the
+`rancher-volumes`/pihole-v6 passes, and the majority of the rest from this dry-run pass. This list
+reflects current state, not day-one.)*
 
-### Resolved 2026-07-15
+### Resolved 2026-07-15 through 2026-07-16
 
 - **kube-prometheus-stack** — was a false alarm, not real drift. Same root cause as the Ingress
   issue: another `.Capabilities.APIVersions.Has` conditional (gated on
@@ -110,9 +107,11 @@ from this pass — only became clean today; this list reflects current state, no
   (matching all 3 GPU nodes' advertised capacity) the whole time; it was the chart's own
   `time-slicing-configmap.yaml` template that had a stale hardcoded `2`. Caught via direct
   `kubectl get` before applying anything — fixed the chart, never touched live.
-- **node-red** — no repo change needed. The chart's `static-config-files/settings.js` already
-  says `level: "info"`; it's live that's still running the older `"debug"` value. A normal
-  restart/sync will pick up `"info"` automatically whenever convenient.
+- **node-red** — the ConfigMap fix needed a real `helm upgrade` (unlike rocketchat below, this one
+  *did* apply — the static file's content had genuinely changed since the last recorded release,
+  so Helm correctly detected a delta). Then restarted the pod, since ConfigMap volume updates
+  don't get re-read by a running Node-RED process without a restart. Verified: pod healthy,
+  reconnected to Home Assistant/MQTT/Alexa integrations, `kubectl diff` clean.
 - **rocketchat** — confirmed intentional: `templates/gotify/` and `templates/push-gateway/`
   deliberately set `managed-by: {{ .Release.Service }}-gotify` / `-pushgateway` to distinguish
   those sub-components; live was on an older revision that predated this. Confirmed nothing
@@ -123,13 +122,17 @@ from this pass — only became clean today; this list reflects current state, no
   This is a concrete example of the exact gap ArgoCD's continuous live-state reconciliation
   would close that plain `helm upgrade` can't.
 - **borg-wes** — fixed (see "Do not sync" above).
+- **generic-ingress** / **tesla-wall-connector-exporter-wes** — fixed (see "Two unrelated chart
+  bugs" above).
 
-### Still open — 2
+### mariadb-operator — decision made, not yet a "clean" state
 
-| Release | Status | Recommended action |
-|---|---|---|
-| **mariadb-operator** | Held, per instruction | `mariadb-test` CR not applied — chart left as documentation for a future homeassistant-db migration |
-| **node-red** | No repo change needed | Live will pick up the chart's already-correct `"info"` log level on next restart/sync |
+Not actively used for anything yet (no real MariaDB workload has been migrated onto it) — the
+`mariadb-test` CR (`database: homeassistant-db`) remains unapplied, chart left as documentation
+for a future migration. **Decision 2026-07-16: include it in the ArgoCD app list anyway** — it's a
+legitimate deployed chart (the operator itself is running), just without a real consumer yet.
+Expect this one to keep showing the `mariadb-test` diff until that migration actually happens or
+the example resource is removed from the chart.
 
 ## Excluded
 
@@ -139,23 +142,26 @@ from this pass — only became clean today; this list reflects current state, no
   Excluded from the ArgoCD migration entirely — no chart needed here. Still live in the cluster
   (left running, per instruction) but untracked; `wchat-data`'s PVC stays as-is in
   `rancher-volumes`.
-- **immich-typesense-data** PV — flagged in the `rancher-volumes` pass as tracked-but-not-live,
-  still an open decision, unrelated to this chart-diff pass.
+- **immich-typesense-data** PV — **resolved 2026-07-16.** Confirmed no live typesense pod/PVC
+  exists (immich-wes is on v1.91.4, well past upstream dropping Typesense for Postgres pgvector).
+  Commented out in `rancher-volumes/immich-typesense.yaml` rather than deleted — the underlying
+  Ceph data at its `rootPath` was never removed, in case it's ever needed.
 
 ## Next steps
 
-1. Fix the two real chart bugs (`generic-ingress` HeaterMeter naming, `tesla-wall-connector`
-   externalName casing) — independent of ArgoCD, these block any future `helm upgrade` too.
+1. ~~Fix the two real chart bugs~~ — done 2026-07-16 (see "Two unrelated chart bugs" above).
 2. ~~Fix onlyoffice's jwt-secret regeneration~~ — done 2026-07-15.
 3. ~~Decide keycloak's fate~~ — deprecated 2026-07-15, excluded from migration.
 4. ~~Fix jitsi's secret regeneration~~ — done 2026-07-15.
 5. ~~Fix borg-wes's `values.yaml` `suspend` value~~ — done 2026-07-15, backup target confirmed
    long-term down.
-6. ~~Work through the remaining 7 drift items~~ — done 2026-07-15: `authentik`, `gpu-operator`,
-   `kube-prometheus-stack`, and `rocketchat` fixed (see "Resolved 2026-07-15" above);
-   `mariadb-operator` held per instruction; `node-red` needs no repo change, just a live sync;
+6. ~~Work through the remaining 7 drift items~~ — done 2026-07-15/16: `authentik`, `gpu-operator`,
+   `kube-prometheus-stack`, `rocketchat`, and `node-red` fixed (see "Resolved" above);
+   `mariadb-operator` will be included in the ArgoCD list despite not being actively used yet;
    `open-webui` was already benign, no action needed.
 7. ~~Resolve wes-chat's missing chart~~ — resolved 2026-07-16: it's a throwaway test app in its
    own repo, excluded from the migration entirely, not a real gap.
-8. Once `mariadb-operator`/`node-red` are settled, re-run this same sweep to confirm it comes back
-   all-clean before building any ArgoCD `Application`/`ApplicationSet` resources.
+8. ~~Resolve immich-typesense-data~~ — done 2026-07-16, commented out, unused.
+9. This checklist is now clean: 41 releases match live exactly, keycloak is deprecated,
+   mariadb-operator is a known/accepted non-clean state, and wes-chat is intentionally excluded.
+   Ready to start building the actual ArgoCD `Application`/`ApplicationSet` resources.
