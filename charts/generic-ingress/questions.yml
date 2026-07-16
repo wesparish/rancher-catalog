@@ -2,7 +2,7 @@ categories:
 - ingress
 questions:
 - variable: name
-  default: "GenericIngress"
+  default: "generic-ingress"
   description: "Front of URL"
   type: string
   required: true

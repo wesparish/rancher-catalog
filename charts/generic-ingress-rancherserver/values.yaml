@@ -1,0 +1,9 @@
+generic-ingress:
+  name: rancher2
+  domainSuffix: elastiscale.net
+  auth: false
+  backendProtocol: HTTPS
+
+  endpoint:
+    targetIP: 172.16.1.107
+    targetPort: 8443

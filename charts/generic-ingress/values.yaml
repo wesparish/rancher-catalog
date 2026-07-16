@@ -1,7 +1,10 @@
-name: HeaterMeter
+# This is a base/library-style chart meant to be wrapped by an umbrella chart with its own
+# values.yaml (see generic-ingress-ceph-dashboard, generic-ingress-opensprinkler,
+# generic-ingress-rancherserver for examples), not deployed with these placeholder values as-is.
+name: generic-ingress
 domainSuffix: elastiscale.net
 backendProtocol: # HTTPS
 
 endpoint:
-  targetIP: 172.16.1.79
+  targetIP: 0.0.0.0
   targetPort: 80
