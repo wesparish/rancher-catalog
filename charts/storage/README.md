@@ -21,10 +21,62 @@ anything else existing yet) before syncing any chart that references one via `ex
 
 ## Adding a new one
 
-Copy `template.yaml`, replace the `<app>`/`<namespace>` placeholders, and pick a `rootPath` that
-doesn't collide with an existing one (`grep -h rootPath *.yaml` to check). Match the existing
-`accessModes`/capacity conventions loosely based on similar apps — there's no hard rule, just
-avoid asking for far more than the app needs.
+Copy the template below into a new `<app>.yaml`, replace the `<app>`/`<namespace>` placeholders,
+and pick a `rootPath` that doesn't collide with an existing one (`grep -h rootPath *.yaml` to
+check). Match the existing `accessModes`/capacity conventions loosely based on similar apps —
+there's no hard rule, just avoid asking for far more than the app needs.
+
+This lives here as documentation, not as a `template.yaml` file in this directory — anything
+ending in `.yaml` here gets picked up by both `kubectl apply -f storage/` and ArgoCD's directory
+sync, and `<app>-data` isn't a valid Kubernetes object name (a real apply would fail, or worse,
+partially succeed in confusing ways).
+
+```yaml
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <app>-data
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 50Gi
+  csi:
+    driver: cephfs.csi.ceph.com
+    nodeStageSecretRef:
+      # node stage secret name
+      name: csi-cephfs-secret
+      # node stage secret namespace where above secret is created
+      namespace: ceph-csi
+    volumeAttributes:
+      # optional file system to be mounted
+      "fsName": "test1"
+      # Required options from storageclass parameters need to be added in volumeAttributes
+      "clusterID": "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      "staticVolume": "true"
+      "rootPath": /k8s-volumes/<app>-data/
+    # volumeHandle can be anything, need not to be same
+    # as PV name or volume name. keeping same for brevity
+    volumeHandle: <app>-data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <app>-data
+  namespace: <namespace>
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: <app>-data
+```
 
 ## Pruning
 

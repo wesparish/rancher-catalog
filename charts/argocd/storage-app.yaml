@@ -1,0 +1,21 @@
+# Static PV/PVC manifests, applied before every other Application (sync-wave "-1") so PVCs exist
+# and are bound before any chart tries to mount one via existingClaim. Plain directory source --
+# these are raw manifests, not a Helm chart.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: storage
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  project: homelab
+  source:
+    repoURL: git@github.com:wesparish/rancher-catalog.git
+    targetRevision: master
+    path: charts/storage
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
