@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ai-models-storage-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 500Gi
+  csi:
+    driver: cephfs.csi.ceph.com
+    nodeStageSecretRef:
+      name: csi-cephfs-secret
+      namespace: ceph-csi
+    volumeAttributes:
+      "fsName": "test1"
+      "clusterID": "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      "staticVolume": "true"
+      "rootPath": /k8s-volumes/ai-models/huggingface/
+    volumeHandle: ai-models-storage-pvc
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ai-models-storage-pvc
+  namespace: vllm
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: ai-models-storage-pvc

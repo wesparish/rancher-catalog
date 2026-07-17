@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tasks-data
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  csi:
+    driver: cephfs.csi.ceph.com
+    nodeStageSecretRef:
+      name: csi-cephfs-secret
+      namespace: ceph-csi
+    volumeAttributes:
+      "fsName": "test1"
+      "clusterID": "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      "staticVolume": "true"
+      "rootPath": /k8s-volumes/tasks-data/data/
+    volumeHandle: tasks-data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tasks-data
+  namespace: tasks-md
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: tasks-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tasks-config
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  csi:
+    driver: cephfs.csi.ceph.com
+    nodeStageSecretRef:
+      name: csi-cephfs-secret
+      namespace: ceph-csi
+    volumeAttributes:
+      "fsName": "test1"
+      "clusterID": "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      "staticVolume": "true"
+      "rootPath": /k8s-volumes/tasks-data/config/
+    volumeHandle: tasks-config
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tasks-config
+  namespace: tasks-md
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: tasks-config

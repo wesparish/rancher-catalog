@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 100Gi
+  csi:
+    driver: cephfs.csi.ceph.com
+    nodeStageSecretRef:
+      # node stage secret name
+      name: csi-cephfs-secret
+      # node stage secret namespace where above secret is created
+      namespace: ceph-csi
+    volumeAttributes:
+      # optional file system to be mounted
+      "fsName": "test1"
+      # Required options from storageclass parameters need to be added in volumeAttributes
+      "clusterID": "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      "staticVolume": "true"
+      "rootPath": /k8s-volumes/rocketchat-mongodb-data/
+    # volumeHandle can be anything, need not to be same
+    # as PV name or volume name. keeping same for brevity
+    volumeHandle: mongodb-data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-data
+  namespace: rocketchat
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: mongodb-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-official-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 100Gi
+  csi:
+    driver: cephfs.csi.ceph.com
+    nodeStageSecretRef:
+      name: csi-cephfs-secret
+      namespace: ceph-csi
+    volumeAttributes:
+      "fsName": "test1"
+      "clusterID": "6c2190ab-5525-4345-8dba-8c3151c4e530"
+      "staticVolume": "true"
+      "rootPath": /k8s-volumes/rocketchat-mongodb-official-data/
+    volumeHandle: mongodb-official-data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-official-data
+  namespace: rocketchat
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: mongodb-official-data
