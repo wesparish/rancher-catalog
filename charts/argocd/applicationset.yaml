@@ -68,6 +68,12 @@ spec:
   template:
     metadata:
       name: '{{name}}'
+      labels:
+        # Plain label duplicating the sync-wave value below, so `argocd app sync -l wave=N` can
+        # select a whole wave for the fresh-cluster bootstrap flow -- argocd.argoproj.io/sync-wave
+        # itself has to be an annotation (that's what ArgoCD reads), and the CLI's -l/--selector
+        # only matches labels, not annotations.
+        wave: '{{wave}}'
       annotations:
         argocd.argoproj.io/sync-wave: '{{wave}}'
     spec:
