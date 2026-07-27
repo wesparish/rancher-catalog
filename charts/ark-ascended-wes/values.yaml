@@ -48,7 +48,10 @@ env:
   # only -- silently dropping every setting after the space. See README.md.
   sessionName: "WTopAce_Ascended_Island"
   serverMap: TheIsland_WP
-  gamePort: 7777
+  # 7778 rather than the ASA default 7777: satisfactory already holds WAN 7777. Nothing clashes
+  # inside the cluster (separate LoadBalancer IPs), but keeping the port identical end-to-end
+  # avoids NAT-translating it on the way in.
+  gamePort: 7778
   rconPort: 27020
 
   # Empty for the first deploy -- bring the vanilla server up and confirm the steamcmd install,

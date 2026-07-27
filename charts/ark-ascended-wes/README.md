@@ -141,8 +141,12 @@ out too easy.
 | | |
 |---|---|
 | LoadBalancer IP | `172.16.1.238` (metallb pool `172.16.1.220-240`) |
-| Game port | `7777/UDP` |
+| Game port | `7778/UDP` — not the ASA default 7777, which satisfactory already holds on the WAN |
 | RCON port | `27020/TCP` (uses the admin password from the Secret) |
+
+Router: forward `UDP 7778` to `172.16.1.238:7778`. ASA needs no Steam query port — unlike ASE it
+uses the Epic-backed server list, discovered over outbound connections. Do **not** forward the RCON
+port; reach it from the LAN.
 
 The `metallb.universe.tf/allow-shared-ip` key is `ark-ascended`, deliberately different from the
 literal `sharing-key` that `charts/ark-wes` uses at `.233`, so the two ARK servers can never be
