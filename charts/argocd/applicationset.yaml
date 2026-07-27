@@ -38,6 +38,7 @@ spec:
 
           # --- Layer 3: Applications ---
           - {name: ark, namespace: ark, path: charts/ark-wes, wave: "3"}
+          - {name: ark-ascended, namespace: ark-ascended, path: charts/ark-ascended-wes, wave: "3"}
           - {name: authentik, namespace: authentik, path: charts/authentik-wes, wave: "3"}
           - {name: borg-wes, namespace: borg, path: charts/borg-wes, wave: "3"}
           - {name: frigate, namespace: frigate, path: charts/frigate-wes, wave: "3"}

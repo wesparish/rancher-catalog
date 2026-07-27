@@ -1,0 +1,13 @@
+apiVersion: v2
+name: ark-ascended-wes
+description: ARK Survival Ascended dedicated server (TheIsland_WP)
+
+# Standalone chart, not a helm dependency on jsknnr/ark-ascended-server. That chart's own
+# templates have no hooks for nodeSelector, initContainers, or an existingClaim-style PVC, and
+# only mount ShooterGame/Saved rather than the whole install dir (meaning every pod restart would
+# re-download the ~50GB+ game install via steamcmd from scratch). This chart borrows its image and
+# env-var contract (SESSION_NAME, SERVER_MAP, MODS, EXTRA_SETTINGS, etc.) but ships its own
+# Deployment/Service/ConfigMap so those gaps can be closed directly.
+type: application
+version: 0.1.0
+appVersion: "latest"

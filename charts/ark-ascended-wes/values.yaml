@@ -1,0 +1,97 @@
+# Default values for ark-ascended-wes.
+
+image:
+  repository: sknnr/ark-ascended-server
+  tag: latest
+  pullPolicy: Always
+
+# Floats across any node that can mount the cephfs volume, rather than pinning to one host.
+nodeSelector:
+  ceph-client: "true"
+
+resources:
+  requests:
+    cpu: 2
+    memory: 12Gi
+  limits:
+    cpu: 4
+    memory: 20Gi
+
+persistence:
+  # Created out-of-band by storage/ark-ascended.yaml (applied before this chart -- and, once argocd
+  # is actually live, ahead of it via the "storage" Application's sync-wave). Covers the whole ARK
+  # install dir, not just Saved, so a pod restart/reschedule doesn't re-download the entire game
+  # through steamcmd.
+  existingClaim: ark-ascended-data
+
+service:
+  type: LoadBalancer
+  # Free address in the metallb 172.16.1.220-240 pool. ark-wes (ASE) holds .233.
+  loadBalancerIP: "172.16.1.238"
+
+# Passwords are never stored in this file. Create the Secret out-of-band before installing:
+#
+#   kubectl create secret generic ark-ascended-server -n ark-ascended \
+#     --from-literal=server-admin-password='...' \
+#     --from-literal=server-password=''
+#
+# An empty server-password means no join password (public server).
+existingSecret: ark-ascended-server
+secretKeys:
+  serverAdminPassword: server-admin-password
+  serverPassword: server-password
+
+env:
+  # MUST NOT contain spaces. The image's entrypoint interpolates SESSION_NAME into a single
+  # `?`-delimited launch string and then expands that string *unquoted* into `proton run ...`, so a
+  # space word-splits it into separate argv elements and ARK parses `?` options from the first one
+  # only -- silently dropping every setting after the space. See README.md.
+  sessionName: "WTopAce_Ascended_Island"
+  serverMap: TheIsland_WP
+  gamePort: 7777
+  rconPort: 27020
+
+  # Empty for the first deploy -- bring the vanilla server up and confirm the steamcmd install,
+  # volume and LoadBalancer all work before adding mods, since bad CurseForge IDs fail at startup
+  # in ways that look like storage or network problems. See README.md for the ASE -> ASA mapping
+  # and the IDs to add back.
+  mods: ""
+
+  # Deliberately empty -- see gameUserSettingsIni below. Launch args are fragile in this image
+  # (unquoted expansion) and ARK does not persist them to disk, so [ServerSettings] is managed as
+  # a file instead. Anything added here is appended to the same brittle launch string.
+  extraSettings: ""
+  extraFlags: ""
+
+# GameUserSettings.ini [ServerSettings] -- written to disk by an initContainer on every pod start,
+# same as gameIni below. This is where server settings live rather than in `extraSettings` launch
+# args, because the image drops most of those (see env.sessionName).
+#
+# The image's entrypoint only creates this file when it is absent, and otherwise only rewrites the
+# RCON lines, so a file written here survives. RCONEnabled/RCONPort are repeated here to match what
+# the entrypoint expects to find.
+#
+# NOTE: because this is rewritten every start, settings changed in-game or by an admin are reverted
+# on the next restart. Change values.yaml instead. Only the headline settings are declared; the
+# rest of the old ASE GameUserSettingsIni block still hasn't been audited against ASA defaults.
+gameUserSettingsIni: |
+  [ServerSettings]
+  RCONEnabled=True
+  RCONPort=27020
+  TamingSpeedMultiplier=40.0
+  XPMultiplier=4.0
+  ServerPVE=True
+
+# Settings that only exist in Game.ini [/script/shootergame.shootergamemode] and have no launch-arg
+# equivalent -- written to disk by an initContainer on every pod start. Per-level stat multiplier
+# arrays were deliberately left out (left at ASA default; revisit later if taming/breeding gets too
+# easy).
+gameIni: |
+  [/script/shootergame.shootergamemode]
+  DinoHarvestingDamageMultiplier=3.200000
+  TamedDinoCharacterFoodDrainMultiplier=0.250000
+  UseCorpseLifeSpanMultiplier=25.000000
+  CraftXPMultiplier=2.000000
+  GenericXPMultiplier=2.000000
+  HarvestXPMultiplier=2.000000
+  KillXPMultiplier=4.000000

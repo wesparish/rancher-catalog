@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ark-ascended-wes.fullname" . }}
+  labels:
+    {{- include "ark-ascended-wes.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "ark-ascended-wes.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ark-ascended-wes.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+      initContainers:
+        - name: game-ini
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /home/steam/ark/ShooterGame/Saved/Config/WindowsServer
+              cp /game-ini/Game.ini /home/steam/ark/ShooterGame/Saved/Config/WindowsServer/Game.ini
+              cp /game-ini/GameUserSettings.ini /home/steam/ark/ShooterGame/Saved/Config/WindowsServer/GameUserSettings.ini
+          volumeMounts:
+            - name: data
+              mountPath: /home/steam/ark
+            - name: game-ini
+              mountPath: /game-ini
+      containers:
+        - name: ark-ascended-server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: SESSION_NAME
+              value: {{ .Values.env.sessionName | quote }}
+            - name: SERVER_MAP
+              value: {{ .Values.env.serverMap | quote }}
+            {{- $secret := required "existingSecret is required -- passwords are not stored in values.yaml, see README.md" .Values.existingSecret }}
+            - name: SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret }}
+                  key: {{ .Values.secretKeys.serverPassword }}
+            - name: SERVER_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret }}
+                  key: {{ .Values.secretKeys.serverAdminPassword }}
+            - name: GAME_PORT
+              value: {{ .Values.env.gamePort | quote }}
+            - name: RCON_PORT
+              value: {{ .Values.env.rconPort | quote }}
+            {{- if .Values.env.mods }}
+            - name: MODS
+              value: {{ .Values.env.mods | quote }}
+            {{- end }}
+            {{- if .Values.env.extraFlags }}
+            - name: EXTRA_FLAGS
+              value: {{ .Values.env.extraFlags | quote }}
+            {{- end }}
+            {{- if .Values.env.extraSettings }}
+            - name: EXTRA_SETTINGS
+              value: {{ .Values.env.extraSettings | quote }}
+            {{- end }}
+          ports:
+            - name: game-port
+              containerPort: {{ .Values.env.gamePort }}
+              protocol: UDP
+            - name: rcon-port
+              containerPort: {{ .Values.env.rconPort }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /home/steam/ark
+          securityContext:
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+        - name: game-ini
+          configMap:
+            name: {{ include "ark-ascended-wes.fullname" . }}-game-ini

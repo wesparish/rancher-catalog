@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ark-ascended-wes.fullname" . }}
+  labels:
+    {{- include "ark-ascended-wes.labels" . | nindent 4 }}
+  annotations:
+    # Distinct from ark-wes's literal "sharing-key" so the two ARK servers can never be
+    # co-assigned onto the same address.
+    metallb.io/allow-shared-ip: "ark-ascended"
+spec:
+  type: {{ .Values.service.type }}
+  externalTrafficPolicy: Local
+  {{- if .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  publishNotReadyAddresses: true
+  ports:
+    - name: game-udp
+      port: {{ .Values.env.gamePort }}
+      targetPort: game-port
+      protocol: UDP
+    - name: rcon-tcp
+      port: {{ .Values.env.rconPort }}
+      targetPort: rcon-port
+      protocol: TCP
+  selector:
+    {{- include "ark-ascended-wes.selectorLabels" . | nindent 4 }}
