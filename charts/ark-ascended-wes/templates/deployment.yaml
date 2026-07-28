@@ -16,6 +16,14 @@ spec:
       labels:
         {{- include "ark-ascended-wes.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.egress.hostNetwork }}
+      # egress.markPorts requires this: with hostNetwork there is no pod-to-node SNAT, so the
+      # source port this pod sets is the one that leaves the machine. Inside a pod netns the node
+      # re-SNATs and reallocates the port (measured: ~1 in 10 survived), which defeats it.
+      # Kept as its own switch so the two can be tested independently.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -90,6 +98,87 @@ spec:
               mountPath: /home/steam/ark
           securityContext:
             allowPrivilegeEscalation: false
+        {{- if .Values.egress.markPorts.enabled }}
+        # Marks this server's outbound HTTPS with a distinctive source port range, so the network
+        # can give it the routing it needs wherever the pod happens to run -- no host pinning.
+        #
+        # Because hostNetwork shares the node's namespace, these rules land on the node itself, so
+        # they are scoped by socket owner to this server's uid: everything else on the node keeps
+        # the default path. Install is idempotent and preStop removes them, so nodes stay clean.
+        - name: egress-mark
+          image: {{ .Values.egress.markPorts.image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            capabilities:
+              add: ["NET_ADMIN"]
+          env:
+            - name: RANGE
+              value: {{ .Values.egress.markPorts.range | quote }}
+            - name: OWNER_UID
+              value: {{ .Values.egress.markPorts.ownerUid | quote }}
+            - name: CHAIN
+              value: {{ .Values.egress.markPorts.chain | quote }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              iptables -t nat -N "$CHAIN" 2>/dev/null || true
+              iptables -t nat -F "$CHAIN"
+              # Cluster and private destinations keep their normal source ports.
+              for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16; do
+                iptables -t nat -A "$CHAIN" -d "$net" -j RETURN
+              done
+              # Never touch DNS, even over TCP.
+              iptables -t nat -A "$CHAIN" -p tcp --dport 53 -j RETURN
+              # Mark ONLY HTTPS -- that is what the backend registration and the mod query use.
+              # An earlier version marked every TCP connection from this uid and the server failed
+              # to start, reporting the mod API as unreachable (exit 3, repeatably). Marking just
+              # 443 fixed it, so keep this narrow: bulk steamcmd traffic and everything else keep
+              # their normal source ports. The game socket is UDP and never matches.
+              iptables -t nat -A "$CHAIN" -p tcp --dport 443 -j MASQUERADE --to-ports "$RANGE"
+              iptables -t nat -C POSTROUTING -p tcp -m owner --uid-owner "$OWNER_UID" -j "$CHAIN" 2>/dev/null \
+                || iptables -t nat -A POSTROUTING -p tcp -m owner --uid-owner "$OWNER_UID" -j "$CHAIN"
+              echo "egress-mark: uid $OWNER_UID internet-bound TCP -> source ports $RANGE"
+
+              # The mechanism is invisible from inside the game, so report what the pod actually
+              # looks like from outside. This MUST run as the marked uid -- this container is root,
+              # and root's traffic is not matched by the rule above, so probing as root would
+              # measure the unmarked path and report a reassuring but meaningless result.
+              EXPECT="{{ .Values.egress.verify.expectedAddress }}"
+              while true; do
+                SEEN=$(setpriv --reuid="$OWNER_UID" --regid="$OWNER_UID" --clear-groups \
+                         curl -s -4 --max-time 20 {{ .Values.egress.verify.url }} 2>/dev/null)
+                if [ -z "$SEEN" ]; then
+                  echo "$(date -u +%FT%TZ) egress-verify: lookup failed"
+                elif [ -z "$EXPECT" ]; then
+                  echo "$(date -u +%FT%TZ) egress-verify: marked egress appears as $SEEN (set egress.verify.expectedAddress to have this checked)"
+                elif [ "$SEEN" != "$EXPECT" ]; then
+                  echo "$(date -u +%FT%TZ) egress-verify: UNEXPECTED egress $SEEN (wanted $EXPECT) -- source-port routing is not taking effect"
+                else
+                  echo "$(date -u +%FT%TZ) egress-verify: ok ($SEEN)"
+                fi
+                sleep {{ .Values.egress.verify.intervalSeconds }}
+              done
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    iptables -t nat -D POSTROUTING -p tcp -m owner --uid-owner "$OWNER_UID" -j "$CHAIN" 2>/dev/null || true
+                    iptables -t nat -F "$CHAIN" 2>/dev/null || true
+                    iptables -t nat -X "$CHAIN" 2>/dev/null || true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+        {{- end }}
       volumes:
         - name: data
           persistentVolumeClaim:

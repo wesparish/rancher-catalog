@@ -146,3 +146,48 @@ The `metallb.universe.tf/allow-shared-ip` key is `ark-ascended`, deliberately di
 literal `sharing-key` that `charts/ark-wes` uses at `.233`, so the two ARK servers can never be
 co-assigned onto one address.
 
+## Outbound routing (why hostNetwork + egress.markPorts)
+
+This server registers itself with the ASA backend, and the backend records the address it sees the
+connection come **from**. If that address is not the one players can reach, the server appears in
+the in-game browser and **cannot be joined** -- while direct connect keeps working and nothing logs
+an error. Diagnosing that from the game side is very hard, so the chart makes the outbound path
+explicit instead of inheriting whatever the node happens to have.
+
+`egress.markPorts` rewrites the source port of this server's outbound **HTTPS** into a distinctive
+range (`61000-61999`), which the network uses to give it the right path from any node. That is what
+removes the need to pin the pod to a particular host.
+
+Three things about this are load-bearing; each was established by measurement, so change them only
+with evidence:
+
+- **`egress.hostNetwork` is required.** Inside a normal pod netns the node re-SNATs on the way out
+  and reallocates the port: measured **~1 in 10** marked connections kept their port, versus
+  **10 of 10** under hostNetwork, where there is no second translation step.
+- **Only port 443 is marked, and DNS is explicitly exempt.** An earlier version marked every TCP
+  connection from the server's uid; it then failed to start, repeatably, reporting the mod API as
+  unreachable (exit 3) with resolver errors alongside. Narrowing to `--dport 443` fixed it. The
+  kernel showed no NAT insert failures and DNS resolved fine from a shell, so the mechanism was
+  never pinned down -- but the A/B was unambiguous across four runs. Keep it narrow.
+- **The port range sits above the default ephemeral range** (32768-60999). Inside it, other
+  workloads' random source ports would occasionally be treated the same way.
+
+The rules are scoped by socket owner (`egress.markPorts.ownerUid`, which must match the pod's
+`runAsUser`), so nothing else on the node is affected. Because hostNetwork shares the node's
+namespace they are installed on the node itself; install is idempotent and `preStop` removes them,
+so nodes are not left dirty when the pod moves. Verified after a rollback: zero leftover rules.
+
+`egress.verify` logs the address this server actually appears as, once per interval, because none
+of the above is visible from inside the game. It probes as the marked uid -- probing as root would
+measure the *unmarked* path and report a reassuring but meaningless result. Set
+`egress.verify.expectedAddress` at deploy time to have mismatches logged as `UNEXPECTED`:
+
+```bash
+helm upgrade ... --set egress.verify.expectedAddress=<address>
+```
+
+It is intentionally empty in this file, and a plain `helm upgrade` without that flag drops it and
+the check goes quiet -- use a local values file kept out of git if you want it to persist.
+
+Also note `hostNetwork` means the game and RCON ports bind directly on the node, so the RCON port
+is reachable at the node address on the LAN, bypassing the Service.

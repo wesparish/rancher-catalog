@@ -5,17 +5,47 @@ image:
   tag: latest
   pullPolicy: Always
 
-# Pinned to w-dock4 deliberately -- this node has the network path this server needs, and moving it
-# elsewhere breaks server registration silently (direct connect keeps working, so it looks fine).
-# Do not relax this selector without knowing why it is here.
-#
-#   - w-dock4 has ~27Gi allocatable vs ~74Gi on w-dock7/8/9. ARK sits around 10.5Gi.
-#   - Tradeoff: if w-dock4 is down this stays Pending rather than rescheduling.
-#
-# ceph-client is kept so the intent (must be able to mount the cephfs volume) stays explicit.
+# Floats across any node that can mount the cephfs volume. This server needs a specific outbound
+# path, which egress.markPorts below arranges per-pod, so no host pinning is required -- read
+# README.md before changing either.
 nodeSelector:
   ceph-client: "true"
-  kubernetes.io/hostname: w-dock4
+
+# Marks this server's outbound HTTPS with a distinctive source port range so the network can give it
+# the routing it needs regardless of which node it lands on. Without it the pod inherits whatever
+# outbound path its node has, and the server registers an address players cannot reach: it appears
+# in the in-game browser but nobody can join, while direct connect keeps working and nothing logs
+# an error. This is what removes the need to pin the pod to a host.
+#
+# The range is deliberately ABOVE Linux's default ephemeral range (32768-60999). A range inside it
+# would mean other workloads' random source ports occasionally land in ours and get the same
+# treatment -- a silent surprise for anything relying on the default path.
+egress:
+  # Separate switch from markPorts so the two can be isolated when debugging. markPorts only works
+  # with this enabled; enabling this alone is a valid configuration for testing.
+  hostNetwork: true
+  markPorts:
+    enabled: true
+    range: "61000-61999"
+    # Scopes the rule to this server's socket owner so other workloads on the node are untouched.
+    # Must match the pod's runAsUser. Nothing else on these nodes should run host-network processes
+    # as this uid -- if something does, its outbound TCP takes the same path.
+    ownerUid: 10000
+    chain: ARK_EGRESS
+    # Needs iptables and curl.
+    image: nicolaka/netshoot:latest
+  # This whole mechanism rests on the node's masquerade preserving the source port, which is
+  # best-effort -- on collision it reallocates and that connection quietly takes the default path.
+  # Nothing in the game surfaces that, so this logs the address the pod actually appears as.
+  verify:
+    enabled: true
+    intervalSeconds: 300
+    url: https://ifconfig.me
+    # Intentionally empty here: this file is public, so the address is supplied at deploy time
+    # instead --  `helm upgrade ... --set egress.verify.expectedAddress=<addr>`, or a local values
+    # override kept out of git. With it set, a mismatch is logged as "UNEXPECTED"; without it the
+    # sidecar just reports what it observes and makes no claim.
+    expectedAddress: ""
 
 resources:
   requests:
