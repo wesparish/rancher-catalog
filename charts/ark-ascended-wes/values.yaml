@@ -54,11 +54,18 @@ env:
   gamePort: 7778
   rconPort: 27020
 
-  # Empty for the first deploy -- bring the vanilla server up and confirm the steamcmd install,
-  # volume and LoadBalancer all work before adding mods, since bad CurseForge IDs fail at startup
-  # in ways that look like storage or network problems. See README.md for the ASE -> ASA mapping
-  # and the IDs to add back.
-  mods: ""
+  # CurseForge project IDs, verified against curseforge.com 2026-07-27. See README.md for the full
+  # ASE -> ASA mapping, including Dino Tracker which has no ASA port at all:
+  #   947033   Awesome Spyglass!                    (ASE: Awesome SpyGlass!)
+  #   950914   Awesome Teleporters!                 (ASE: Awesome Teleporters!)
+  #   929578   AP: Death Recovery [Cross-platform]  (ASE: Automatic Death Recovery, same author)
+  #   942024   Dino Depot                           (ASE: Dino Storage v2 -- substitute, not a port)
+  #   1086659  AP+ Revive My Dino                   (ASE: Revive my dino)
+  #
+  # Mods download on the pod start after they change, so expect a slow first boot. A bad ID fails
+  # at startup in ways that look like storage or network problems -- check the launch string and
+  # the steamcmd/mod download lines in the pod log before suspecting anything else.
+  mods: "947033,950914,929578,942024,1086659"
 
   # Deliberately empty -- see gameUserSettingsIni below. Launch args are fragile in this image
   # (unquoted expansion) and ARK does not persist them to disk, so [ServerSettings] is managed as
