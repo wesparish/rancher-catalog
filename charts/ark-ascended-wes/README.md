@@ -54,9 +54,10 @@ reschedule re-downloads the entire game through steamcmd.
 
 ## Mods
 
-**Currently empty.** The vanilla server was brought up first so that the steamcmd install, the
-cephfs volume and the LoadBalancer could be verified in isolation — bad CurseForge IDs fail at
-startup in ways that are hard to tell apart from storage or network problems.
+The vanilla server was brought up first so that the steamcmd install, the cephfs volume and the
+LoadBalancer could be verified in isolation — bad CurseForge IDs fail at startup in ways that are
+hard to tell apart from storage or network problems. All five below are now enabled and verified
+loading in-game.
 
 ASA uses CurseForge project IDs, not Steam Workshop IDs, so the ASE list in
 `charts/ark-wes/values.yaml` does not carry over directly. Verified mapping:
@@ -79,14 +80,8 @@ Notes:
   Finder, Simple Creature Finder. Note that Awesome Spyglass already covers part of what Dino
   Tracker was used for.
 
-To enable, set `env.mods` to a comma-separated list and `helm upgrade`:
-
-```yaml
-env:
-  mods: "947033,950914,929578,942024,1086659"
-```
-
-Mods download on the next pod start, so expect a slow first boot after enabling them.
+Set `env.mods` to a comma-separated list of project IDs. Mods download on the first pod start
+after the list changes, so expect a slow boot then.
 
 ## Settings
 
@@ -141,16 +136,13 @@ out too easy.
 | | |
 |---|---|
 | LoadBalancer IP | `172.16.1.238` (metallb pool `172.16.1.220-240`) |
-| Game port | `7778/UDP` — not the ASA default 7777, which satisfactory already holds on the WAN |
+| Game port | `7778/UDP` — not the ASA default 7777, which satisfactory already uses |
 | RCON port | `27020/TCP` (uses the admin password from the Secret) |
 
-Router: forward `UDP 7778` to `172.16.1.238:7778`. ASA needs no Steam query port — unlike ASE it
-uses the Epic-backed server list, discovered over outbound connections. Do **not** forward the RCON
-port; reach it from the LAN.
+ASA needs no Steam query port — unlike ASE it uses the Epic-backed server list, discovered over
+outbound connections. The RCON port should not be reachable from outside the LAN.
 
 The `metallb.universe.tf/allow-shared-ip` key is `ark-ascended`, deliberately different from the
 literal `sharing-key` that `charts/ark-wes` uses at `.233`, so the two ARK servers can never be
 co-assigned onto one address.
 
-ASA does not need a separate Steam query port — it uses the Epic-backed server list, so direct
-connect to `172.16.1.238:7777` is the way in.

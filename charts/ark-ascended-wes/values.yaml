@@ -5,9 +5,17 @@ image:
   tag: latest
   pullPolicy: Always
 
-# Floats across any node that can mount the cephfs volume, rather than pinning to one host.
+# Pinned to w-dock4 deliberately -- this node has the network path this server needs, and moving it
+# elsewhere breaks server registration silently (direct connect keeps working, so it looks fine).
+# Do not relax this selector without knowing why it is here.
+#
+#   - w-dock4 has ~27Gi allocatable vs ~74Gi on w-dock7/8/9. ARK sits around 10.5Gi.
+#   - Tradeoff: if w-dock4 is down this stays Pending rather than rescheduling.
+#
+# ceph-client is kept so the intent (must be able to mount the cephfs volume) stays explicit.
 nodeSelector:
   ceph-client: "true"
+  kubernetes.io/hostname: w-dock4
 
 resources:
   requests:
@@ -48,9 +56,8 @@ env:
   # only -- silently dropping every setting after the space. See README.md.
   sessionName: "WTopAce_Ascended_Island"
   serverMap: TheIsland_WP
-  # 7778 rather than the ASA default 7777: satisfactory already holds WAN 7777. Nothing clashes
-  # inside the cluster (separate LoadBalancer IPs), but keeping the port identical end-to-end
-  # avoids NAT-translating it on the way in.
+  # 7778 rather than the ASA default 7777, which satisfactory already uses. Nothing clashes inside
+  # the cluster (separate LoadBalancer IPs); keeping one port end-to-end just avoids translating it.
   gamePort: 7778
   rconPort: 27020
 
