@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: wesparish/tasks.md
-  tag: "3.3.1-points"
+  tag: "3.4.0"
   pullPolicy: Always
 
 imagePullSecrets: []
