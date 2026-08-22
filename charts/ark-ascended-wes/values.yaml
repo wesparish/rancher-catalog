@@ -1,9 +1,14 @@
 # Default values for ark-ascended-wes.
 
+# Pinned by digest deliberately. The tag was `latest` with pullPolicy: Always, which meant the
+# server binary could change under you on any restart -- and a bad upstream push looked identical
+# to a Wildcard patch failure. `tag` is kept only as a human-readable label; `digest` is what
+# actually resolves. To upgrade: pull the new digest, update it here, commit.
 image:
   repository: sknnr/ark-ascended-server
   tag: latest
-  pullPolicy: Always
+  digest: "sha256:a2e1fa4971d79e8d31890012143029022e486b7924dcb9963e3df7a190527043"
+  pullPolicy: IfNotPresent
 
 # Floats across any node that can mount the cephfs volume. This server needs a specific outbound
 # path, which egress.markPorts below arranges per-pod, so no host pinning is required -- read
@@ -110,6 +115,70 @@ env:
   extraSettings: ""
   extraFlags: ""
 
+# Readiness is measured on the RCON port, not the game port: the game port is UDP and a TCP dial
+# proves nothing there. RCON only starts listening once ARK has finished loading the map, so it is
+# the earliest honest "joinable" signal available without an RCON client in the probe.
+#
+# There is deliberately NO livenessProbe. ARK stalls for minutes under heavy save/load on a busy
+# map, and a liveness probe would restart it mid-save -- which is how save corruption happens.
+# Readiness only pulls it out of the LoadBalancer's endpoints; it never kills the pod.
+#
+# startupProbe carries the long boot (steamcmd validate + mod downloads + map load). failureThreshold
+# 60 x periodSeconds 30 = 30 minutes before the pod is declared failed.
+probes:
+  enabled: true
+  startup:
+    periodSeconds: 30
+    failureThreshold: 60
+  readiness:
+    periodSeconds: 30
+    failureThreshold: 4
+
+# Self-healing steamcmd update, run as an initContainer BEFORE the game container.
+#
+# Why this exists: the upstream image's entrypoint.sh runs `app_update 2430930 validate` with a
+# hard `exit 1` on failure, and offers no flag to skip or soften it. When Wildcard publishes a new
+# build, Steam stops issuing manifest request codes for the superseded manifest to anonymous
+# logins, so validate fails with 'Access Denied' (logged misleadingly as "No connection"). The
+# failure is persisted into the PVC as UpdateResult=6, so every subsequent restart replays it
+# identically -- an unrecoverable CrashLoopBackOff that a plain restart can never clear. This
+# happened 2026-08-22; the server had been on build 24388897 since 2026-07-27 while current was
+# 24827022.
+#
+# The recovery is exactly the manual repair: drop the stale appmanifest and re-acquire. Once this
+# initContainer succeeds, the game container's own unconditional validate finds everything current
+# and is a fast no-op.
+#
+# Cost when the fallback fires: a full ~13GB re-download, so boot takes a while. That is the
+# deliberate tradeoff against being down until a human notices.
+steamUpdate:
+  enabled: true
+
+# Local backup rotation. Deliberately NOT offsite -- borg-wes is suspended (its target
+# j-dock1.weshouse has been unreachable since 2026-07-15) and offsite was explicitly out of scope
+# for now.
+#
+# LIMITATION, on purpose: backups land on the same cephfs volume as the world they protect. This
+# covers "I need yesterday's save back" and ARK-side corruption; it does NOT cover losing the
+# volume. Point `claim` at a separate PVC when that matters.
+#
+# Retention is grandfather-father-son: the daily archive is promoted into weekly/ on Sundays and
+# into monthly/ on the 1st, then each tier is pruned to its own count.
+backup:
+  enabled: true
+  # 04:00 daily -- off-peak, and clear of ARK's own 15-minute autosave rotation.
+  schedule: "0 4 * * *"
+  image: busybox:1.36
+  # Path RELATIVE to the root of the data volume -- the backup job mounts that volume at /data,
+  # not at the game's /home/steam/ark, so an absolute game-side path would not resolve here.
+  # Sits alongside ShooterGame/, not inside it, so a steamcmd validate never touches it.
+  path: Backups
+  claim: ""
+  retention:
+    daily: 7
+    weekly: 4
+    monthly: 6
+
 # GameUserSettings.ini [ServerSettings] -- written to disk by an initContainer on every pod start,
 # same as gameIni below. This is where server settings live rather than in `extraSettings` launch
 # args, because the image drops most of those (see env.sessionName).
@@ -133,11 +202,16 @@ gameUserSettingsIni: |
 # equivalent -- written to disk by an initContainer on every pod start. Per-level stat multiplier
 # arrays were deliberately left out (left at ASA default; revisit later if taming/breeding gets too
 # easy).
+#
+# UseCorpseLifeSpanMultiplier=672 is a 7-day corpse/death-cache timer: the multiplier scales the
+# vanilla 15-minute lifespan, so 672 * 15 min = 10080 min = 7 days (it was 25.0, ~6.25 h). It
+# covers dropped death caches and bodies, player and dino. No comment lines inside the ini block --
+# the Unreal config parser only treats ';' as a comment, so keep annotations out here.
 gameIni: |
   [/script/shootergame.shootergamemode]
   DinoHarvestingDamageMultiplier=3.200000
   TamedDinoCharacterFoodDrainMultiplier=0.250000
-  UseCorpseLifeSpanMultiplier=25.000000
+  UseCorpseLifeSpanMultiplier=672.000000
   CraftXPMultiplier=2.000000
   GenericXPMultiplier=2.000000
   HarvestXPMultiplier=2.000000

@@ -1,0 +1,103 @@
+{{- if .Values.backup.enabled }}
+{{/*
+Local save rotation with grandfather-father-son retention. See the backup block in values.yaml
+for why this is local-only and what that does and does not protect against.
+*/}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "ark-ascended-wes.fullname" . }}-backup
+  labels:
+    {{- include "ark-ascended-wes.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  # A run that overlaps the next schedule means something is wrong (huge save, degraded cephfs);
+  # stacking more tar processes on the same volume would make it worse.
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  # Don't fire a burst of catch-up runs if the cluster was down over several schedules.
+  startingDeadlineSeconds: 3600
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          # Only needs the cephfs mount, so it is not pinned to w-dock4 the way the server is.
+          nodeSelector:
+            ceph-client: "true"
+          securityContext:
+            runAsUser: 10000
+            runAsGroup: 10000
+            fsGroup: 10000
+          containers:
+            - name: backup
+              image: {{ .Values.backup.image | quote }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  SRC=/data/ShooterGame/Saved/SavedArks
+                  DEST=/data/{{ .Values.backup.path }}
+                  STAMP=$(date +%Y-%m-%d)
+                  DOW=$(date +%u)   # 7 = Sunday
+                  DOM=$(date +%d)
+
+                  mkdir -p "$DEST/daily" "$DEST/weekly" "$DEST/monthly"
+
+                  if [ ! -d "$SRC" ]; then
+                    echo "ERROR: $SRC does not exist -- refusing to write an empty archive"
+                    exit 1
+                  fi
+
+                  ARCHIVE="$DEST/daily/savedarks-${STAMP}.tar.gz"
+
+                  # Write to a .partial and rename only on success, so an interrupted run can
+                  # never leave a truncated archive that looks like a valid backup.
+                  tar czf "${ARCHIVE}.partial" -C "$(dirname "$SRC")" "$(basename "$SRC")"
+                  mv "${ARCHIVE}.partial" "$ARCHIVE"
+                  echo "wrote $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1))"
+
+                  # Promote into the longer-retention tiers. Hardlink where cephfs allows it so
+                  # the extra tiers cost no additional space; fall back to a copy if it doesn't.
+                  promote() {
+                    ln "$ARCHIVE" "$1" 2>/dev/null || cp "$ARCHIVE" "$1"
+                    echo "promoted -> $1"
+                  }
+                  [ "$DOW" = "7" ] && promote "$DEST/weekly/savedarks-${STAMP}.tar.gz" || true
+                  [ "$DOM" = "01" ] && promote "$DEST/monthly/savedarks-${STAMP}.tar.gz" || true
+
+                  # Prune each tier independently. Names are date-stamped, so a reverse lexical
+                  # sort is newest-first; keep the first N and delete the rest.
+                  prune() {
+                    tier=$1; keep=$2
+                    ls -1 "$DEST/$tier"/savedarks-*.tar.gz 2>/dev/null | sort -r | tail -n +$((keep + 1)) | while read -r old; do
+                      echo "pruning $old"
+                      rm -f "$old"
+                    done
+                  }
+                  prune daily {{ .Values.backup.retention.daily }}
+                  prune weekly {{ .Values.backup.retention.weekly }}
+                  prune monthly {{ .Values.backup.retention.monthly }}
+
+                  echo "--- current retention ---"
+                  for t in daily weekly monthly; do
+                    echo "$t: $(ls -1 "$DEST/$t" 2>/dev/null | wc -l) archive(s)"
+                  done
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 256Mi
+                limits:
+                  cpu: "2"
+                  memory: 1Gi
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: {{ .Values.backup.claim | default .Values.persistence.existingClaim }}
+{{- end }}

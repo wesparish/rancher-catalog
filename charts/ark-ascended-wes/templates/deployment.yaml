@@ -13,6 +13,13 @@ spec:
       {{- include "ark-ascended-wes.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        # Rolls the pod whenever Game.ini / GameUserSettings.ini change. Without this, `helm
+        # upgrade` updates the ConfigMap but leaves the running pod untouched -- and since the
+        # game-ini initContainer only writes those files at pod start, the change silently never
+        # reaches the server. Any ini edit deployed before this annotation existed needed a manual
+        # `kubectl rollout restart` to take effect.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "ark-ascended-wes.selectorLabels" . | nindent 8 }}
     spec:
@@ -33,8 +40,59 @@ spec:
         runAsGroup: 10000
         fsGroup: 10000
       initContainers:
+        {{- if .Values.steamUpdate.enabled }}
+        - name: steam-update
+          image: "{{ include "ark-ascended-wes.image" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -u
+              APP=2430930
+              MANIFEST="$ARK_PATH/steamapps/appmanifest_${APP}.acf"
+
+              update() {
+                steamcmd +@sSteamCmdForcePlatformType windows \
+                  +force_install_dir "$ARK_PATH" +login anonymous \
+                  +app_update "$APP" validate +quit
+              }
+
+              # steamcmd exits 0 on some failures, so trust the manifest, not the exit code.
+              # StateFlags 4 == Fully Installed with nothing pending.
+              installed_ok() {
+                [ -f "$MANIFEST" ] && grep -q '"StateFlags"[[:space:]]*"4"' "$MANIFEST"
+              }
+
+              update || true
+              if installed_ok; then
+                echo "steam-update: install is current"
+                exit 0
+              fi
+
+              # Stale/expired manifest -- Steam will not issue a request code for a superseded
+              # manifest to an anonymous login. Drop the local state and re-acquire from scratch.
+              echo "steam-update: update failed, clearing stale manifest and retrying (full re-download)"
+              cp -f "$MANIFEST" "${MANIFEST}.bak" 2>/dev/null || true
+              rm -f "$MANIFEST"
+              rm -rf "$ARK_PATH"/steamapps/downloading/* "$ARK_PATH"/steamapps/temp/*
+              update || true
+
+              if installed_ok; then
+                echo "steam-update: recovered"
+                exit 0
+              fi
+              echo "steam-update: FAILED after retry -- see steamcmd output above and"
+              echo "  \$ARK_PATH/../Steam/logs/content_log.txt for the underlying Steam error"
+              exit 1
+          volumeMounts:
+            - name: data
+              mountPath: /home/steam/ark
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- end }}
         - name: game-ini
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "ark-ascended-wes.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - /bin/sh
@@ -50,7 +108,7 @@ spec:
               mountPath: /game-ini
       containers:
         - name: ark-ascended-server
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "ark-ascended-wes.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -93,6 +151,18 @@ spec:
             - name: rcon-port
               containerPort: {{ .Values.env.rconPort }}
               protocol: TCP
+          {{- if .Values.probes.enabled }}
+          startupProbe:
+            tcpSocket:
+              port: rcon-port
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+          readinessProbe:
+            tcpSocket:
+              port: rcon-port
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          {{- end }}
           volumeMounts:
             - name: data
               mountPath: /home/steam/ark

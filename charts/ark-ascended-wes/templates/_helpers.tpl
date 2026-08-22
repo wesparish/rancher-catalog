@@ -47,3 +47,17 @@ Selector labels
 app.kubernetes.io/name: {{ include "ark-ascended-wes.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Container image reference.
+
+Resolves by digest when .Values.image.digest is set, so a restart can never silently pick up a
+different build; falls back to the tag otherwise. See the image block in values.yaml.
+*/}}
+{{- define "ark-ascended-wes.image" -}}
+{{- if .Values.image.digest -}}
+{{- printf "%s@%s" .Values.image.repository .Values.image.digest -}}
+{{- else -}}
+{{- printf "%s:%s" .Values.image.repository .Values.image.tag -}}
+{{- end -}}
+{{- end }}
