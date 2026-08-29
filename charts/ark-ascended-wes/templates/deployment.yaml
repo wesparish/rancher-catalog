@@ -195,20 +195,54 @@ spec:
             - -c
             - |
               set -e
-              iptables -t nat -N "$CHAIN" 2>/dev/null || true
-              iptables -t nat -F "$CHAIN"
-              # Cluster and private destinations keep their normal source ports.
-              for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16; do
-                iptables -t nat -A "$CHAIN" -d "$net" -j RETURN
-              done
-              # Never touch DNS, even over TCP.
-              iptables -t nat -A "$CHAIN" -p tcp --dport 53 -j RETURN
-              # Mark ONLY HTTPS -- that is what the backend registration and the mod query use.
-              # An earlier version marked every TCP connection from this uid and the server failed
-              # to start, reporting the mod API as unreachable (exit 3, repeatably). Marking just
-              # 443 fixed it, so keep this narrow: bulk steamcmd traffic and everything else keep
-              # their normal source ports. The game socket is UDP and never matches.
-              iptables -t nat -A "$CHAIN" -p tcp --dport 443 -j MASQUERADE --to-ports "$RANGE"
+
+              # The rules this chain is supposed to contain, in order. Kept as one list so the
+              # desired state is written once and both the compare and the rebuild below use it.
+              # Order matters: the RETURNs must precede the MASQUERADE or private/DNS traffic
+              # would be rewritten too.
+              build_chain() {
+                # Cluster and private destinations keep their normal source ports.
+                for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16; do
+                  iptables -t nat -A "$CHAIN" -d "$net" -j RETURN
+                done
+                # Never touch DNS, even over TCP.
+                iptables -t nat -A "$CHAIN" -p tcp --dport 53 -j RETURN
+                # Mark ONLY HTTPS -- that is what the backend registration and the mod query use.
+                # An earlier version marked every TCP connection from this uid and the server failed
+                # to start, reporting the mod API as unreachable (exit 3, repeatably). Marking just
+                # 443 fixed it, so keep this narrow: bulk steamcmd traffic and everything else keep
+                # their normal source ports. The game socket is UDP and never matches.
+                iptables -t nat -A "$CHAIN" -p tcp --dport 443 -j MASQUERADE --to-ports "$RANGE"
+              }
+
+              # Rebuilding the chain rips NAT mappings out from under whatever is already running.
+              # This container restarts independently of the game container, and the game holds a
+              # long-lived HTTPS session to the backend that it does NOT re-establish if the
+              # mapping is disturbed -- the socket is left in CLOSE_WAIT and the server stays up
+              # but silently drops off the server list. So flush only when the chain is actually
+              # wrong; a restart against an already-correct chain must be a no-op.
+              want_chain() {
+                printf -- '-N %s\n' "$CHAIN"
+                for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16; do
+                  printf -- '-A %s -d %s -j RETURN\n' "$CHAIN" "$net"
+                done
+                printf -- '-A %s -p tcp -m tcp --dport 53 -j RETURN\n' "$CHAIN"
+                printf -- '-A %s -p tcp -m tcp --dport 443 -j MASQUERADE --to-ports %s\n' "$CHAIN" "$RANGE"
+              }
+
+              # -S prints the chain in a normalised form, so comparing it to the same normalised
+              # form of what we want is a reliable "is it already right?" test.
+              HAVE=$(iptables -t nat -S "$CHAIN" 2>/dev/null || true)
+              WANT=$(want_chain)
+              if [ "$HAVE" = "$WANT" ]; then
+                echo "egress-mark: chain $CHAIN already correct, leaving NAT state untouched"
+              else
+                echo "egress-mark: (re)building chain $CHAIN"
+                iptables -t nat -N "$CHAIN" 2>/dev/null || true
+                iptables -t nat -F "$CHAIN"
+                build_chain
+              fi
+
               iptables -t nat -C POSTROUTING -p tcp -m owner --uid-owner "$OWNER_UID" -j "$CHAIN" 2>/dev/null \
                 || iptables -t nat -A POSTROUTING -p tcp -m owner --uid-owner "$OWNER_UID" -j "$CHAIN"
               echo "egress-mark: uid $OWNER_UID internet-bound TCP -> source ports $RANGE"
@@ -218,16 +252,30 @@ spec:
               # and root's traffic is not matched by the rule above, so probing as root would
               # measure the unmarked path and report a reassuring but meaningless result.
               EXPECT="{{ .Values.egress.verify.expectedAddress }}"
+
+              # From here on the script must never exit. Under `set -e` an assignment from a
+              # command substitution inherits the command's status, so a single curl timeout
+              # (exit 28) killed the container -- which restarted it, which rebuilt the chain,
+              # which broke the game's backend session. It also made the "lookup failed" branch
+              # below unreachable, so the restarts had no warning in the log. The probe is
+              # observability only: a failed lookup is reported, never fatal.
+              set +e
+
+              FAILS=0
               while true; do
                 SEEN=$(setpriv --reuid="$OWNER_UID" --regid="$OWNER_UID" --clear-groups \
                          curl -s -4 --max-time 20 {{ .Values.egress.verify.url }} 2>/dev/null)
                 if [ -z "$SEEN" ]; then
-                  echo "$(date -u +%FT%TZ) egress-verify: lookup failed"
+                  FAILS=$((FAILS + 1))
+                  echo "$(date -u +%FT%TZ) egress-verify: lookup failed ($FAILS consecutive) -- probe only, marking rules are untouched"
                 elif [ -z "$EXPECT" ]; then
+                  FAILS=0
                   echo "$(date -u +%FT%TZ) egress-verify: marked egress appears as $SEEN (set egress.verify.expectedAddress to have this checked)"
                 elif [ "$SEEN" != "$EXPECT" ]; then
+                  FAILS=0
                   echo "$(date -u +%FT%TZ) egress-verify: UNEXPECTED egress $SEEN (wanted $EXPECT) -- source-port routing is not taking effect"
                 else
+                  FAILS=0
                   echo "$(date -u +%FT%TZ) egress-verify: ok ($SEEN)"
                 fi
                 sleep {{ .Values.egress.verify.intervalSeconds }}
