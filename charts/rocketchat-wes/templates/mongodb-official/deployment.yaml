@@ -9,6 +9,8 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.mongodbOfficial.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Release.Name }}-mongodb-official
@@ -30,14 +32,24 @@ spec:
             - name: mongodb
               containerPort: 27017
               protocol: TCP
+          startupProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 90
           livenessProbe:
             exec:
               command:
                 - mongosh
                 - --eval
                 - "db.adminCommand('ping')"
-            initialDelaySeconds: 30
+            initialDelaySeconds: 5
             periodSeconds: 10
+            timeoutSeconds: 10
             failureThreshold: 6
           readinessProbe:
             exec:
@@ -47,6 +59,7 @@ spec:
                 - "db.adminCommand('ping')"
             initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 10
             failureThreshold: 6
           volumeMounts:
             - name: mongodb-official-data
