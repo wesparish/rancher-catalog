@@ -78,6 +78,13 @@ postgresql:
     persistence:
       existingClaim: authentik-data
       subPath: postgres-data
+    startupProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 60
+      successThreshold: 1
   backup:
     enabled: true
     cronjob:
