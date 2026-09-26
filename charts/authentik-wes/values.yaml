@@ -78,6 +78,13 @@ postgresql:
     persistence:
       existingClaim: authentik-data
       subPath: postgres-data
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
     startupProbe:
       enabled: true
       initialDelaySeconds: 30
