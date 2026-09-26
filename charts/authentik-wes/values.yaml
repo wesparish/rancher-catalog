@@ -92,6 +92,13 @@ postgresql:
       timeoutSeconds: 10
       failureThreshold: 8
       successThreshold: 1
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 10
+      failureThreshold: 10
+      successThreshold: 1
   backup:
     enabled: true
     cronjob:
