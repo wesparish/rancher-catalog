@@ -35,6 +35,12 @@ oauth2-proxy:
     tls: "true"
     certManager: "true"
 
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/oauth2-proxy
+    tag: 7.4.0-debian-11-r39
+    pullPolicy: IfNotPresent
+
 # # Default values for oauth2-proxy-wes.
 # # This is a YAML-formatted file.
 # # Declare variables to be passed into your templates.
