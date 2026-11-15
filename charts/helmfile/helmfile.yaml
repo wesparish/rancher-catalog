@@ -1,3 +1,13 @@
+# NOTE (2026-11-14): THIS HELMFILE WAS NEVER ACTUALLY USED TO DEPLOY THIS CLUSTER.
+# It was written as a version-controlled inventory of releases, but no release here was ever
+# installed or upgraded by `helmfile apply`. ArgoCD is the real source of truth now:
+# `charts/argocd/applicationset.yaml` holds the authoritative list of releases, namespaces and
+# sync-wave ordering. Keep that file in sync when adding/removing a chart; this file is reference
+# material only and is NOT kept up to date (it is already missing several releases that exist in
+# the ApplicationSet). Do not use it to cross-check what is deployed, and do not run
+# `helmfile apply` against a cluster ArgoCD manages -- both tools think they own the resources and
+# whichever applies last wins. See charts/argocd/bootstrap/README.md.
+#
 # Helmfile for current K8s Helm deployments.
 # Goal: version-controlled list of releases, deployment order, idempotent apply.
 # We do NOT use helmfile to manage chart dependencies or fetch repos on every run.
