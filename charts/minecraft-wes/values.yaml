@@ -42,7 +42,7 @@ securityContext: {}
 
 service:
   type: LoadBalancer
-  loadBalancerIP: 172.16.1.228
+  loadBalancerIP: 172.16.1.221
   port: 19132
 
 ingress:
