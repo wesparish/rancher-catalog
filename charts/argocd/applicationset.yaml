@@ -35,6 +35,7 @@ spec:
           - {name: kube-prometheus-stack, namespace: kube-prometheus-stack, path: charts/kube-prometheus-stack-wes, wave: "2"}
           - {name: kuberhealthy, namespace: kuberhealthy, path: charts/kuberhealthy-wes, wave: "2"}
           - {name: tesla-wall-connector, namespace: tesla-wall-connector, path: charts/tesla-wall-connector-exporter-wes, wave: "2"}
+          - {name: smartctl-exporter, namespace: smartctl-exporter, path: charts/smartctl-exporter-wes, wave: "2"}
 
           # --- Layer 3: Applications ---
           - {name: ark, namespace: ark, path: charts/ark-wes, wave: "3"}

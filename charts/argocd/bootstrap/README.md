@@ -40,7 +40,7 @@ doesn't care which tool last touched a resource.
    kubectl apply -f argocd/applicationset.yaml
    ```
 
-   This generates 42 `Application` resources, all unsynced (no `syncPolicy.automated` anywhere).
+   This generates 44 `Application` resources, all unsynced (no `syncPolicy.automated` anywhere).
    Nothing changes on the cluster yet.
 
 3. For each `Application` — order doesn't matter here the way it does for a fresh cluster,
@@ -52,9 +52,11 @@ doesn't care which tool last touched a resource.
 
    Per the dry-run checklist, this should already be empty for the 41 confirmed-clean releases.
    `mariadb-operator` will show a diff (the unapplied `mariadb-test` CR) — expected, not a
-   problem. If anything else shows an unexpected diff, live has drifted since 2026-07-15/16 —
-   treat it the same way the checklist did: figure out which side is right before syncing, don't
-   assume the chart wins.
+   problem. `smartctl-exporter` is a net-new release that has never been deployed, so it will show
+   a full creation diff rather than an empty one — also expected; it's the one app in this list
+   where the first sync genuinely creates resources instead of adopting them. If anything else
+   shows an unexpected diff, live has drifted since 2026-07-15/16 — treat it the same way the
+   checklist did: figure out which side is right before syncing, don't assume the chart wins.
 
 4. Sync each `Application` once its diff looks right:
 
@@ -100,7 +102,7 @@ Nothing exists yet — order matters here in a way it doesn't for the transition
    kubectl apply -f argocd/applicationset.yaml
    ```
 
-   Same as the transition case, this generates 42 unsynced `Application` resources. Unlike the
+   Same as the transition case, this generates 44 unsynced `Application` resources. Unlike the
    transition case, these now have to be synced in wave order — nothing exists yet, so e.g. an
    ingress created before `cert-manager` is up just won't get a certificate until `cert-manager`
    catches up. Each generated `Application` carries a plain `wave` label (`0`-`3`, duplicating the
