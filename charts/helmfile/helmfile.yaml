@@ -150,6 +150,12 @@ releases:
     values:
       - values/tesla-wall-connector.yaml
 
+  - name: smartctl-exporter
+    namespace: smartctl-exporter
+    chart: ../smartctl-exporter-wes
+    values:
+      - values/smartctl-exporter.yaml
+
   # --- Layer 3: Applications ---
   - name: ark
     namespace: ark

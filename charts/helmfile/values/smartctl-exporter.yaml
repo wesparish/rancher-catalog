@@ -1,0 +1,2 @@
+# Override values for smartctl-exporter. Backfill from cluster: helm get values smartctl-exporter -n smartctl-exporter
+{}

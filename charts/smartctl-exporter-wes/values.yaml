@@ -1,0 +1,57 @@
+# Default values for smartctl-exporter-wes.
+# Deploys prometheuscommunity/smartctl-exporter as a DaemonSet so every disk
+# on every node gets SMART health/wear metrics in Prometheus, with no
+# static device list - devices are discovered dynamically via
+# `--smartctl.scan` and re-scanned every `rescanInterval` to pick up
+# disks that are added/removed.
+
+image:
+  repository: prometheuscommunity/smartctl-exporter
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+exporter:
+  port: 9633
+  # How often smartctl is polled for existing devices.
+  pollInterval: 60s
+  # How often the exporter re-scans for new/removed devices.
+  rescanInterval: 10m
+  # Optional regex to exclude devices from automatic scanning
+  # (mutually exclusive with deviceInclude).
+  deviceExclude: ""
+  # Optional regex to restrict automatic scanning to matching devices
+  # (mutually exclusive with deviceExclude).
+  deviceInclude: ""
+
+# Supplementary sidecar (shares the same image/binaries - no extra image
+# needed) that exposes `smartctl_wear_used_percent`, derived from
+# smartctl's "Percentage Used Endurance Indicator" (SATA Device Statistics
+# log) / NVMe "Percentage Used" fields. The main smartctl-exporter
+# container does not expose this value, but it is the one normalized
+# "percent of rated write endurance consumed" metric that is comparable
+# across vendors and matches what Ceph's own device health reporting uses.
+wearExporter:
+  port: 9634
+  pollIntervalSeconds: 60
+  smartctlTimeoutSeconds: 30
+
+# Required for smartctl to issue SMART ioctls against raw block devices.
+hostNetwork: false
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 128Mi
+
+podMonitor:
+  enabled: true
+  # namespace: ""
+  interval: 60s
+  additionalLabels: {}
+    # prometheus: kube-prometheus-stack
+
+nameOverride: ""
+fullnameOverride: ""

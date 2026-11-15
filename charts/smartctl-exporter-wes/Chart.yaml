@@ -1,0 +1,12 @@
+apiVersion: v2
+name: smartctl-exporter-wes
+description: Prometheus smartctl exporter DaemonSet - exposes SMART health/wear metrics for every disk on every node
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+version: 0.1.0
+
+# Tracks the upstream prometheuscommunity/smartctl-exporter image tag.
+appVersion: "v0.15.0"

@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smartctl-exporter-wes.fullname" . }}-wear-script
+  labels:
+    {{- include "smartctl-exporter-wes.labels" . | nindent 4 }}
+data:
+  # Supplementary exporter for disk wear/endurance percentage.
+  #
+  # prometheuscommunity/smartctl-exporter does not expose smartctl's
+  # top-level `endurance_used.current_percent` field (derived from the SATA
+  # Device Statistics log's "Percentage Used Endurance Indicator" / NVMe's
+  # "Percentage Used") - the one vendor-normalized "percent of rated write
+  # endurance consumed" value smartctl computes, which matches what Ceph's
+  # own device health module reports. This sidecar re-derives it directly
+  # by grepping smartctl's compact JSON output for that one field (plain
+  # busybox grep, no python/jq needed, and more reliable than parsing the
+  # human-readable table - some drives omit the friendly-named row there
+  # depending on the controller/link, even though the JSON field is always
+  # populated). Devices are (re)discovered dynamically via `smartctl --scan`
+  # on every poll - no static device list.
+  #
+  # Also emits `smartctl_disk_filesystem_used_percent`, mapping each whole
+  # disk to the filesystem mounted on it (if any) and its percent-full,
+  # resolved via `nsenter -t 1` (requires hostPID) into the host's real
+  # mount namespace - this correctly follows through LVM/device-mapper
+  # volumes (e.g. an "ubuntu-vg" root LV) back to the physical disk via
+  # /sys/block/<dm>/slaves/, with no lvm2 tooling required in-container.
+  collect_loop.sh: |
+    #!/bin/sh
+    set -u
+    INTERVAL="${POLL_INTERVAL_SECONDS:-60}"
+    SMARTCTL_TIMEOUT="${SMARTCTL_TIMEOUT_SECONDS:-30}"
+    OUT=/tmp/metrics.prom
+    TMP=/tmp/metrics.prom.tmp
+    smartctl() { timeout "$SMARTCTL_TIMEOUT" /usr/sbin/smartctl "$@"; }
+
+    # Maps a host mount's device path (which may be a raw partition like
+    # /dev/sdd1, an NVMe partition like /dev/nvme0n1p1, or an LVM/dm mapper
+    # device like /dev/mapper/ubuntu--vg-ubuntu--lv) back to the *whole
+    # disk* name smartctl reports (e.g. "sdd", "nvme0") so it can be
+    # correlated with smartctl_wear_used_percent's `device` label.
+    resolve_parent_disk() {
+      dfdev="$1"
+      base=$(basename "$dfdev")
+      case "$dfdev" in
+        */dev/mapper/*|*/dev/dm-*)
+          realdm=$(nsenter -t 1 -m -- readlink -f "$dfdev" 2>/dev/null)
+          dmbase=$(basename "${realdm:-}")
+          slave=$(nsenter -t 1 -m -- sh -c "ls /sys/block/$dmbase/slaves/ 2>/dev/null" | head -n1)
+          [ -n "$slave" ] && base="$slave"
+          ;;
+      esac
+      printf '%s' "$base" | sed -E 's/^(nvme[0-9]+)n[0-9]+p?[0-9]*$/\1/; t; s/^([a-z]+)[0-9]+$/\1/'
+    }
+
+    while true; do
+      {
+        echo "# HELP smartctl_wear_used_percent Percent of rated write/erase endurance consumed, higher is more worn"
+        echo "# TYPE smartctl_wear_used_percent gauge"
+        smartctl --scan 2>/dev/null | while read -r dev _dflag _devtype _rest; do
+          [ -z "$dev" ] && continue
+          devname=$(basename "$dev")
+          json=$(smartctl -x --json=c "$dev" 2>/dev/null)
+          model=$(printf '%s' "$json" | grep -o '"model_name":"[^"]*"' | head -n1 | cut -d'"' -f4)
+          serial=$(printf '%s' "$json" | grep -o '"serial_number":"[^"]*"' | head -n1 | cut -d'"' -f4)
+          pct=$(printf '%s' "$json" | grep -o '"endurance_used":{"current_percent":[0-9]*' | grep -o '[0-9]*$')
+          if [ -n "${pct:-}" ]; then
+            echo "smartctl_wear_used_percent{device=\"$devname\",model=\"$model\",serial=\"$serial\"} $pct"
+          fi
+        done
+        echo "smartctl_wear_scrape_success 1"
+
+        echo "# HELP smartctl_disk_filesystem_used_percent Percent full of the filesystem mounted on this whole disk (blank/absent for disks with no mounted filesystem, e.g. raw Ceph OSD block devices)"
+        echo "# TYPE smartctl_disk_filesystem_used_percent gauge"
+        nsenter -t 1 -m -- df -P 2>/dev/null \
+          | awk 'NR>1 && $1 ~ /^\/dev\// && $1 !~ /^\/dev\/(loop|sr)/ {print $1, $5, $6}' \
+          | while read -r dfdev cap mnt; do
+              [ -z "${dfdev:-}" ] && continue
+              parent=$(resolve_parent_disk "$dfdev")
+              pct=$(printf '%s' "$cap" | tr -d '%')
+              [ -n "$parent" ] && [ -n "$pct" ] && echo "$parent $mnt $pct"
+            done \
+          | awk '{
+              parent=$1; mnt=$2; pct=$3
+              if (!(parent in seen) || mnt == "/") {
+                seen[parent]=1
+                mnt_for[parent]=mnt
+                pct_for[parent]=pct
+              }
+            }
+            END {
+              for (p in seen) printf "smartctl_disk_filesystem_used_percent{device=\"%s\",mountpoint=\"%s\"} %s\n", p, mnt_for[p], pct_for[p]
+            }'
+      } > "$TMP" 2>/tmp/collect_errors.log
+      mv "$TMP" "$OUT"
+      sleep "$INTERVAL"
+    done
+
+  respond.sh: |
+    #!/bin/sh
+    # Drain the incoming HTTP request before responding. If we close the
+    # socket while unread request bytes are still sitting in the kernel's
+    # receive buffer, the OS sends a TCP RST instead of a clean FIN - which
+    # curl/nc often tolerate silently, but strict HTTP clients (e.g.
+    # Prometheus' Go scraper) surface as "unexpected EOF" and mark the
+    # scrape as down.
+    CR=$(printf '\r')
+    timeout 2 sh -c '
+      CR="$1"
+      while IFS= read -r line; do
+        line="${line%$CR}"
+        [ -z "$line" ] && break
+      done
+    ' _ "$CR"
+
+    # Build the entire HTTP response (headers + body) as a single string and
+    # write it with one `printf` call. busybox nc (`-e PROG`) tears down the
+    # connection as soon as PROG exits; if the body is written by a separate
+    # process (e.g. `cat file` after an earlier `printf`), that write races
+    # the connection teardown and gets silently dropped some fraction of the
+    # time. Reading the file into a shell variable first (via command
+    # substitution, which never touches the socket) and emitting everything
+    # in one final `printf` avoids the race entirely.
+    BODY=$(cat /tmp/metrics.prom 2>/dev/null)
+    LEN=$(printf '%s' "$BODY" | wc -c)
+    printf 'HTTP/1.1 200 OK\r\nContent-Type: text/plain; version=0.0.4\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s\n' "$LEN" "$BODY"

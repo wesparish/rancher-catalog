@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "smartctl-exporter-wes.fullname" . }}
+  labels:
+    {{- include "smartctl-exporter-wes.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "smartctl-exporter-wes.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "smartctl-exporter-wes.labels" . | nindent 8 }}
+      annotations:
+        checksum/wear-script: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      hostNetwork: {{ .Values.hostNetwork }}
+      hostPID: true
+      dnsPolicy: {{ .Values.hostNetwork | ternary "ClusterFirstWithHostNet" "ClusterFirst" }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --smartctl.scan
+            - --smartctl.rescan={{ .Values.exporter.rescanInterval }}
+            - --smartctl.interval={{ .Values.exporter.pollInterval }}
+            {{- if .Values.exporter.deviceExclude }}
+            - --smartctl.device-exclude={{ .Values.exporter.deviceExclude }}
+            {{- end }}
+            {{- if .Values.exporter.deviceInclude }}
+            - --smartctl.device-include={{ .Values.exporter.deviceInclude }}
+            {{- end }}
+            - --web.listen-address=:{{ .Values.exporter.port }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.exporter.port }}
+              protocol: TCP
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            runAsGroup: 0
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: dev
+              mountPath: /dev
+            - name: run-udev
+              mountPath: /run/udev
+              readOnly: true
+        - name: wear-exporter
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              sh /scripts/collect_loop.sh &
+              exec nc -lk -p {{ .Values.wearExporter.port }} -e sh /scripts/respond.sh
+          env:
+            - name: POLL_INTERVAL_SECONDS
+              value: {{ .Values.wearExporter.pollIntervalSeconds | quote }}
+            - name: SMARTCTL_TIMEOUT_SECONDS
+              value: {{ .Values.wearExporter.smartctlTimeoutSeconds | quote }}
+          ports:
+            - name: wear
+              containerPort: {{ .Values.wearExporter.port }}
+              protocol: TCP
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            runAsGroup: 0
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: dev
+              mountPath: /dev
+            - name: run-udev
+              mountPath: /run/udev
+              readOnly: true
+            - name: wear-script
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: run-udev
+          hostPath:
+            path: /run/udev
+        - name: wear-script
+          configMap:
+            name: {{ include "smartctl-exporter-wes.fullname" . }}-wear-script
+            defaultMode: 0555
+      tolerations:
+        - operator: Exists
