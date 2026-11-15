@@ -1,2 +1,0 @@
-# Override values for ceph-csi. Backfill from cluster: helm get values ceph-csi -n ceph-csi
-{}

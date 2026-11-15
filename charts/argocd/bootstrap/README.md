@@ -67,11 +67,13 @@ doesn't care which tool last touched a resource.
    Should be a no-op apply for the 41 clean ones — ArgoCD adds its own tracking label to the
    resources, nothing else changes, no pod restarts.
 
-5. **The moment an `Application` is synced, stop running `helm upgrade`/`helmfile apply` against
-   that release by hand.** Both tools will still work and both think they own the resources — if
-   you (or a stale script/habit) runs `helm upgrade` after ArgoCD has adopted a release, whichever
-   one applies last wins, and they'll silently fight if run repeatedly. Once everything's synced,
-   retire `charts/helmfile/` entirely rather than leaving it around as a temptation.
+5. **The moment an `Application` is synced, stop running `helm upgrade` against that release by
+   hand.** Both tools will still work and both think they own the resources — if you (or a stale
+   script/habit) runs `helm upgrade` after ArgoCD has adopted a release, whichever one applies last
+   wins, and they'll silently fight if run repeatedly. (`charts/helmfile/` used to be listed here
+   as the other thing to retire; it was deleted on 2026-11-14 — it never actually deployed
+   anything, and having a second apparent source of truth caused confusion. Recoverable from git
+   history if ever needed.)
 
 6. Optional, once confident: the old Helm release history (`sh.helm.release.v1.<name>.v<N>`
    Secrets in each release's namespace) is now stale — ArgoCD doesn't create or update these, so

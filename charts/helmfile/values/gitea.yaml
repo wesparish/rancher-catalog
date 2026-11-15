@@ -1,2 +1,0 @@
-# Override values for gitea (chart ordering only; chart defaults in ../gitea-wes/values.yaml)
-{}

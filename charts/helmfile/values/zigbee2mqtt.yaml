@@ -1,2 +1,0 @@
-# Override values for zigbee2mqtt. Backfill from cluster: helm get values zigbee2mqtt -n zigbee2mqtt
-{}

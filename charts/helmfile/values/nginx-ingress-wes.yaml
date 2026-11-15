@@ -1,2 +1,0 @@
-# Override values for nginx-ingress-wes. Backfill from cluster: helm get values nginx-ingress-wes -n nginx-ingress-wes
-{}

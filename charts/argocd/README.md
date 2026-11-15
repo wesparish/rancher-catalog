@@ -7,8 +7,8 @@ one.
 
 - `project.yaml` — the one `AppProject`, scoping this repo as the allowed source.
 - `applicationset.yaml` — one `Application` per release, generated from an inline list (name,
-  namespace, chart path, sync-wave). This is the file to edit when adding, removing, or
-  re-pointing a release — same role `helmfile.yaml`'s `releases:` list used to serve.
+  namespace, chart path, sync-wave). This is the single source of truth for what's deployed, and
+  the file to edit when adding, removing, or re-pointing a release.
 - `storage-app.yaml` — a separate, hand-written `Application` for `charts/storage/`'s static
   PV/PVC manifests, synced at wave `-1` (before everything else).
 

@@ -1,2 +1,0 @@
-# Override values for cert-manager. Backfill from cluster: helm get values cert-manager -n cert-manager
-{}

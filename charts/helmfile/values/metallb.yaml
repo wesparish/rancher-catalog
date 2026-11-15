@@ -1,2 +1,0 @@
-# Override values for metallb. Backfill from cluster: helm get values metallb -n metallb
-{}

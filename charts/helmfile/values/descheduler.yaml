@@ -1,2 +1,0 @@
-# Override values for descheduler. Backfill from cluster: helm get values descheduler -n descheduler
-{}

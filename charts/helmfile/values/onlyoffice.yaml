@@ -1,2 +1,0 @@
-# Override values for onlyoffice. Backfill from cluster: helm get values onlyoffice -n onlyoffice
-{}

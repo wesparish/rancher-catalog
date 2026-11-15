@@ -1,2 +1,0 @@
-# Override values for gpu-operator. Backfill from cluster: helm get values gpu-operator -n nvidia-gpu-operator
-{}

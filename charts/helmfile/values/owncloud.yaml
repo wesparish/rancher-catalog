@@ -1,2 +1,0 @@
-# Override values for owncloud. Backfill from cluster: helm get values owncloud -n owncloud
-{}

@@ -19,11 +19,13 @@ Working notes for this repo's infrastructure — chart upgrades and the ongoing 
 
 ## Current infrastructure direction
 
-Moving off Rancher Manager to bare k3s, and off the ad-hoc `helm upgrade`/`helmfile` workflow
-(`../helmfile/`, superseded) onto ArgoCD (`../argocd/`) for continuous, self-healing GitOps. The
-goal: be able to wipe the cluster and redeploy everything back to its current state from git,
-keeping the underlying persistent data (`../storage/` — static PV/PVC manifests, formerly a
-separate `rancher-volumes` repo, folded in 2026-07-16).
+Moving off Rancher Manager to bare k3s, and off the ad-hoc `helm upgrade` workflow onto ArgoCD
+(`../argocd/`) for continuous, self-healing GitOps. The goal: be able to wipe the cluster and
+redeploy everything back to its current state from git, keeping the underlying persistent data
+(`../storage/` — static PV/PVC manifests, formerly a separate `rancher-volumes` repo, folded in
+2026-07-16). A `../helmfile/` directory also briefly existed as a version-controlled release
+inventory, but it never actually deployed anything and was deleted on 2026-11-14 to avoid implying
+a second source of truth; `../argocd/applicationset.yaml` is the authoritative release list.
 
 The dry-run checklist above is why `../argocd/applicationset.yaml` could be built with reasonable
 confidence that each `Application` will come up clean on first sync — every chart in it was
