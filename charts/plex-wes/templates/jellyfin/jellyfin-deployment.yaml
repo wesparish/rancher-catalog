@@ -44,6 +44,14 @@ spec:
               value: /config/data
             - name: JELLYFIN_CONFIG_DIR
               value: /config
+            # JELLYFIN_CONFIG_DIR and JELLYFIN_DATA_DIR share the same volume (/config),
+            # so .NET's inotify-based config-reload watcher recursively watches the
+            # entire data/metadata tree (one watch per media item). On CephFS this
+            # held thousands of caps open per client and tripped MDS_CLIENT_RECALL
+            # warnings. Polling-based watching avoids the persistent inotify watches.
+            # See: https://github.com/jellyfin/jellyfin/issues/9843
+            - name: DOTNET_USE_POLLING_FILE_WATCHER
+              value: "1"
           imagePullPolicy: Always
           ports:
             - name: jellyfin-web
