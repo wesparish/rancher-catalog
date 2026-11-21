@@ -60,6 +60,7 @@ spec:
           - {name: owncloud, namespace: owncloud, path: charts/owncloud-wes, wave: "3"}
           - {name: pihole, namespace: pihole, path: charts/pihole, wave: "3"}
           - {name: plex, namespace: plex, path: charts/plex-wes, wave: "3"}
+          - {name: plex-downloads, namespace: plex, path: charts/plex-downloads-wes, wave: "3"}
           - {name: rocketchat, namespace: rocketchat, path: charts/rocketchat-wes, wave: "3"}
           - {name: satisfactory, namespace: satisfactory, path: charts/satisfactory-server-wes, wave: "3"}
           - {name: tandoor, namespace: tandoor, path: charts/tandoor-wes, wave: "3"}

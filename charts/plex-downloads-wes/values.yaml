@@ -1,0 +1,100 @@
+replicaCount: 1
+
+image:
+  # nginx-unprivileged listens on 8080 and runs as uid 101, so we don't need root
+  repository: nginxinc/nginx-unprivileged
+  tag: "1.27-alpine"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 101
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx-wes"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy-authentik.elastiscale.net/oauth2/start
+    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy-authentik.elastiscale.net/oauth2/auth
+  hosts:
+    - host: plexdl.elastiscale.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: plexdl.elastiscale.net
+      hosts:
+        - plexdl.elastiscale.net
+
+# Media PVC to browse/download from. This chart must be deployed into the same namespace as
+# this PVC (the "plex" namespace) since plex-data is a static CephFS binding that's already
+# bound 1:1 to a PVC there -- a second PVC in another namespace can't bind to the same PV.
+persistence:
+  existingClaim: "plex-data"
+  # Always mounted read-only: this is a browse/download-only tool, never a place media should be
+  # modified or deleted from.
+  readOnly: true
+
+resources: {}
+  # limits:
+  #   cpu: 200m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 50m
+  #   memory: 32Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

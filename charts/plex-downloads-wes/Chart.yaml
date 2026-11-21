@@ -1,0 +1,6 @@
+apiVersion: v2
+name: plex-downloads-wes
+description: Simple nginx directory listing/download server for the plex-data PVC, behind OIDC auth (faster browser downloads than the Plex app)
+type: application
+version: 0.1.0
+appVersion: "1.27"
